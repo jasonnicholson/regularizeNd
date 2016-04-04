@@ -41,7 +41,14 @@ else
 end
 
 %% Begin Calculations
-dx = (xGridMax - xGridMin)./nGrid;
+[index, weights] = interp(x,y,xGridMin,xGridMax, nGrid);
 
 end
 
+%%
+function [index, weight] = linear(x,y,xGridMin,xGridMax, nGrid)
+dx = (xGridMax - xGridMin)./nGrid;
+fractionalIndex = bsxfunbsxfun(@rdivide,  bsxfun(@minus, x, xGridMin), dx);
+lowerIndex = fix(fractionalIndex);
+fraction = fractionalIndex - lowerIndex;
+end
