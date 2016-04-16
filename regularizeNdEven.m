@@ -1,5 +1,5 @@
 function [ yGrid, xGrid] = regularizeNdEven(x, y, xGridMin, xGridMax, nGrid, smoothness, interpMethod)
-%regularizeNd  Produces a smooth nD surface from scattered input data.
+%regularizeNd  Produces a smooth nD gridded surface from scattered input data.
 % 
 
 %% Input Checking
@@ -10,7 +10,8 @@ getname = @(x) inputname(1);
 
 % Check dimensions
 nDimensions = size(x,2);
-assert(nDimensions == length(xGridMin) & nDimensions == length(xGridMax) & nDimensions == length(nGrid),'The length of %s, %s, and %s should be the same as the number of rows in %s',getname(xGridMin), getname(xGridMax), getname(nGrid), getname(x));
+assert(nDimensions == numel(xGridMin) & nDimensions == numel(xGridMax) & nDimensions == numel(nGrid),'The length of %s, %s, and %s should be the same as the number of rows in %s',getname(xGridMin), getname(xGridMax), getname(nGrid), getname(x));
+assert(isvector(xGridMin) & isvector(xGridMax) & isvector(nGrid),'%s, %s, and %s must vectors', getname(xGridMin), getname(xGridMax), getname(nGrid));
 nScatteredPoints = size(x,1);
 assert( nScatteredPoints == size(y, 1), '%s must have same number of rows as %s',getname(x), getname(y));
 xGridMin = reshape(xGridMin,1,[]);
@@ -34,10 +35,12 @@ if isa(interpMethod, 'function_handle')
     interp = interpMethod;
 elseif strcmpi(interpMethod, 'linear')
     interp = @linear;
+elseif strcmpi(interpMethod, 'cubic')
+    interp = @cubic;
 elseif strcmpi(interpMethod, 'nearest')
     interp = @nearest;
 else
-    error('%s must be ''linear'', ''nearest'', or of type function_handle', getname(interpMethod));
+    error('%s must be ''cubic'', ''linear'', ''nearest'', or a custom interp function_handle', getname(interpMethod));
 end
 
 %% Begin Calculations
