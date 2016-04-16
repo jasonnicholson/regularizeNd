@@ -54,5 +54,6 @@ dx = (xGridMax - xGridMin)./nGrid;
 fractionalIndex = bsxfunbsxfun(@rdivide,  bsxfun(@minus, x, xGridMin), dx);
 lowerIndex = fix(fractionalIndex);
 fraction = fractionalIndex - lowerIndex;
+w = cat(3,1-fraction, fraction);
 
 end
