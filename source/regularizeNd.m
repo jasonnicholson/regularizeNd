@@ -1,4 +1,4 @@
-function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxiter)
+function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
 % regularizeNd  Produces a smooth nD surface from scattered input data.
 %
 %   yGrid = regularizeNd(x, y, xGrid)
@@ -15,14 +15,14 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          to x. y has the same number of rows as x.
 %
 %  xGrid - cell array containg vectors defining the nodes in the grid in
-%          each dimension. xGrid need not be equally spaced. xGrid
-%          must completely span the data. If it does not, an error is
-%          thrown.
+%          each dimension. The grid vectors need not be equally spaced. The
+%          grid vectors must completely span the data. If it does not, an
+%          error is thrown.
 %
 %  smoothness - scalar or vector. - the ratio of smoothness to fidelity of
-%          the output surface. This must be a positive real number. If it
-%          is a vector, it must have same number of elements as columns in
-%          x.
+%          the output surface, a.k.a. ration of smoothness to "goodness of
+%          fit." This must be a positive real number. If it is a vector, it
+%          must have same number of elements as columns in x.
 %
 %          A smoothness of 1 gives equal weight to fidelity (goodness of fit)
 %          and smoothness of the output surface.  This results in noticeable
@@ -80,10 +80,10 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %          DEFAULT: '\'
 %
-%   'maxiter' - only applies to lsqr solvers - defines the maximum number
-%          of iterations for an iterative solver
+%   'maxIter' - only applies to lsqr solvers - defines the maximum number
+%          of iterations for an iterative solver.
 %
-%          DEFAULT: min(10000,length(xnodes)*length(ynodes))
+%          DEFAULT: min(1e4, nTotalGridPoints)
 %
 %
 %% Output
@@ -103,194 +103,180 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %  x = rand(100,2);
 %  y = exp(x(:,1)+2*x(:,2));
-%  xnodes = {0:.1:1, 0:.1:1};
+%  xGrid = {0:.1:1, 0:.1:1};
 %
-%  g = regularizeNd(x,y,xnodes);
+%  g = regularizeNd(x, y, xGrid);
 %
-% Note: this is equivalent to the following call:
+%  % Note: this is equivalent to the following call:
 %
-%  g = regularizeNd(x,y,xnodes, 0.01, 'linear', '\');
+%  g = regularizeNd(x, y, xGrid, 0.01, 'linear', '\');
 %
+
 
 
 %% Input Checking and Default Values
 narginchk(3, 7);
-
+nargoutchk(0,1);
 
 % helper function used mostly for when variables are renamed
 getname = @(x) inputname(1);
 
-% Set default input values
+% Set default smoothness or check smoothness
 if nargin() < 4 || isempty(smoothness)
     smoothness = 0.01;
+else
+    assert(all(smoothness>0), '%s must be positive in all components.', getname(smoothness));
 end
 
-interpMethodsPossible = {'cubic', 'triangle', 'linear', 'nearest'};
+% calculate the number of dimension
+nDimensions = size(x,2);
 
+% Check if smoothness is a scalar. If it is convert it to a vector
+if isscalar(smoothness)
+    smoothness = ones(nDimensions,1).*smoothness;
+end
+
+% Set default interp method or check method
+interpMethodsPossible = {'cubic', 'triangle', 'linear', 'nearest'};
 if nargin() < 5 || isempty(interpMethod)
     interpMethod = 'linear';
-elseif nargin >= 5 && ~any(strcmpi(interpMethod, interpMethodsPossible))
-    error('%s is not a possible interpolation method. Check your spelling.', interpMethod);
+else
+    assert(any(strcmpi(interpMethod, interpMethodsPossible)), '%s is not a possible interpolation method. Check your spelling.', interpMethod);
+    interpMethod = lower(interpMethod);
 end
 
-if nargin() < 6
+% Set default solver or check the solver
+solversPossible = {'\', 'lsqr'};
+if nargin() < 6 || (nargin()==6 && isempty(solver))
     solver = '\';
+elseif nargin() == 7 && isempty(solver) && ~isempty(maxIter)
+    solver = 'lsqr';
+elseif nargin() == 7 && isempty(solver) && isempty(maxIter)
+    solver = '\';
+else
+    assert(any(strcmpi(solver, solversPossible)), '%s is not an acceptable %s. Check spelling and try again.', solver, getname(solver));
 end
 
-% Check dimensions
+% Check y rows matches the number in x
 nScatteredPoints = size(x,1);
 assert( nScatteredPoints == size(y, 1), '%s must have same number of rows as %s',getname(x), getname(y));
+
+% Check the grid vectors is a cell array
 assert(iscell(xGrid), '%s must be a cell array where the ith cell contains  nodes for ith dimension', getname(xGrid));
 
+% arrange xGrid as a row cell array. This helps with cellfun and arrayfun
+% later because the shape is always the same. From here on, the shape is
+% known.
+xGrid = reshape(xGrid,1,[]);
+
+% arrange the grid vector as column vectors. This is helpful with arrayfun
+% and cellfun calls because the shape is always the same. From here on the
+% grid vectors shape is a known.
+xGrid = cellfun(@(u) reshape(u,[],1), xGrid, 'UniformOutput', false);
+
+% calculate the number of points in each dimension of the grid
 nGrid = cellfun(@(u) length(u), xGrid);
 nTotalGridPoints = prod(nGrid);
 
-if nargin() == 6 && strcmpi('lsqr', solver)
+% Set maxIter or check it otherwise
+if nargin()>6 && isempty(maxIter)
     maxIter = min(1e4, nTotalGridPoints);
+elseif nargin()==7
+    assert(maxIter == fix(maxIter) & maxIter > 0, '%s must a positive integer.', getname(maxIter));
 end
 
-if (nargin() == 7 && isempty(solver))
-    solver = 'lsqr';
-elseif nargin()==7 && (~isempty(solver) || ~strcmpi(solver,'lsqr'))
-    error('%s set but lsqr solver not selected.', getname(maxiter));
-end
-    
-if nargin()==7 && isempty(maxIter)
-    maxIter = min(1e4, nTotalGridPoints);
-end
-
-% Check input points are within min and max of grid
+% Check input points are within min and max of grid.
 xGridMin = cellfun(@(u) min(u), xGrid);
 xGridMax = cellfun(@(u) max(u), xGrid);
-assert(all(all(bsxfun(@ge, x, xGridMin))) & all(all(bsxfun(@le, x, xGridMax))), 'All %s points must be within the range of %s to %s', getname(x), getname(xGridMin), getname(xGridMax));
+assert(all(all(bsxfun(@ge, x, xGridMin))) & all(all(bsxfun(@le, x, xGridMax))), 'All %s points must be within the range of the grid vectors', getname(x));
+
+% calcuate the difference between grid points for each dimension
+dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
 
 % Check for monotonic increasing grid points in each dimension
-assert(all(cellfun(@(u) ~any(diff(u)<=0), xGrid)), 'All grid points in %s must be monotonicaly increasing.', getname(xGrid));
+assert(all(cellfun(@(du) ~any(du<=0), dx)), 'All grid points in %s must be monotonicaly increasing.', getname(xGrid));
 
-% Are there enough output points to form a surface?
-% Bicubic interpolation requires a 4x4 output grid.  Other types require a 3x3 output grid.
-if strcmpi(interpMethod, 'cubic')
-    minAxisLength = 4;
-else
-    minAxisLength = 3;
+% Check that there are enough points to form an output surface Cubic
+% interpolation requires 4 points in each output grid dimension.  Other
+% types require a 3 points in the output grid dimension.
+% TODO rewrite this function to accept a user specificied interpolation function. Get rid of the hard coded interpolation types
+switch interpMethod
+    case 'cubic'
+        minGridVectorLength = 4;
+    case 'linear'
+        minGridVectorLength = 3;
+    case 'nearest'
+        minGridVectorLength = 3;
 end
-assert(all(nGrid < minAxisLength), 'Not enough grid points in each dimension. %s interpolation method requires %d points.', interpMethod, minAxisLength);
+assert(all(nGrid > minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method requires %d points.', interpMethod, minGridVectorLength);
+
 
 %% Find cell index
 % determine the cell the x-points lie in the xGrid
 
-nDimensions = size(x,2);
-
-% calculate the multipler corresponding to each dimension. For example, if
-% x has 2 dimensions and xGrid has 5 points in the first dimension and 7
-% ponts in the 2nd dimension, multiplier is [1 4]. If point has an index of
-% 3 in the first dimension and 2 in the 2nd dimension then its overall
-% index is 3+2*4 = 11.
-multiplier = cumprod([1, nGrid(1:nDimensions-1)-1]);
-
-% preallocate before loop
-xIndex = nan(nScatteredPoints, nDimensions); 
-
-% find initial index for 1st dimension
-xIndex(:,1) = findDimensionIndex(x(:,1), xGrid{1});
-xLinearIndex = xIndex(:,1);
-
-% loop over the dimensions accumulating the index calculated for the
-% previous dimensions
-for iDimension = 2:nDimensions
-    xIndex(:,iDimension) = findDimensionIndex(x(:,iDimension), xGrid{iDimension});
-    xLinearIndex = xLinearIndex + multiplier(iDimension)*xIndex(:,iDimension);
-end
-
-% Adjust the linear index so that first cell is numbered 1 rather than 0.
-% This needed since matlab uses 1 as its first index of an array.
-% Calculating the overall index across multiple dimensions is easier if the
-% index is 0 based. Therefore, the overall 0 based index is calculated
-% first and then shifted by 1.
-xLinearIndex = xLinearIndex+1;
-xIndex = xIndex + 1;
+% loop over the dimensions/columns, calculating cell index
+xIndex = arrayfun(@(iDimension) findDimensionIndex(x(:,iDimension), xGrid{iDimension}, nGrid(iDimension)), 1:nDimensions, 'UniformOutput',false);
 
 %% Calculate Fidelity Equations
 
+% Calcuate the cell fraction. This corresponds to a value between 0 and 1.
+% 0 corresponds to the beggining of the cell. 1 corresponds to the end of
+% the cell. The min and max functions help ensure the output is always
+% between 0 and 1.
+cellFraction = arrayfun(@(iDimension) min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension}))), 1:nDimensions, 'UniformOutput', false);
+
 switch interpMethod
     case 'nearest' % nearest neighbor interpolation in a cell
-        % preallocate before loop
-        dx = nan(nScatteredPoints, nDimensions);
-
-        for iDimension = 1:nDimensions
-            
-        end
-        A = sparse((1:nScatteredPoints)', 1, ones(n,1), nScatteredPoints, nGridPoints);
+        % calculate the index of nearest point
+        xWeightIndex = cellfun(@(fraction, index) round(fraction)+index, cellFraction, xIndex, 'UniformOutput', false);
         
-    case 'linear'
-        % bilinear interpolation in a cell
-        A = sparse(repmat((1:n)',1,4),[ind,ind+1,ind+ny,ind+ny+1], ...
-            [(1-tx).*(1-ty), (1-tx).*ty, tx.*(1-ty), tx.*ty], ...
-            n,nGridPoints);
+        % calculate linear index
+        xWeightIndex = sub2ind(nGrid, xWeightIndex{:});
+        
+        % the weight for nearest interpolation is just 1
+        weight  = 1;
+        
+        % Form the sparse A matrix for fidelity equations
+        A = sparse((1:nScatteredPoints)', xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
+        
+    case 'linear'  % linear interpolation in a cell
+        % In linear interpolation, there is two weights per dimension
+        %                                      weight 1    weight 2
+        weights = cellfun(@(fraction) [1-fraction, fraction], cellFraction, 'UniformOutput', false);
+        
+        % Each cell has 2^nDimension points. Each dimension has two points, 1 or 2.
+        % The local index has 1 or 2 for each dimension. For instance, cell in 2d
+        % has 4 points with the folling indexes:
+        % point 1  2  3  4
+        %      [1, 1, 2, 2;
+        %       1, 2, 1, 2]
+        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2bin(0:2^nDimensions-1))+1)';
+        
+        % preallocate before loop
+        weight = ones(nScatteredPoints, 2^nDimensions);
+        xWeightIndex = cell(1, nDimensions);
+        
+        % Calculate weight for each point in the cell
+        % After the for loop finishes, the rows of weight sum to 1 as a check.
+        for iDimension = 1:nDimensions
+            % multiply the weights from each dimension
+            weight = weight.*weights{iDimension}(:, localCellIndex(iDimension,:));
+            % compute the index corresponding to the weight
+            xWeightIndex{iDimension} = bsxfun(@plus, xIndex{iDimension}, localCellIndex(iDimension,:)-1);
+        end
+        
+        % calculate linear index
+        xWeightIndex = sub2ind(nGrid, xWeightIndex{:});
+        
+        % Form the sparse A matrix for fidelity equations
+        A = sparse(repmat((1:nScatteredPoints)',1,2^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'cubic'
-        % Legacy code calculated the starting index ind for bilinear interpolation, but for bicubic interpolation we need to be further away by one
-        % row and one column (but not off the grid).  Bicubic interpolation involves a 4x4 grid of coefficients, and we want x,y to be right
-        % in the middle of that 4x4 grid if possible.  Use min and max to ensure we won't exceed matrix dimensions.
-        % The sparse matrix format has each column of the sparse matrix A assigned to a unique output grid point.  We need to determine which column
-        % numbers are assigned to those 16 grid points.
-        % What are the first indexes (in x and y) for the points?
-        XIndexes = min(max(1, indx - 1), nx - 3);
-        YIndexes = min(max(1, indy - 1), ny - 3);
-        % These are the first indexes of that 4x4 grid of nodes where we are doing the interpolation.
-        AllColumns = (YIndexes + (XIndexes - 1) * ny)';
-        % Add in the next three points.  This gives us output nodes in the first row (i.e. along the x direction).
-        AllColumns = [AllColumns; AllColumns + ny; AllColumns + 2 * ny; AllColumns + 3 * ny];
-        % Add in the next three rows.  This gives us 16 total output points for each input point.
-        AllColumns = [AllColumns; AllColumns + 1; AllColumns + 2; AllColumns + 3];
-        % Coefficients are calculated based on:
-        % http://en.wikipedia.org/wiki/Lagrange_interpolation
-        % Calculate coefficients for this point based on its coordinates as if we were doing cubic interpolation in x.
-        % Calculate the first coefficients for x and y.
-        XCoefficients = (x(:) - xGrid(XIndexes(:) + 1)) .* (x(:) - xGrid(XIndexes(:) + 2)) .* (x(:) - xGrid(XIndexes(:) + 3)) ./ ((xGrid(XIndexes(:)) - xGrid(XIndexes(:) + 1)) .* (xGrid(XIndexes(:)) - xGrid(XIndexes(:) + 2)) .* (xGrid(XIndexes(:)) - xGrid(XIndexes(:) + 3)));
-        YCoefficients = (w(:) - ynodes(YIndexes(:) + 1)) .* (w(:) - ynodes(YIndexes(:) + 2)) .* (w(:) - ynodes(YIndexes(:) + 3)) ./ ((ynodes(YIndexes(:)) - ynodes(YIndexes(:) + 1)) .* (ynodes(YIndexes(:)) - ynodes(YIndexes(:) + 2)) .* (ynodes(YIndexes(:)) - ynodes(YIndexes(:) + 3)));
-        % Calculate the second coefficients.
-        XCoefficients = [XCoefficients, (x(:) - xGrid(XIndexes(:))) .* (x(:) - xGrid(XIndexes(:) + 2)) .* (x(:) - xGrid(XIndexes(:) + 3)) ./ ((xGrid(XIndexes(:) + 1) - xGrid(XIndexes(:))) .* (xGrid(XIndexes(:) + 1) - xGrid(XIndexes(:) + 2)) .* (xGrid(XIndexes(:) + 1) - xGrid(XIndexes(:) + 3)))];
-        YCoefficients = [YCoefficients, (w(:) - ynodes(YIndexes(:))) .* (w(:) - ynodes(YIndexes(:) + 2)) .* (w(:) - ynodes(YIndexes(:) + 3)) ./ ((ynodes(YIndexes(:) + 1) - ynodes(YIndexes(:))) .* (ynodes(YIndexes(:) + 1) - ynodes(YIndexes(:) + 2)) .* (ynodes(YIndexes(:) + 1) - ynodes(YIndexes(:) + 3)))];
-        % Calculate the third coefficients.
-        XCoefficients = [XCoefficients, (x(:) - xGrid(XIndexes(:))) .* (x(:) - xGrid(XIndexes(:) + 1)) .* (x(:) - xGrid(XIndexes(:) + 3)) ./ ((xGrid(XIndexes(:) + 2) - xGrid(XIndexes(:))) .* (xGrid(XIndexes(:) + 2) - xGrid(XIndexes(:) + 1)) .* (xGrid(XIndexes(:) + 2) - xGrid(XIndexes(:) + 3)))];
-        YCoefficients = [YCoefficients, (w(:) - ynodes(YIndexes(:))) .* (w(:) - ynodes(YIndexes(:) + 1)) .* (w(:) - ynodes(YIndexes(:) + 3)) ./ ((ynodes(YIndexes(:) + 2) - ynodes(YIndexes(:))) .* (ynodes(YIndexes(:) + 2) - ynodes(YIndexes(:) + 1)) .* (ynodes(YIndexes(:) + 2) - ynodes(YIndexes(:) + 3)))];
-        % Calculate the fourth coefficients.
-        XCoefficients = [XCoefficients, (x(:) - xGrid(XIndexes(:))) .* (x(:) - xGrid(XIndexes(:) + 1)) .* (x(:) - xGrid(XIndexes(:) + 2)) ./ ((xGrid(XIndexes(:) + 3) - xGrid(XIndexes(:))) .* (xGrid(XIndexes(:) + 3) - xGrid(XIndexes(:) + 1)) .* (xGrid(XIndexes(:) + 3) - xGrid(XIndexes(:) + 2)))];
-        YCoefficients = [YCoefficients, (w(:) - ynodes(YIndexes(:))) .* (w(:) - ynodes(YIndexes(:) + 1)) .* (w(:) - ynodes(YIndexes(:) + 2)) ./ ((ynodes(YIndexes(:) + 3) - ynodes(YIndexes(:))) .* (ynodes(YIndexes(:) + 3) - ynodes(YIndexes(:) + 1)) .* (ynodes(YIndexes(:) + 3) - ynodes(YIndexes(:) + 2)))];
-        % Allocate space for all of the data we're about to insert.
-        AllCoefficients = zeros(16, n);
-        % There may be a clever way to vectorize this, but then the code would be unreadable and difficult to debug or upgrade.
-        % The matrix solution process will take far longer than this, so it's not worth the effort to vectorize this.
-        for i = 1 : n
-            % Multiply the coefficients to accommodate bicubic interpolation.  The resulting matrix is a 4x4 of the interpolation coefficients.
-            TheseCoefficients = repmat(XCoefficients(i, :)', 1, 4) .* repmat(YCoefficients(i, :), 4, 1);
-            % Add these coefficients to the list.
-            AllCoefficients(1 : 16, i) = TheseCoefficients(:);
-        end
-        % Each input point has 16 interpolation coefficients (because of the 4x4 grid).
-        AllRows = repmat(1 : n, 16, 1);
-        % Now that we have all of the indexes and coefficients, we can create the sparse matrix of equality conditions.
-        A = sparse(AllRows(:), AllColumns(:), AllCoefficients(:), n, nGridPoints);
-end
-rhs = y;
-
-% Do we have relative smoothing parameters?
-if numel(smoothness) == 1
-    % Nothing special; this is just a scalar quantity that needs to be the same for x and y directions.
-    xyRelativeStiffness = [1; 1] * smoothness;
-else
-    % What the user asked for
-    xyRelativeStiffness = smoothness(:);
+        error('Not read yet.');
+%         A = sparse(AllRows(:), AllColumns(:), AllCoefficients(:), n, nGridPoints);
 end
 
-% Build a regularizer using the second derivative.  This used to be called "gradient" even though it uses a second
-% derivative, not a first derivative.  This is an important distinction because "gradient" implies a horizontal
-% surface, which is not correct.  The second derivative favors flatness, especially if you use a large smoothness
-% constant.  Flat and horizontal are two different things, and in this script we are taking an irregular surface and
-% flattening it according to the smoothness constant.
-% The second-derivative calculation is documented here:
-% http://mathformeremortals.wordpress.com/2013/01/12/a-numerical-second-derivative-from-three-points/
+%% Calculate Smoothness Equations
 
 % Minimizes the sum of the squares of the second derivatives (wrt x and y) across the grid
 [i,j] = meshgrid(1:nx,2:(ny-1));
@@ -298,26 +284,22 @@ ind = j(:) + ny*(i(:)-1);
 dy1 = dy(j(:)-1);
 dy2 = dy(j(:));
 
-Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], ...
-    xyRelativeStiffness(2)*[-2./(dy1.*(dy1+dy2)), ...
-    2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],nGridPoints,nGridPoints);
+Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], smoothness(2)*[-2./(dy1.*(dy1+dy2)), 2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],nGridPoints,nGridPoints);
 
 [i,j] = meshgrid(2:(nx-1),1:ny);
 ind = j(:) + ny*(i(:)-1);
 dx1 = dx(i(:) - 1);
 dx2 = dx(i(:));
 
-Areg = [Areg;sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], ...
-    xyRelativeStiffness(1)*[-2./(dx1.*(dx1+dx2)), ...
-    2./(dx1.*dx2), -2./(dx2.*(dx1+dx2))],nGridPoints,nGridPoints)];
+Areg = [Areg;sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], smoothness(1)*[-2./(dx1.*(dx1+dx2)), 2./(dx1.*dx2), -2./(dx2.*(dx1+dx2))],nGridPoints,nGridPoints)];
 nreg = size(Areg, 1);
 
-FidelityEquationCount = size(A, 1);
+nFidelityEquation = nScatteredPoints;
 % Number of the second derivative equations in the matrix
 RegularizerEquationCount = nx * (ny - 2) + ny * (nx - 2);
 % We are minimizing the sum of squared errors, so adjust the magnitude of the squared errors to make second-derivative
 % squared errors match the fidelity squared errors.  Then multiply by smoothparam.
-NewSmoothnessScale = sqrt(FidelityEquationCount / RegularizerEquationCount);
+NewSmoothnessScale = sqrt(nFidelityEquation / RegularizerEquationCount);
 
 % Second derivatives scale with z exactly because d^2(K*z) / dx^2 = K * d^2(z) / dx^2.
 % That means we've taken care of the z axis.
@@ -336,16 +318,16 @@ NewSmoothnessScale = NewSmoothnessScale *	SurfaceDomainScale;
 
 A = [A; Areg * NewSmoothnessScale];
 
-rhs = [rhs;zeros(nreg,1)];
+y = [y;zeros(nreg,1)];
 % solve the full system, with regularizer attached
 switch solver
     case {'\' 'backslash'}
-        yGrid = reshape(A\rhs,ny,nx);
+        yGrid = reshape(A\y,ny,nx);
     case 'lsqr'
         % iterative solver - lsqr. No preconditioner here.
         tol = abs(max(y)-min(y))*1.e-13;
         
-        [yGrid,flag] = lsqr(A,rhs,tol,maxiter);
+        [yGrid,flag] = lsqr(A,y,tol,maxIter);
         yGrid = reshape(yGrid,ny,nx);
         
         % display a warning if convergence problems
@@ -355,7 +337,7 @@ switch solver
             case 1
                 % lsqr iterated MAXIT times but did not converge.
                 warning('GRIDFIT:solver',['Lsqr performed ', ...
-                    num2str(maxiter),' iterations but did not converge.'])
+                    num2str(maxIter),' iterations but did not converge.'])
             case 3
                 % lsqr stagnated, successive iterates were the same
                 warning('GRIDFIT:solver','Lsqr stagnated without apparent convergence.')
@@ -366,20 +348,18 @@ switch solver
         
 end  % switch solver
 
-% only generate xgrid and ygrid if requested.
-if nargout>1
-    [xgrid,wgrid]=meshgrid(xGrid,ynodes);
-end
-
-end % 
+end %
 
 %%
-function index = findDimensionIndex(u, uGrid)
-% calculates the 0 based index of the points u in uGrid
+function index = findDimensionIndex(u, uGrid, uGridLength)
+% calculates the 1 based cell index of the points u in uGrid as edges
 
 [~, index] = histc(u, uGrid);
 
-% histc's first bin is numbered 1. I want the first bin to be 0. This helps
-% with calculating the index in multiple dimension.
-index = index - 1;
+% For points that lie ON the max value of uGrid (i.e. the last value),
+% histc returns an index that is equal to the length of uGrid. uGrid
+% describes uGridLength-1 cells. Therefore, we need to find when a cell has
+% an index equal to the length of uGridLength and reduce the index by 1.
+index(index==uGridLength) = uGridLength-1;
+
 end
