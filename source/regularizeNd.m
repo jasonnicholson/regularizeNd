@@ -82,7 +82,6 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %   'maxIter' - only applies to lsqr solvers - defines the maximum number
 %          of iterations for the lsqr iterative solver.
-%
 %          DEFAULT: min(1e4, nTotalGridPoints)
 %
 %
@@ -189,6 +188,9 @@ end
 xGridMin = cellfun(@(u) min(u), xGrid);
 xGridMax = cellfun(@(u) max(u), xGrid);
 assert(all(all(bsxfun(@ge, x, xGridMin))) & all(all(bsxfun(@le, x, xGridMax))), 'All %s points must be within the range of the grid vectors', getname(x));
+
+% calcuate the difference between grid points for each dimension
+dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
 
 % calcuate the difference between grid points for each dimension
 dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
@@ -389,3 +391,4 @@ index(index==uGridLength) = uGridLength-1;
 end
 
 function w = secondDerivativeWeights(dx, n, 
+
