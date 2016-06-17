@@ -5,7 +5,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %   yGrid = regularizeNd(x, y, xGrid, smoothness)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
-%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxiter)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
 %
 %% Inputs
 %      x - matrix, containing arbitrary scattered data. Each row contains
@@ -81,7 +81,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          DEFAULT: '\'
 %
 %   'maxIter' - only applies to lsqr solvers - defines the maximum number
-%          of iterations for an iterative solver.
+%          of iterations for the lsqr iterative solver.
 %
 %          DEFAULT: min(1e4, nTotalGridPoints)
 %
@@ -276,23 +276,49 @@ switch interpMethod
 %         A = sparse(AllRows(:), AllColumns(:), AllCoefficients(:), n, nGridPoints);
 end
 
+clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
+
 %% Calculate Smoothness Equations
 
-% Minimizes the sum of the squares of the second derivatives (wrt x and y) across the grid
-[i,j] = meshgrid(1:nx,2:(ny-1));
-ind = j(:) + ny*(i(:)-1);
-dy1 = dy(j(:)-1);
-dy2 = dy(j(:));
+% calculate the number smoothness equations
+nSmoothnessEquations = nan(nDimensions,1);
+for iDimension = 1:nDimensions
+    % calculate the number of points in each dimension for switch to
+    % calculate smoothness for the current dimension. i.e. the number of
+    % 2nd derivatives for the current dimension.
+    nEquationsPerDimension = nGrid;
+    nEquationsPerDimension(iDimension) = nEquationsPerDimension(iDimension)-2;
+    
+    % Accumulate the smoothness equations
+    nSmoothnessEquations(iDimension) = prod(nEquationsPerDimension);
+end
+nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 
-Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], smoothness(2)*[-2./(dy1.*(dy1+dy2)), 2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],nGridPoints,nGridPoints);
+% Preallocate the regularization equations
+Areg = sparse([],[],[],nTotalSmoothnessEquations, prod(nGrid), 3*nSmoothnessEquations);
+equationOffset = 0;
 
-[i,j] = meshgrid(2:(nx-1),1:ny);
-ind = j(:) + ny*(i(:)-1);
-dx1 = dx(i(:) - 1);
-dx2 = dx(i(:));
-
-Areg = [Areg;sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], smoothness(1)*[-2./(dx1.*(dx1+dx2)), 2./(dx1.*dx2), -2./(dx2.*(dx1+dx2))],nGridPoints,nGridPoints)];
-nreg = size(Areg, 1);
+for iDimension=1:nDimensions
+    % preallocate before loop
+    index = cell(nDimensions,1);
+    
+    % loop over dimensions creating index vector in each dimension
+    for iCell = 1:nDimensions
+        if iCell == iDimension
+            index{iCell} = uint32(2):uint32(nGrid(iCell)-1);
+        else
+            index{iCell} = uint32(1):uint32(nGrid(iCell));
+        end
+    end
+    
+    % Create a grid over index vectors
+    [index{:}] = ndgrid(index{:});
+    
+    % convert index to a linear index
+    index = reshape(sub2ind(nGrid, index{:}),[],1);
+    
+    Areg(repmat((uint32(1):uint32(nSmoothnessEquations(iDimension)))',1,3), [index-1, index, index+1])  = smoothness(iDimension).*1;
+end
 
 nFidelityEquation = nScatteredPoints;
 % Number of the second derivative equations in the matrix
@@ -322,13 +348,13 @@ y = [y;zeros(nreg,1)];
 % solve the full system, with regularizer attached
 switch solver
     case {'\' 'backslash'}
-        yGrid = reshape(A\y,ny,nx);
+        yGrid = reshape(A\y, nGrid);
     case 'lsqr'
         % iterative solver - lsqr. No preconditioner here.
         tol = abs(max(y)-min(y))*1.e-13;
         
         [yGrid,flag] = lsqr(A,y,tol,maxIter);
-        yGrid = reshape(yGrid,ny,nx);
+        yGrid = reshape(yGrid,nGrid);
         
         % display a warning if convergence problems
         switch flag
@@ -336,14 +362,12 @@ switch solver
                 % no problems with convergence
             case 1
                 % lsqr iterated MAXIT times but did not converge.
-                warning('GRIDFIT:solver',['Lsqr performed ', ...
-                    num2str(maxIter),' iterations but did not converge.'])
+                warning('Lsqr performed %d iterations but did not converge.', maxIter);
             case 3
                 % lsqr stagnated, successive iterates were the same
-                warning('GRIDFIT:solver','Lsqr stagnated without apparent convergence.')
+                warning('Lsqr stagnated without apparent convergence.');
             case 4
-                warning('GRIDFIT:solver',['One of the scalar quantities calculated in',...
-                    ' LSQR was too small or too large to continue computing.'])
+                warning('One of the scalar quantities calculated in LSQR was too small or too large to continue computing.');
         end
         
 end  % switch solver
@@ -363,3 +387,5 @@ function index = findDimensionIndex(u, uGrid, uGridLength)
 index(index==uGridLength) = uGridLength-1;
 
 end
+
+function w = secondDerivativeWeights(dx, n, 

@@ -544,14 +544,12 @@ else
 	% http://mathformeremortals.wordpress.com/2013/01/12/a-numerical-second-derivative-from-three-points/
 
 	% Minimizes the sum of the squares of the second derivatives (wrt x and y) across the grid
-	[i,j] = meshgrid(1:nx,2:(ny-1));
+    	[i,j] = meshgrid(1:nx,2:(ny-1));
 	ind = j(:) + ny*(i(:)-1);
 	dy1 = dy(j(:)-1);
 	dy2 = dy(j(:));
 
-	Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], ...
-		xyRelativeStiffness(2)*[-2./(dy1.*(dy1+dy2)), ...
-		2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],ngrid,ngrid);
+	Areg = sparse(repmat(ind,1,3), [ind-1, ind, ind+1], xyRelativeStiffness(2)*[-2./(dy1.*(dy1+dy2)), 2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))], ngrid, ngrid);
 
 	[i,j] = meshgrid(2:(nx-1),1:ny);
 	ind = j(:) + ny*(i(:)-1);
