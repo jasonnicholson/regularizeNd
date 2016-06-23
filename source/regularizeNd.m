@@ -282,31 +282,38 @@ clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
 
 %% Calculate Smoothness Equations
 
-% calculate the number smoothness equations
+%%% calculate the number smoothness equations
 nSmoothnessEquations = nan(nDimensions,1);
 for iDimension = 1:nDimensions
     % calculate the number of points in each dimension for which to
-    % calculate smoothness for the current dimension. i.e. the number of
-    % 2nd derivatives for the current dimension.
+    % calculate smoothness for the ith dimension. i.e. the number of
+    % 2nd derivatives for the ith dimension.
     nEquationsPerDimension = nGrid;
     nEquationsPerDimension(iDimension) = nEquationsPerDimension(iDimension)-2;
     
-    % Save the number of equations for the current dimension
+    % Calculate the number equations for the ith dimension
     nSmoothnessEquations(iDimension) = prod(nEquationsPerDimension);
 end
+% Calculate the total number of Smooth equations
 nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 
+%%% Setup to calculate the A matrix for smoothness equations, Areg
+
 % Preallocate the regularization equations
-Areg = sparse([],[],[],nTotalSmoothnessEquations, prod(nGrid), 3*nSmoothnessEquations);
+Areg = sparse([],[],[],nTotalSmoothnessEquations, nTotalGridPoints, 3*nTotalSmoothnessEquations);
 equationOffset = 0;
 
+% loop over each dimension. calcuate numerical 2nd derivatives weights. Place them in A matrix.
 for iDimension=1:nDimensions
-    % preallocate before loop
-    index = cell(nDimensions,1);
     
+    % preallocate before loop
+    index = cell(nDimensions, 1);
     % loop over dimensions creating index vector in each dimension
     for iCell = 1:nDimensions
         if iCell == iDimension
+            % for iCell == iDimension, the first and last index are
+            % dropped. you cannot calculate numerical 2nd derivative with a
+            % central difference approach at the edges.
             index{iCell} = uint32(2):uint32(nGrid(iCell)-1);
         else
             index{iCell} = uint32(1):uint32(nGrid(iCell));
@@ -316,24 +323,27 @@ for iDimension=1:nDimensions
     % Create a grid over index vectors
     [index{:}] = ndgrid(index{:});
     
-    % convert index to a linear index
+    % convert index to a linear index and column vector
     index = reshape(sub2ind(nGrid, index{:}),[],1);
     
-    Areg(repmat((uint32(1):uint32(nSmoothnessEquations(iDimension)))',1,3), [index-1, index, index+1])  = smoothness(iDimension).*1;
+    % number of times to copy 2nd derivative weights for this dimension
+    nCopies = nGrid;
+    nCopies(iDimension) = [];
+    nCopies = prod(nCopies);
+    
+    Areg(repmat(equationOffset + (uint32(1):uint32(nSmoothnessEquations(iDimension)))',1,3), [index-1, index, index+1])  = smoothness(iDimension).*secondDerivativeWeights(dx{iDimension}, nCopies);
+    
+    % calcuate the new equation offset. This defines where the next block of 2nd derivative equations starts
+    equationOffset = equationOffset + nSmoothnessEquations(iDimension);
 end
 
-nFidelityEquation = nScatteredPoints;
-% Number of the second derivative equations in the matrix
-RegularizerEquationCount = nx * (ny - 2) + ny * (nx - 2);
+
 % We are minimizing the sum of squared errors, so adjust the magnitude of the squared errors to make second-derivative
-% squared errors match the fidelity squared errors.  Then multiply by smoothparam.
-NewSmoothnessScale = sqrt(nFidelityEquation / RegularizerEquationCount);
+% squared errors match the fidelity squared errors.  Then multiply by smoothness.
+newSmoothnessScale = sqrt(nScatteredPoints / nTotalSmoothnessEquations);
 
-% Second derivatives scale with z exactly because d^2(K*z) / dx^2 = K * d^2(z) / dx^2.
-% That means we've taken care of the z axis.
-% The square root of the point/derivative ratio takes care of the grid density.
+
 % We also need to take care of the size of the dataset in x and y.
-
 % The scaling up to this point applies to local variation.  Local means within a domain of [0, 1] or [10, 11], etc.
 % The smoothing behavior needs to work for datasets that are significantly larger or smaller than that.
 % For example, if x and y span [0 10,000], smoothing local to [0, 1] is insufficient to influence the behavior of
@@ -341,13 +351,16 @@ NewSmoothnessScale = sqrt(nFidelityEquation / RegularizerEquationCount);
 % spanning [0, 0.01].  Multiplying the smoothing constant by SurfaceDomainScale compensates for this, producing the
 % expected behavior that a smoothing constant of 1 produces noticeable smoothing (when looking at the entire surface
 % profile) and that 1% does not produce noticeable smoothing.
-SurfaceDomainScale = (max(max(xGrid)) - min(min(xGrid))) * (max(max(ynodes)) - min(min(ynodes)));
-NewSmoothnessScale = NewSmoothnessScale *	SurfaceDomainScale;
+surfaceDomainScale = prod(arrayfun(@(uMax, uMin) uMax-uMin, xGridMax, xGridMin));
+newSmoothnessScale = newSmoothnessScale * surfaceDomainScale;
 
-A = [A; Areg * NewSmoothnessScale];
+%% Solve the Overall Equation System
 
-y = [y;zeros(nreg,1)];
-% solve the full system, with regularizer attached
+% concatenate the fidelity equations and smoothing equations together
+A = [A; Areg * newSmoothnessScale];
+y = [y;zeros(nTotalSmoothnessEquations, 1)];
+
+% solve the full system
 switch solver
     case {'\' 'backslash'}
         yGrid = reshape(A\y, nGrid);
@@ -390,5 +403,32 @@ index(index==uGridLength) = uGridLength-1;
 
 end
 
-function w = secondDerivativeWeights(dx, n, 
+ function w = secondDerivativeWeights(dx, nCopies)
+ % dx is a column vector of differences
+ % nCopies is the number times to copy the difference weights
+ 
+ nDx = length(dx);
+ 
+% calcuate the numerical second derivative weights
+% Sorry formula is a bit complicated. I derived it from parabolic 
+% lagrange formula and then differentiated it twice. I then used
+% the 1st order difference, dx, to calculate the weights.
+% 2nd order lagrange polynomial through 3 points: 
+% y = [(x-x2)*(x-x3)/((x1-x2)*(x1-x3)), (x-x1)*(x-x3)/((x2-x1)*(x2-x3)), (x-x1)*(x-x2)/((x3-x1)*(x3-x2))]*[y1;y2;y3]
+% differentiating twice:
+% y'' = 2./[((x1-x3)*(x1-x2)), ((x2-x1)*(x2-x3)), ((x3-x1)*(x3-x2))]*[y1;y2;y3];
+% (x1-x3) = -(dx(1:nDx-1)+dx(2:nDx))
+% (x1-x2) = -dx(1:nDx-1)
+% (x2-x1) =  dx(1:nDx-1)
+% (x2-x3) = -dx(2:end)
+% (x3-x1) =  (dx(1:nDx-1)+dx(2:nDx))
+% (x3-x2) =  dx(2:end)
+w = 2./[(dx(1:nDx-1)+dx(2:nDx)).*dx(1:nDx-1), ...
+       -dx(1:nDx-1).*dx(2:nDx), ...
+       (dx(1:nDx-1)+dx(2:nDx)).*dx(2:nDx)];
+
+% copy the weights the necessary number of times
+w = repmat(w, nCopies, 1);
+
+ end
 
