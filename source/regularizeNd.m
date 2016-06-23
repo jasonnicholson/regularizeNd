@@ -14,7 +14,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %      y - vector or matrix, containing containing the corresponds values
 %          to x. y has the same number of rows as x.
 %
-%  xGrid - cell array containg vectors defining the nodes in the grid in
+%  xGrid - cell array containing vectors defining the nodes in the grid in
 %          each dimension. The grid vectors need not be equally spaced. The
 %          grid vectors must completely span the data. If it does not, an
 %          error is thrown.
@@ -62,7 +62,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %          What solver should you use? Problems with a significant
 %          amount of extrapolation should avoid lsqr. \ may be
-%          best numerically for small smoothnesss parameters and
+%          best numerically for small smoothness parameters and
 %          high extents of extrapolation.
 %
 %          Large numbers of points will slow down the direct
@@ -189,19 +189,19 @@ xGridMin = cellfun(@(u) min(u), xGrid);
 xGridMax = cellfun(@(u) max(u), xGrid);
 assert(all(all(bsxfun(@ge, x, xGridMin))) & all(all(bsxfun(@le, x, xGridMax))), 'All %s points must be within the range of the grid vectors', getname(x));
 
-% calcuate the difference between grid points for each dimension
+% calculate the difference between grid points for each dimension
 dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
 
-% calcuate the difference between grid points for each dimension
+% calculate the difference between grid points for each dimension
 dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
 
 % Check for monotonic increasing grid points in each dimension
-assert(all(cellfun(@(du) ~any(du<=0), dx)), 'All grid points in %s must be monotonicaly increasing.', getname(xGrid));
+assert(all(cellfun(@(du) ~any(du<=0), dx)), 'All grid points in %s must be monotonically increasing.', getname(xGrid));
 
 % Check that there are enough points to form an output surface Cubic
 % interpolation requires 4 points in each output grid dimension.  Other
 % types require a 3 points in the output grid dimension.
-% TODO rewrite this function to accept a user specificied interpolation function. Get rid of the hard coded interpolation types
+% TODO rewrite this function to accept a user specified interpolation function. Get rid of the hard coded interpolation types
 switch interpMethod
     case 'cubic'
         minGridVectorLength = 4;
@@ -221,8 +221,8 @@ xIndex = arrayfun(@(iDimension) findDimensionIndex(x(:,iDimension), xGrid{iDimen
 
 %% Calculate Fidelity Equations
 
-% Calcuate the cell fraction. This corresponds to a value between 0 and 1.
-% 0 corresponds to the beggining of the cell. 1 corresponds to the end of
+% Calculate the cell fraction. This corresponds to a value between 0 and 1.
+% 0 corresponds to the beginning of the cell. 1 corresponds to the end of
 % the cell. The min and max functions help ensure the output is always
 % between 0 and 1.
 cellFraction = arrayfun(@(iDimension) min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension}))), 1:nDimensions, 'UniformOutput', false);
@@ -248,7 +248,7 @@ switch interpMethod
         
         % Each cell has 2^nDimension points. Each dimension has two points, 1 or 2.
         % The local index has 1 or 2 for each dimension. For instance, cell in 2d
-        % has 4 points with the folling indexes:
+        % has 4 points with the following indexes:
         % point 1  2  3  4
         %      [1, 1, 2, 2;
         %       1, 2, 1, 2]
@@ -285,13 +285,13 @@ clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
 % calculate the number smoothness equations
 nSmoothnessEquations = nan(nDimensions,1);
 for iDimension = 1:nDimensions
-    % calculate the number of points in each dimension for switch to
+    % calculate the number of points in each dimension for which to
     % calculate smoothness for the current dimension. i.e. the number of
     % 2nd derivatives for the current dimension.
     nEquationsPerDimension = nGrid;
     nEquationsPerDimension(iDimension) = nEquationsPerDimension(iDimension)-2;
     
-    % Accumulate the smoothness equations
+    % Save the number of equations for the current dimension
     nSmoothnessEquations(iDimension) = prod(nEquationsPerDimension);
 end
 nTotalSmoothnessEquations = sum(nSmoothnessEquations);
