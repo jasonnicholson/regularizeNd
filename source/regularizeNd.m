@@ -161,7 +161,7 @@ nScatteredPoints = size(x,1);
 assert( nScatteredPoints == size(y, 1), '%s must have same number of rows as %s',getname(x), getname(y));
 
 % Check the grid vectors is a cell array
-assert(iscell(xGrid), '%s must be a cell array where the ith cell contains  nodes for ith dimension', getname(xGrid));
+assert(iscell(xGrid), '%s must be a cell array where the ith cell contains nodes for ith dimension', getname(xGrid));
 
 % arrange xGrid as a row cell array. This helps with cellfun and arrayfun
 % later because the shape is always the same. From here on, the shape is
@@ -192,9 +192,6 @@ assert(all(all(bsxfun(@ge, x, xGridMin))) & all(all(bsxfun(@le, x, xGridMax))), 
 % calculate the difference between grid points for each dimension
 dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
 
-% calculate the difference between grid points for each dimension
-dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
-
 % Check for monotonic increasing grid points in each dimension
 assert(all(cellfun(@(du) ~any(du<=0), dx)), 'All grid points in %s must be monotonically increasing.', getname(xGrid));
 
@@ -213,19 +210,25 @@ end
 assert(all(nGrid > minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method requires %d points.', interpMethod, minGridVectorLength);
 
 
-%% Find cell index
-% determine the cell the x-points lie in the xGrid
-
-% loop over the dimensions/columns, calculating cell index
-xIndex = arrayfun(@(iDimension) findDimensionIndex(x(:,iDimension), xGrid{iDimension}, nGrid(iDimension)), 1:nDimensions, 'UniformOutput',false);
-
 %% Calculate Fidelity Equations
 
-% Calculate the cell fraction. This corresponds to a value between 0 and 1.
-% 0 corresponds to the beginning of the cell. 1 corresponds to the end of
-% the cell. The min and max functions help ensure the output is always
-% between 0 and 1.
-cellFraction = arrayfun(@(iDimension) min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension}))), 1:nDimensions, 'UniformOutput', false);
+% preallocate
+xIndex = cell(1,nDimensions);
+cellFraction = cell(1, nDimensions);
+
+% loop over dimensions
+for iDimension = 1:nDimensions
+    % Find cell index
+    % determine the cell the x-points lie in the xGrid
+    % loop over the dimensions/columns, calculating cell index
+    xIndex{iDimension} = findDimensionIndex(x(:,iDimension), xGrid{iDimension}, nGrid(iDimension));
+    
+    % Calculate the cell fraction. This corresponds to a value between 0 and 1.
+    % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
+    % the cell. The min and max functions help ensure the output is always
+    % between 0 and 1.
+    cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
+end
 
 switch interpMethod
     case 'nearest' % nearest neighbor interpolation in a cell
@@ -233,7 +236,7 @@ switch interpMethod
         xWeightIndex = cellfun(@(fraction, index) round(fraction)+index, cellFraction, xIndex, 'UniformOutput', false);
         
         % calculate linear index
-        xWeightIndex = sub2ind(nGrid, xWeightIndex{:});
+        xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
         
         % the weight for nearest interpolation is just 1
         weight  = 1;
@@ -268,21 +271,22 @@ switch interpMethod
         end
         
         % calculate linear index
-        xWeightIndex = sub2ind(nGrid, xWeightIndex{:});
+        xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
         
         % Form the sparse A matrix for fidelity equations
         A = sparse(repmat((1:nScatteredPoints)',1,2^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'cubic'
-        error('Not read yet.');
+        error('Not ready yet.');
 %         A = sparse(AllRows(:), AllColumns(:), AllCoefficients(:), n, nGridPoints);
 end
 
-clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
+% save('nd A matrix.mat', 'A');
+clear(getname(xWeightIndex), getname(weight), getname(localCellIndex), getname(cellFraction));
 
-%% Calculate Smoothness Equations
+%% Smoothness Equations
 
-%%% calculate the number smoothness equations
+%% calculate the number of smoothness equations in each dimension
 nSmoothnessEquations = nan(nDimensions,1);
 for iDimension = 1:nDimensions
     % calculate the number of points in each dimension for which to
@@ -297,50 +301,11 @@ end
 % Calculate the total number of Smooth equations
 nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 
-%%% Setup to calculate the A matrix for smoothness equations, Areg
-
-% Preallocate the regularization equations
-Areg = sparse([],[],[],nTotalSmoothnessEquations, nTotalGridPoints, 3*nTotalSmoothnessEquations);
-equationOffset = 0;
-
-% loop over each dimension. calcuate numerical 2nd derivatives weights. Place them in A matrix.
-for iDimension=1:nDimensions
-    
-    % preallocate before loop
-    index = cell(nDimensions, 1);
-    % loop over dimensions creating index vector in each dimension
-    for iCell = 1:nDimensions
-        if iCell == iDimension
-            % for iCell == iDimension, the first and last index are
-            % dropped. you cannot calculate numerical 2nd derivative with a
-            % central difference approach at the edges.
-            index{iCell} = uint32(2):uint32(nGrid(iCell)-1);
-        else
-            index{iCell} = uint32(1):uint32(nGrid(iCell));
-        end
-    end
-    
-    % Create a grid over index vectors
-    [index{:}] = ndgrid(index{:});
-    
-    % convert index to a linear index and column vector
-    index = reshape(sub2ind(nGrid, index{:}),[],1);
-    
-    % number of times to copy 2nd derivative weights for this dimension
-    nCopies = nGrid;
-    nCopies(iDimension) = [];
-    nCopies = prod(nCopies);
-    
-    Areg(repmat(equationOffset + (uint32(1):uint32(nSmoothnessEquations(iDimension)))',1,3), [index-1, index, index+1])  = smoothness(iDimension).*secondDerivativeWeights(dx{iDimension}, nCopies);
-    
-    % calcuate the new equation offset. This defines where the next block of 2nd derivative equations starts
-    equationOffset = equationOffset + nSmoothnessEquations(iDimension);
-end
-
+%%% Calculate Smoothness parameters
 
 % We are minimizing the sum of squared errors, so adjust the magnitude of the squared errors to make second-derivative
 % squared errors match the fidelity squared errors.  Then multiply by smoothness.
-newSmoothnessScale = sqrt(nScatteredPoints / nTotalSmoothnessEquations);
+smoothnessScale = sqrt(nScatteredPoints / nTotalSmoothnessEquations);
 
 
 % We also need to take care of the size of the dataset in x and y.
@@ -352,12 +317,66 @@ newSmoothnessScale = sqrt(nScatteredPoints / nTotalSmoothnessEquations);
 % expected behavior that a smoothing constant of 1 produces noticeable smoothing (when looking at the entire surface
 % profile) and that 1% does not produce noticeable smoothing.
 surfaceDomainScale = prod(arrayfun(@(uMax, uMin) uMax-uMin, xGridMax, xGridMin));
-newSmoothnessScale = newSmoothnessScale * surfaceDomainScale;
+newSmoothnessScale = smoothnessScale * surfaceDomainScale;
+
+%%% Calculate the A matrix for smoothness equations, Areg
+
+% Preallocate the regularization equations
+Areg = cell(nDimensions, 1);
+
+% loop over each dimension. calcuate numerical 2nd derivatives weights. Place them in Areg cell array.
+for iDimension=1:nDimensions
+    
+    % compute the multiplier for each dimension
+    multiplier = nGrid;
+    multiplier(iDimension) = multiplier(iDimension)-2;
+    multiplier = cumprod(multiplier);
+    
+    % initialize the index with the first vector
+    if iDimension==1
+        index1 = (1:nGrid(1)-2)';
+        index2 = (2:nGrid(1)-1)';
+        index3 = (3:nGrid(1))';
+    else
+        index1 = (1:nGrid(1))';
+        index2 = index1;
+        index3 = index1;
+    end
+    
+    % loop over dimensions accumulating the linear index vector in each dimension
+    for iCell = 2:nDimensions
+        if iCell == iDimension
+            index1 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index1, (1:nGrid(iCell)-2)), [], 1);
+            index2 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index2, (2:nGrid(iCell)-1)), [], 1);
+            index3 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index3, (3:nGrid(iCell))), [], 1);
+        else
+            currentDimensionIndex = 1:nGrid(iCell);
+            index1 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index1, currentDimensionIndex), [], 1);
+            index2 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index2, currentDimensionIndex), [], 1);
+            index3 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index3, currentDimensionIndex), [], 1);
+        end
+    end
+
+Areg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
+    [index1, index2, index3], ...
+    smoothness(iDimension)*newSmoothnessScale*secondDerivativeWeights(xGrid{iDimension}, iDimension, nGrid), ...
+    nSmoothnessEquations(iDimension), ...
+    nTotalGridPoints);
+
+end
+
+% Areg1 = Areg{1};
+% Areg2 = Areg{2};
+% save('nd reg matrix', 'Areg1', 'Areg2');
 
 %% Solve the Overall Equation System
 
 % concatenate the fidelity equations and smoothing equations together
-A = [A; Areg * newSmoothnessScale];
+A = vertcat(A, Areg{:});
+
+% clean up
+clear(getname(Areg)); 
+
 y = [y;zeros(nTotalSmoothnessEquations, 1)];
 
 % solve the full system
@@ -403,32 +422,82 @@ index(index==uGridLength) = uGridLength-1;
 
 end
 
- function w = secondDerivativeWeights(dx, nCopies)
- % dx is a column vector of differences
- % nCopies is the number times to copy the difference weights
- 
- nDx = length(dx);
- 
-% calcuate the numerical second derivative weights
-% Sorry formula is a bit complicated. I derived it from parabolic 
-% lagrange formula and then differentiated it twice. I then used
-% the 1st order difference, dx, to calculate the weights.
-% 2nd order lagrange polynomial through 3 points: 
-% y = [(x-x2)*(x-x3)/((x1-x2)*(x1-x3)), (x-x1)*(x-x3)/((x2-x1)*(x2-x3)), (x-x1)*(x-x2)/((x3-x1)*(x3-x2))]*[y1;y2;y3]
+%%
+function weights = secondDerivativeWeights(x, dim, arraySize)
+% calculates the weights for a 2nd order numerical 2nd derivative
+%
+% Inputs
+% x - grid vector
+% dim - The dimension for which the numerical 2nd derivative is calculated
+% arraySize - The size of the grid.
+% Outputs
+% weights  - weights of the numerical second derivative in a column vector
+% form
+
+nX = length(x);
+
+% Calculate the numerical second derivative weights.
+% The weights come from differentiating the parabolic Lagrange polynomial twice.
+%
+% parabolic Lagrange polynomial through 3 points:
+% y = [(x-x2)*(x-x3)/((x1-x2)*(x1-x3)), (x-x1)*(x-x3)/((x2-x1)*(x2-x3)), (x-x1)*(x-x2)/((x3-x1)*(x3-x2))]*[y1;y2;y3];
+%
 % differentiating twice:
-% y'' = 2./[((x1-x3)*(x1-x2)), ((x2-x1)*(x2-x3)), ((x3-x1)*(x3-x2))]*[y1;y2;y3];
-% (x1-x3) = -(dx(1:nDx-1)+dx(2:nDx))
-% (x1-x2) = -dx(1:nDx-1)
-% (x2-x1) =  dx(1:nDx-1)
-% (x2-x3) = -dx(2:end)
-% (x3-x1) =  (dx(1:nDx-1)+dx(2:nDx))
-% (x3-x2) =  dx(2:end)
-w = 2./[(dx(1:nDx-1)+dx(2:nDx)).*dx(1:nDx-1), ...
-       -dx(1:nDx-1).*dx(2:nDx), ...
-       (dx(1:nDx-1)+dx(2:nDx)).*dx(2:nDx)];
+% y'' = 2./[(x1-x2)*(x1-x3), (x2-x1)*(x2-x3), (x3-x1)*(x3-x2)]*[y1;y2;y3];
+%
+x1 = x(1:nX-2);
+x2 = x(2:nX-1);
+x3 = x(3:nX);
+weights = 2./[(x1-x3).*(x1-x2), (x2-x1).*(x2-x3), (x3-x1).*(x3-x2)];
 
-% copy the weights the necessary number of times
-w = repmat(w, nCopies, 1);
+% expand the weights across other dimensions and convert to  column vectors
+weights = [reshape(ndGrid1D(weights(:,1), dim, arraySize),[], 1), ...
+           reshape(ndGrid1D(weights(:,2), dim, arraySize),[], 1), ...
+           reshape(ndGrid1D(weights(:,3), dim, arraySize),[], 1)];
+end
+ 
+ %%
+ function xx = ndGrid1D(x, dim,  arraySize)
+% copies x along all dimensions except the dimension dim
+% 
+% Inputs
+% x - column vector 
+% dim - The dimension that x is not copied
+% arraySize - The size of the output array. arraySize(dim) is not used.
+%
+% Outputs
+% xx - array with size arraySize except for the dimension dim. The length
+% of dimension dim is numel(x).
+%
+% Description
+% This is very similar to ndgrid except that ndgrid returns all arrays for
+% each input vector. This algorithm returns only one array. The nth output
+% array of ndgrid is same as this algoritm when dim = n. For instance, if
+% ndgrid is given three input vectors, the output size will be arraySize.
+% Calling ndGrid1D(x,3, arraySize) will return the same values as the 3rd
+% output of ndgrid.
+% 
 
+% reshape x into a vector with the proper dimensions. All dimensions are 1
+% expect the dimension dim.
+s = ones(1,length(arraySize));
+s(dim) = numel(x);
+x = reshape(x,s);
+
+% expand x along all the dimensions except dim
+arraySize(dim) = 1;
+xx = repmat(x, arraySize);
  end
+ 
+ %%
+ function ndx = subscript2index(siz,varargin)
+% Computes the linear index from the subscripts for an n dimensional array
 
+k = cumprod(siz);
+
+%Compute linear indices
+ndx = varargin{1};
+for i = 2:length(varargin)
+    ndx = ndx + (varargin{i}-1)*k(i-1);
+end
+end
