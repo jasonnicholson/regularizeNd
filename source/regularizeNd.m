@@ -16,8 +16,8 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %  xGrid - cell array containing vectors defining the nodes in the grid in
 %          each dimension. The grid vectors need not be equally spaced. The
-%          grid vectors must completely span the data. If it does not, an
-%          error is thrown.
+%          grid vectors must completely span the data. If the grid does not
+%          span the data, an error is thrown.
 %
 %  smoothness - scalar or vector. - the ratio of smoothness to fidelity of
 %          the output surface, a.k.a. ration of smoothness to "goodness of
@@ -74,7 +74,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          make the equations less well conditioned.
 %
 %          '\' - uses matlab's backslash operator to solve the sparse
-%                     system. 'backslash' is an alternate name.
+%                     system.
 %
 %          'lsqr' - uses matlab's iterative lsqr solver
 %
@@ -197,8 +197,8 @@ assert(all(cellfun(@(du) ~any(du<=0), dx)), 'All grid points in %s must be monot
 
 % Check that there are enough points to form an output surface Cubic
 % interpolation requires 4 points in each output grid dimension.  Other
-% types require a 3 points in the output grid dimension.
-% TODO rewrite this function to accept a user specified interpolation function. Get rid of the hard coded interpolation types
+% types require a 3 points in the output grid dimension because of the
+% numerical 2nd derivative needs three points.
 switch interpMethod
     case 'cubic'
         minGridVectorLength = 4;
@@ -207,8 +207,38 @@ switch interpMethod
     case 'nearest'
         minGridVectorLength = 3;
 end
-assert(all(nGrid > minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method requires %d points.', interpMethod, minGridVectorLength);
+assert(all(nGrid >= minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method and numerical 2nd derivatives requires %d points.', interpMethod, minGridVectorLength);
+%% Scale the Input Points and Nodes
+scalingType = 'minMax';
+% scalingType = 'meanAndStd';
 
+scalingType = lower(scalingType);
+
+switch scalingType
+    case 'minmax'
+        % Use the min and max to normalize the scattered data and grid to
+        % [0 1].
+        for iDimension = 1:nDimensions
+            xGrid = (xGrid{iDimension} - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
+            x(:, iDimension) = (x(:, iDimension) - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
+        end
+    case 'meanandstd'
+        % Use the mean and standard deviation of the grid to normalize the
+        % scattered data and grid.
+        % x_hat = (x - mean(x))/std(x)
+        xGridMean = cellfun(@(u) mean(u), xGrid);
+        xGridStandardDeviation = cellfun(@(u) std(u), xGrid);
+        for iDimension = 1:nDimensions
+            xGrid = (xGrid{iDimension} - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
+            x(:, iDimension) = (x(:, iDimension) - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
+        end
+        
+    case 'none'
+        % Do nothing
+    otherwise
+        error('Scaling type %s is not accepted. Try ''minMax'', ''meanAndStd'', or ''none.''', scalingType);
+end
+        
 
 %% Calculate Fidelity Equations
 
@@ -216,24 +246,36 @@ assert(all(nGrid > minGridVectorLength), 'Not enough grid points in each dimensi
 xIndex = cell(1,nDimensions);
 cellFraction = cell(1, nDimensions);
 
-% loop over dimensions
+% loop over dimensions calculating subscript index in each dimension for
+% scattered points.
 for iDimension = 1:nDimensions
     % Find cell index
     % determine the cell the x-points lie in the xGrid
     % loop over the dimensions/columns, calculating cell index
-    xIndex{iDimension} = findDimensionIndex(x(:,iDimension), xGrid{iDimension}, nGrid(iDimension));
+    xIndex{iDimension} = histc(x(:,iDimension), xGrid{iDimension});
     
-    % Calculate the cell fraction. This corresponds to a value between 0 and 1.
-    % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
-    % the cell. The min and max functions help ensure the output is always
-    % between 0 and 1.
-    cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
+    % For points that lie ON the max value of xGrid{iDimension} (i.e. the
+    % last value), histc returns an index that is equal to the length of
+    % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
+    % cells. Therefore, we need to find when a cell has an index equal to
+    % the length of nGrid(iDimension) and reduce the index by 1.
+    xIndex{iDimension}(xIndex{iDimension} == nGrid(iDimension))=nGrid(iDimension)-1;
 end
 
 switch interpMethod
     case 'nearest' % nearest neighbor interpolation in a cell
+        
+        % Calculate the cell fraction. This corresponds to a value between 0 and 1.
+        % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
+        % the cell. The min and max functions help ensure the output is always
+        % between 0 and 1.
+        cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
+        
         % calculate the index of nearest point
         xWeightIndex = cellfun(@(fraction, index) round(fraction)+index, cellFraction, xIndex, 'UniformOutput', false);
+        
+        % clean up a little
+        clear(getname(cellFraction));
         
         % calculate linear index
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
@@ -245,23 +287,34 @@ switch interpMethod
         A = sparse((1:nScatteredPoints)', xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'linear'  % linear interpolation in a cell
+        
+        % Calculate the cell fraction. This corresponds to a value between 0 and 1.
+        % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
+        % the cell. The min and max functions help ensure the output is always
+        % between 0 and 1.
+        cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
+        
         % In linear interpolation, there is two weights per dimension
-        %                                      weight 1    weight 2
+        %                              weight 1    weight 2
         weights = cellfun(@(fraction) [1-fraction, fraction], cellFraction, 'UniformOutput', false);
         
-        % Each cell has 2^nDimension points. Each dimension has two points, 1 or 2.
-        % The local index has 1 or 2 for each dimension. For instance, cell in 2d
-        % has 4 points with the following indexes:
-        % point 1  2  3  4
-        %      [1, 1, 2, 2;
-        %       1, 2, 1, 2]
+        % clean up a little
+        clear(getname(cellFraction));
+        
+        % Each cell has 2^nDimension nodes. The local dimension index label is 1 or 2 for each dimension. For instance, cells in 2d
+        % have 4 nodes with the following indexes:
+        % node label  =  1  2  3  4
+        % index label = [1, 1, 2, 2;
+        %                1, 2, 1, 2]
+        % Said in words, node 1 is one, one. node 2 is one, two. node
+        % three is two, one. node 4 is two, two.
         localCellIndex = (arrayfun(@(digit) str2double(digit), dec2bin(0:2^nDimensions-1))+1)';
         
         % preallocate before loop
         weight = ones(nScatteredPoints, 2^nDimensions);
         xWeightIndex = cell(1, nDimensions);
         
-        % Calculate weight for each point in the cell
+        % Calculate weight for each point in the local cell
         % After the for loop finishes, the rows of weight sum to 1 as a check.
         for iDimension = 1:nDimensions
             % multiply the weights from each dimension
@@ -281,32 +334,27 @@ switch interpMethod
 %         A = sparse(AllRows(:), AllColumns(:), AllCoefficients(:), n, nGridPoints);
 end
 
-% save('nd A matrix.mat', 'A');
-clear(getname(xWeightIndex), getname(weight), getname(localCellIndex), getname(cellFraction));
+clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
 
 %% Smoothness Equations
 
-%% calculate the number of smoothness equations in each dimension
+%%% calculate the number of smoothness equations in each dimension
 nSmoothnessEquations = nan(nDimensions,1);
 for iDimension = 1:nDimensions
-    % calculate the number of points in each dimension for which to
-    % calculate smoothness for the ith dimension. i.e. the number of
-    % 2nd derivatives for the ith dimension.
+    % calculate the number of numerical 2nd derivatives in the current
+    % dimension.
     nEquationsPerDimension = nGrid;
     nEquationsPerDimension(iDimension) = nEquationsPerDimension(iDimension)-2;
-    
-    % Calculate the number equations for the ith dimension
     nSmoothnessEquations(iDimension) = prod(nEquationsPerDimension);
 end
 % Calculate the total number of Smooth equations
 nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 
-%%% Calculate Smoothness parameters
+%%% smoothness parameters
 
 % We are minimizing the sum of squared errors, so adjust the magnitude of the squared errors to make second-derivative
 % squared errors match the fidelity squared errors.  Then multiply by smoothness.
-smoothnessScale = sqrt(nScatteredPoints / nTotalSmoothnessEquations);
-
+smoothnessScale = sqrt(nScatteredPoints/nTotalSmoothnessEquations);
 
 % We also need to take care of the size of the dataset in x and y.
 % The scaling up to this point applies to local variation.  Local means within a domain of [0, 1] or [10, 11], etc.
@@ -316,10 +364,9 @@ smoothnessScale = sqrt(nScatteredPoints / nTotalSmoothnessEquations);
 % spanning [0, 0.01].  Multiplying the smoothing constant by SurfaceDomainScale compensates for this, producing the
 % expected behavior that a smoothing constant of 1 produces noticeable smoothing (when looking at the entire surface
 % profile) and that 1% does not produce noticeable smoothing.
-surfaceDomainScale = prod(arrayfun(@(uMax, uMin) uMax-uMin, xGridMax, xGridMin));
-newSmoothnessScale = smoothnessScale * surfaceDomainScale;
-
-%%% Calculate the A matrix for smoothness equations, Areg
+% surfaceDomainScale = prod(arrayfun(@(uMax, uMin) uMax-uMin, xGridMax, xGridMin));
+% newSmoothnessScale = smoothnessScale * surfaceDomainScale;
+newSmoothnessScale  = smoothnessScale;
 
 % Preallocate the regularization equations
 Areg = cell(nDimensions, 1);
@@ -327,12 +374,12 @@ Areg = cell(nDimensions, 1);
 % loop over each dimension. calcuate numerical 2nd derivatives weights. Place them in Areg cell array.
 for iDimension=1:nDimensions
     
-    % compute the multiplier for each dimension
+    % compute the index multiplier for each dimension
     multiplier = nGrid;
     multiplier(iDimension) = multiplier(iDimension)-2;
     multiplier = cumprod(multiplier);
     
-    % initialize the index with the first vector
+    % initialize the index for the first grid vector
     if iDimension==1
         index1 = (1:nGrid(1)-2)';
         index2 = (2:nGrid(1)-1)';
@@ -343,7 +390,10 @@ for iDimension=1:nDimensions
         index3 = index1;
     end
     
-    % loop over dimensions accumulating the linear index vector in each dimension
+    % loop over dimensions accumulating the contribution to the linear
+    % index vector in each dimension. Note this section of code works very
+    % similar to combining ndgrid and sub2ind. Basically, inspiration came
+    % from looking at ndgrid and sub2ind.
     for iCell = 2:nDimensions
         if iCell == iDimension
             index1 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index1, (1:nGrid(iCell)-2)), [], 1);
@@ -357,19 +407,16 @@ for iDimension=1:nDimensions
         end
     end
 
+% Create the Areg for each dimension and store it a cell array.
 Areg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
     [index1, index2, index3], ...
-    smoothness(iDimension)*newSmoothnessScale*secondDerivativeWeights(xGrid{iDimension}, iDimension, nGrid), ...
+    smoothness(iDimension)*newSmoothnessScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
     nSmoothnessEquations(iDimension), ...
     nTotalGridPoints);
 
 end
 
-% Areg1 = Areg{1};
-% Areg2 = Areg{2};
-% save('nd reg matrix', 'Areg1', 'Areg2');
-
-%% Solve the Overall Equation System
+%% Assemble and Solve the Overall Equation System
 
 % concatenate the fidelity equations and smoothing equations together
 A = vertcat(A, Areg{:});
@@ -381,7 +428,7 @@ y = [y;zeros(nTotalSmoothnessEquations, 1)];
 
 % solve the full system
 switch solver
-    case {'\' 'backslash'}
+    case '\'
         yGrid = reshape(A\y, nGrid);
     case 'lsqr'
         % iterative solver - lsqr. No preconditioner here.
@@ -396,10 +443,10 @@ switch solver
                 % no problems with convergence
             case 1
                 % lsqr iterated MAXIT times but did not converge.
-                warning('Lsqr performed %d iterations but did not converge.', maxIter);
+                warning('lsqr performed %d iterations but did not converge.', maxIter);
             case 3
                 % lsqr stagnated, successive iterates were the same
-                warning('Lsqr stagnated without apparent convergence.');
+                warning('lsqr stagnated without apparent convergence.');
             case 4
                 warning('One of the scalar quantities calculated in LSQR was too small or too large to continue computing.');
         end
@@ -408,33 +455,19 @@ end  % switch solver
 
 end %
 
-%%
-function index = findDimensionIndex(u, uGrid, uGridLength)
-% calculates the 1 based cell index of the points u in uGrid as edges
-
-[~, index] = histc(u, uGrid);
-
-% For points that lie ON the max value of uGrid (i.e. the last value),
-% histc returns an index that is equal to the length of uGrid. uGrid
-% describes uGridLength-1 cells. Therefore, we need to find when a cell has
-% an index equal to the length of uGridLength and reduce the index by 1.
-index(index==uGridLength) = uGridLength-1;
-
-end
 
 %%
-function weights = secondDerivativeWeights(x, dim, arraySize)
+function weights = secondDerivativeWeights(x, nX, dim, arraySize)
 % calculates the weights for a 2nd order numerical 2nd derivative
 %
 % Inputs
 % x - grid vector
+% nX - The length of x.
 % dim - The dimension for which the numerical 2nd derivative is calculated
 % arraySize - The size of the grid.
 % Outputs
 % weights  - weights of the numerical second derivative in a column vector
 % form
-
-nX = length(x);
 
 % Calculate the numerical second derivative weights.
 % The weights come from differentiating the parabolic Lagrange polynomial twice.
@@ -492,6 +525,15 @@ xx = repmat(x, arraySize);
  %%
  function ndx = subscript2index(siz,varargin)
 % Computes the linear index from the subscripts for an n dimensional array
+%
+% Inputs
+% siz - The size of the array.
+% varargin - has the same length as length(siz). Contains the subscript in
+% each dimension.
+% 
+% Description
+% This algorithm is very similar sub2ind. However, it will work for 1-D and
+% all of the extra functionality for other data types is removed.
 
 k = cumprod(siz);
 
