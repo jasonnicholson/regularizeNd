@@ -11,12 +11,13 @@ zNoise = z + noise;
 surf(xx,yy,z, 'FaceColor', 'g')
 hold all;
 surf(xx,yy,zNoise)
-xGrid = 0.4:0.1:5;
-yGrid = 0.4:0.1:5.6;
-smoothness = 1e-13;
+xGrid = -5:0.025:6;
+yGrid = -4:0.025:6.6;
+smoothness = 0.0025;
 
-zGrid = RegularizeData3D(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bilinear','solver', '\');
-zGrid2 = regularizeNd([xx(:), yy(:)], zNoise(:), {xGrid, yGrid}, smoothness, 'linear');
+zGrid2 = regularizeNd([xx(:), yy(:)], zNoise(:), {xGrid, yGrid}, smoothness, 'linear', 'none');
+zGrid = RegularizeData3D(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bilinear');
+
 
 surf(xGrid, yGrid, zGrid, 'FaceColor', 'r')
 surf(xGrid, yGrid, zGrid2', 'FaceColor', 'b')

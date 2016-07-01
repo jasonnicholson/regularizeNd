@@ -1,11 +1,12 @@
-function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
+function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType, solver, maxIter)
 % regularizeNd  Produces a smooth nD surface from scattered input data.
 %
 %   yGrid = regularizeNd(x, y, xGrid)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod)
-%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
-%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType, solver)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType, solver, maxIter)
 %
 %% Inputs
 %      x - matrix, containing arbitrary scattered data. Each row contains
@@ -52,6 +53,9 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %                     as an option for completeness.
 %
 %          DEFAULT: 'linear'
+%
+%   scalingType - 
+%
 %
 %   solver - character flag - denotes the solver used for the
 %          resulting linear system. Different solvers will have
@@ -114,7 +118,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 
 
 %% Input Checking and Default Values
-narginchk(3, 7);
+narginchk(3, 8);
 nargoutchk(0,1);
 
 % helper function used mostly for when variables are renamed
@@ -136,7 +140,7 @@ if isscalar(smoothness)
 end
 
 % Set default interp method or check method
-interpMethodsPossible = {'cubic', 'triangle', 'linear', 'nearest'};
+interpMethodsPossible = {'cubic', 'linear', 'nearest'};
 if nargin() < 5 || isempty(interpMethod)
     interpMethod = 'linear';
 else
@@ -144,13 +148,23 @@ else
     interpMethod = lower(interpMethod);
 end
 
+% set default scaling type or check scaling type
+scalingTypePossible = {'minmax', 'meanandstd', 'none'};
+if nargin() < 6 || isempty(scalingType)
+    scalingType = 'minmax';
+else
+    assert(any(strcmpi(scalingType, scalingTypePossible)), 'Scaling type %s is not accepted. Try ''minMax'', ''meanAndStd'', or ''none''. Check your spelling.', scalingType);
+    scalingType = lower(scalingType);
+end
+
+
 % Set default solver or check the solver
 solversPossible = {'\', 'lsqr'};
-if nargin() < 6 || (nargin()==6 && isempty(solver))
+if nargin() < 7 || (nargin()==7 && isempty(solver))
     solver = '\';
-elseif nargin() == 7 && isempty(solver) && ~isempty(maxIter)
+elseif nargin() == 8 && isempty(solver) && ~isempty(maxIter)
     solver = 'lsqr';
-elseif nargin() == 7 && isempty(solver) && isempty(maxIter)
+elseif nargin() == 8 && isempty(solver) && isempty(maxIter)
     solver = '\';
 else
     assert(any(strcmpi(solver, solversPossible)), '%s is not an acceptable %s. Check spelling and try again.', solver, getname(solver));
@@ -178,9 +192,9 @@ nGrid = cellfun(@(u) length(u), xGrid);
 nTotalGridPoints = prod(nGrid);
 
 % Set maxIter or check it otherwise
-if nargin()>6 && isempty(maxIter)
+if nargin()>7 && isempty(maxIter)
     maxIter = min(1e4, nTotalGridPoints);
-elseif nargin()==7
+elseif nargin()==8
     assert(maxIter == fix(maxIter) & maxIter > 0, '%s must a positive integer.', getname(maxIter));
 end
 
@@ -209,35 +223,32 @@ switch interpMethod
 end
 assert(all(nGrid >= minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method and numerical 2nd derivatives requires %d points.', interpMethod, minGridVectorLength);
 %% Scale the Input Points and Nodes
-scalingType = 'minMax';
-% scalingType = 'meanAndStd';
 
-scalingType = lower(scalingType);
-
-switch scalingType
-    case 'minmax'
-        % Use the min and max to normalize the scattered data and grid to
-        % [0 1].
-        for iDimension = 1:nDimensions
-            xGrid = (xGrid{iDimension} - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
-            x(:, iDimension) = (x(:, iDimension) - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
-        end
-    case 'meanandstd'
-        % Use the mean and standard deviation of the grid to normalize the
-        % scattered data and grid.
-        % x_hat = (x - mean(x))/std(x)
-        xGridMean = cellfun(@(u) mean(u), xGrid);
-        xGridStandardDeviation = cellfun(@(u) std(u), xGrid);
-        for iDimension = 1:nDimensions
-            xGrid = (xGrid{iDimension} - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
-            x(:, iDimension) = (x(:, iDimension) - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
-        end
-        
-    case 'none'
-        % Do nothing
-    otherwise
-        error('Scaling type %s is not accepted. Try ''minMax'', ''meanAndStd'', or ''none.''', scalingType);
-end
+% switch scalingType
+%     case 'minmax'
+%         % Use the min and max to normalize the scattered data and grid to
+%         % [0 1] in each dimension.
+%         for iDimension = 1:nDimensions
+%             xGrid{iDimension} = (xGrid{iDimension} - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
+%             x(:, iDimension) = (x(:, iDimension) - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
+%             dx{iDimension} = diff(xGrid{iDimension});
+%         end
+%     case 'meanandstd'
+%         % Use the mean and standard deviation of the grid to normalize the
+%         % scattered data and grid.
+%         % x_hat = (x - mean(x))/std(x)
+%         xGridMean = cellfun(@(u) mean(u), xGrid);
+%         xGridStandardDeviation = cellfun(@(u) std(u), xGrid);
+%         for iDimension = 1:nDimensions
+%             xGrid{iDimension} = (xGrid{iDimension} - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
+%             x(:, iDimension) = (x(:, iDimension) - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
+%             dx{iDimension} = diff(xGrid{iDimension});
+%         end
+%     case 'none'
+%         % Do nothing
+%     otherwise
+%         error('Code should never reach this. There is probably a bug. Please report the bug.');
+% end
         
 
 %% Calculate Fidelity Equations
@@ -252,7 +263,7 @@ for iDimension = 1:nDimensions
     % Find cell index
     % determine the cell the x-points lie in the xGrid
     % loop over the dimensions/columns, calculating cell index
-    xIndex{iDimension} = histc(x(:,iDimension), xGrid{iDimension});
+    [~,xIndex{iDimension}] = histc(x(:,iDimension), xGrid{iDimension});
     
     % For points that lie ON the max value of xGrid{iDimension} (i.e. the
     % last value), histc returns an index that is equal to the length of
@@ -260,16 +271,16 @@ for iDimension = 1:nDimensions
     % cells. Therefore, we need to find when a cell has an index equal to
     % the length of nGrid(iDimension) and reduce the index by 1.
     xIndex{iDimension}(xIndex{iDimension} == nGrid(iDimension))=nGrid(iDimension)-1;
+    
+    % Calculate the cell fraction. This corresponds to a value between 0 and 1.
+    % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
+    % the cell. The min and max functions help ensure the output is always
+    % between 0 and 1.
+    cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
 end
 
 switch interpMethod
     case 'nearest' % nearest neighbor interpolation in a cell
-        
-        % Calculate the cell fraction. This corresponds to a value between 0 and 1.
-        % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
-        % the cell. The min and max functions help ensure the output is always
-        % between 0 and 1.
-        cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
         
         % calculate the index of nearest point
         xWeightIndex = cellfun(@(fraction, index) round(fraction)+index, cellFraction, xIndex, 'UniformOutput', false);
@@ -287,12 +298,6 @@ switch interpMethod
         A = sparse((1:nScatteredPoints)', xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'linear'  % linear interpolation in a cell
-        
-        % Calculate the cell fraction. This corresponds to a value between 0 and 1.
-        % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
-        % the cell. The min and max functions help ensure the output is always
-        % between 0 and 1.
-        cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
         
         % In linear interpolation, there is two weights per dimension
         %                              weight 1    weight 2
@@ -339,14 +344,15 @@ clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
 %% Smoothness Equations
 
 %%% calculate the number of smoothness equations in each dimension
-nSmoothnessEquations = nan(nDimensions,1);
-for iDimension = 1:nDimensions
-    % calculate the number of numerical 2nd derivatives in the current
-    % dimension.
-    nEquationsPerDimension = nGrid;
-    nEquationsPerDimension(iDimension) = nEquationsPerDimension(iDimension)-2;
-    nSmoothnessEquations(iDimension) = prod(nEquationsPerDimension);
-end
+
+% nEquations is a square matrix where the ith row contains
+% number of smoothing equations in each dimension. For instance, if the
+% nGrid is [ 3 6 7 8] and ith row is 2, nEquationPerDimension contains
+% [3 4 7 8]. Therefore, the nSmoothnessEquations is 3*4*7*8=672 for 2nd dimension (2nd row).
+nEquationsPerDimension = repmat(nGrid, nDimensions,1);
+nEquationsPerDimension = nEquationsPerDimension - 2*eye(nDimensions);
+nSmoothnessEquations = prod(nEquationsPerDimension,2);
+
 % Calculate the total number of Smooth equations
 nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 
@@ -356,29 +362,22 @@ nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 % squared errors match the fidelity squared errors.  Then multiply by smoothness.
 smoothnessScale = sqrt(nScatteredPoints/nTotalSmoothnessEquations);
 
-% We also need to take care of the size of the dataset in x and y.
-% The scaling up to this point applies to local variation.  Local means within a domain of [0, 1] or [10, 11], etc.
-% The smoothing behavior needs to work for datasets that are significantly larger or smaller than that.
-% For example, if x and y span [0 10,000], smoothing local to [0, 1] is insufficient to influence the behavior of
-% the whole surface.  For the same reason there would be a problem applying smoothing for [0, 1] to a small surface
-% spanning [0, 0.01].  Multiplying the smoothing constant by SurfaceDomainScale compensates for this, producing the
-% expected behavior that a smoothing constant of 1 produces noticeable smoothing (when looking at the entire surface
-% profile) and that 1% does not produce noticeable smoothing.
-% surfaceDomainScale = prod(arrayfun(@(uMax, uMin) uMax-uMin, xGridMax, xGridMin));
-% newSmoothnessScale = smoothnessScale * surfaceDomainScale;
-newSmoothnessScale  = smoothnessScale;
+% This adjust for the fact that we want use the same smoothness for [0 1]
+% and any larger domain such as [0 1000]
+domainScale = prod(xGridMax - xGridMin);
+
+%%% Calculate regularization matrices
 
 % Preallocate the regularization equations
 Areg = cell(nDimensions, 1);
 
+% compute the index multiplier for each dimension. This is used for
+% calculating the linear index.
+multiplier = cumprod(nGrid);
+
 % loop over each dimension. calcuate numerical 2nd derivatives weights. Place them in Areg cell array.
 for iDimension=1:nDimensions
-    
-    % compute the index multiplier for each dimension
-    multiplier = nGrid;
-    multiplier(iDimension) = multiplier(iDimension)-2;
-    multiplier = cumprod(multiplier);
-    
+ 
     % initialize the index for the first grid vector
     if iDimension==1
         index1 = (1:nGrid(1)-2)';
@@ -410,7 +409,7 @@ for iDimension=1:nDimensions
 % Create the Areg for each dimension and store it a cell array.
 Areg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
     [index1, index2, index3], ...
-    smoothness(iDimension)*newSmoothnessScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
+    smoothness(iDimension)*smoothnessScale*domainScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
     nSmoothnessEquations(iDimension), ...
     nTotalGridPoints);
 
@@ -424,12 +423,10 @@ A = vertcat(A, Areg{:});
 % clean up
 clear(getname(Areg)); 
 
-y = [y;zeros(nTotalSmoothnessEquations, 1)];
-
 % solve the full system
 switch solver
     case '\'
-        yGrid = reshape(A\y, nGrid);
+        yGrid = reshape(A\[y;zeros(nTotalSmoothnessEquations,1)], nGrid);
     case 'lsqr'
         % iterative solver - lsqr. No preconditioner here.
         tol = abs(max(y)-min(y))*1.e-13;
