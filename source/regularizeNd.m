@@ -1,12 +1,11 @@
-function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType, solver, maxIter)
+function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
 % regularizeNd  Produces a smooth nD surface from scattered input data.
 %
 %   yGrid = regularizeNd(x, y, xGrid)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod)
-%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType)
-%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType, solver)
-%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType, solver, maxIter)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
 %
 %% Inputs
 %      x - matrix, containing arbitrary scattered data. Each row contains
@@ -53,8 +52,6 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, scalingType
 %                     as an option for completeness.
 %
 %          DEFAULT: 'linear'
-%
-%   scalingType - 
 %
 %
 %   solver - character flag - denotes the solver used for the
@@ -148,16 +145,6 @@ else
     interpMethod = lower(interpMethod);
 end
 
-% set default scaling type or check scaling type
-scalingTypePossible = {'minmax', 'meanandstd', 'none'};
-if nargin() < 6 || isempty(scalingType)
-    scalingType = 'minmax';
-else
-    assert(any(strcmpi(scalingType, scalingTypePossible)), 'Scaling type %s is not accepted. Try ''minMax'', ''meanAndStd'', or ''none''. Check your spelling.', scalingType);
-    scalingType = lower(scalingType);
-end
-
-
 % Set default solver or check the solver
 solversPossible = {'\', 'lsqr'};
 if nargin() < 7 || (nargin()==7 && isempty(solver))
@@ -222,33 +209,6 @@ switch interpMethod
         minGridVectorLength = 3;
 end
 assert(all(nGrid >= minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method and numerical 2nd derivatives requires %d points.', interpMethod, minGridVectorLength);
-%% Scale the Input Points and Nodes
-
-% switch scalingType
-%     case 'minmax'
-%         % Use the min and max to normalize the scattered data and grid to
-%         % [0 1] in each dimension.
-%         for iDimension = 1:nDimensions
-%             xGrid{iDimension} = (xGrid{iDimension} - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
-%             x(:, iDimension) = (x(:, iDimension) - xGridMin(iDimension))./(xGridMax(iDimension) - xGridMin(iDimension));
-%             dx{iDimension} = diff(xGrid{iDimension});
-%         end
-%     case 'meanandstd'
-%         % Use the mean and standard deviation of the grid to normalize the
-%         % scattered data and grid.
-%         % x_hat = (x - mean(x))/std(x)
-%         xGridMean = cellfun(@(u) mean(u), xGrid);
-%         xGridStandardDeviation = cellfun(@(u) std(u), xGrid);
-%         for iDimension = 1:nDimensions
-%             xGrid{iDimension} = (xGrid{iDimension} - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
-%             x(:, iDimension) = (x(:, iDimension) - xGridMean(iDimension))./xGridStandardDeviation(iDimension);
-%             dx{iDimension} = diff(xGrid{iDimension});
-%         end
-%     case 'none'
-%         % Do nothing
-%     otherwise
-%         error('Code should never reach this. There is probably a bug. Please report the bug.');
-% end
         
 
 %% Calculate Fidelity Equations
@@ -409,7 +369,7 @@ for iDimension=1:nDimensions
 % Create the Areg for each dimension and store it a cell array.
 Areg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
     [index1, index2, index3], ...
-    smoothness(iDimension)*smoothnessScale*domainScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
+    smoothness(iDimension)*domainScale*smoothnessScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
     nSmoothnessEquations(iDimension), ...
     nTotalGridPoints);
 

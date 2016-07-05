@@ -2,20 +2,25 @@ clc;close all; clear;
 addpath('../source')
 addpath('../legacy/');
 
+xScale = 1;
+
 xx = 0.5:0.1:4.5;
 yy = 0.5:0.1:5.5;
 [xx,yy] = ndgrid(xx,yy);
 z = tanh(xx-3).*sin(2*pi/6*yy);
 noise = (rand(size(xx))-0.5).*xx.*yy/30;
 zNoise = z + noise;
+xx = xScale*xx;
 surf(xx,yy,z, 'FaceColor', 'g')
 hold all;
 surf(xx,yy,zNoise)
-xGrid = -5:0.025:6;
-yGrid = -4:0.025:6.6;
-smoothness = 0.0025;
+xGrid = -5:0.1:6;
+yGrid = -4:0.1:6.6;
+smoothness = 0.00025;
 
-zGrid2 = regularizeNd([xx(:), yy(:)], zNoise(:), {xGrid, yGrid}, smoothness, 'linear', 'none');
+xGrid = xScale*xGrid;
+
+zGrid2 = regularizeNd([xx(:), yy(:)], zNoise(:), {xGrid, yGrid}, smoothness, 'linear');
 zGrid = RegularizeData3D(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bilinear');
 
 
