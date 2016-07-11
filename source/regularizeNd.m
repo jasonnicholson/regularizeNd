@@ -19,10 +19,13 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          grid vectors must completely span the data. If the grid does not
 %          span the data, an error is thrown.
 %
-%  smoothness - scalar or vector. - the ratio of smoothness to fidelity of
-%          the output surface, a.k.a. ration of smoothness to "goodness of
-%          fit." This must be a positive real number. If it is a vector, it
-%          must have same number of elements as columns in x.
+%  smoothness - scalar or vector. - The numerical "measure" of what we want
+%          to achieve along an axis, regardless of the resolution, the
+%          aspect ratio between axes, or the scale of the overall problem.
+%          The ratio of smoothness to fidelity of the output surface,
+%          a.k.a. ration of smoothness to "goodness of fit." This must be a
+%          positive real number. If it is a vector, it must have same
+%          number of elements as columns in x.
 %
 %          A smoothness of 1 gives equal weight to fidelity (goodness of fit)
 %          and smoothness of the output surface.  This results in noticeable
@@ -79,7 +82,12 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %          'lsqr' - uses matlab's iterative lsqr solver
 %
-%          DEFAULT: '\'
+%          'normal' - Constructs the normal equation and solves.
+%                     x = (A'A)\(A'*y). From testing, this seems to be a well
+%                     conditioned and faster way to solve this type of
+%                     equation system than backslash x = A\y.
+%
+%          DEFAULT: 'normal'
 %
 %   'maxIter' - only applies to lsqr solvers - defines the maximum number
 %          of iterations for the lsqr iterative solver.
@@ -125,7 +133,7 @@ getname = @(x) inputname(1);
 if nargin() < 4 || isempty(smoothness)
     smoothness = 0.01;
 else
-    assert(all(smoothness>0), '%s must be positive in all components.', getname(smoothness));
+    assert(all(smoothness>=0), '%s must be positive in all components.', getname(smoothness));
 end
 
 % calculate the number of dimension
@@ -146,13 +154,13 @@ else
 end
 
 % Set default solver or check the solver
-solversPossible = {'\', 'lsqr'};
+solversPossible = {'\', 'lsqr', 'normal'};
 if nargin() < 7 || (nargin()==7 && isempty(solver))
-    solver = '\';
+    solver = 'normal';
 elseif nargin() == 8 && isempty(solver) && ~isempty(maxIter)
     solver = 'lsqr';
 elseif nargin() == 8 && isempty(solver) && isempty(maxIter)
-    solver = '\';
+    solver = 'normal';
 else
     assert(any(strcmpi(solver, solversPossible)), '%s is not an acceptable %s. Check spelling and try again.', solver, getname(solver));
 end
@@ -316,16 +324,6 @@ nSmoothnessEquations = prod(nEquationsPerDimension,2);
 % Calculate the total number of Smooth equations
 nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 
-%%% smoothness parameters
-
-% We are minimizing the sum of squared errors, so adjust the magnitude of the squared errors to make second-derivative
-% squared errors match the fidelity squared errors.  Then multiply by smoothness.
-smoothnessScale = sqrt(nScatteredPoints/nTotalSmoothnessEquations);
-
-% This adjust for the fact that we want use the same smoothness for [0 1]
-% and any larger domain such as [0 1000]
-domainScale = prod(xGridMax - xGridMin);
-
 %%% Calculate regularization matrices
 
 % Preallocate the regularization equations
@@ -337,42 +335,57 @@ multiplier = cumprod(nGrid);
 
 % loop over each dimension. calcuate numerical 2nd derivatives weights. Place them in Areg cell array.
 for iDimension=1:nDimensions
- 
-    % initialize the index for the first grid vector
-    if iDimension==1
-        index1 = (1:nGrid(1)-2)';
-        index2 = (2:nGrid(1)-1)';
-        index3 = (3:nGrid(1))';
+    if smoothness(iDimension) == 0
+        nTotalSmoothnessEquations = nTotalSmoothnessEquations - nSmoothnessEquations(iDimension);
+        Areg{iDimension} = [];
     else
-        index1 = (1:nGrid(1))';
-        index2 = index1;
-        index3 = index1;
-    end
-    
-    % loop over dimensions accumulating the contribution to the linear
-    % index vector in each dimension. Note this section of code works very
-    % similar to combining ndgrid and sub2ind. Basically, inspiration came
-    % from looking at ndgrid and sub2ind.
-    for iCell = 2:nDimensions
-        if iCell == iDimension
-            index1 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index1, (1:nGrid(iCell)-2)), [], 1);
-            index2 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index2, (2:nGrid(iCell)-1)), [], 1);
-            index3 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index3, (3:nGrid(iCell))), [], 1);
+        % initialize the index for the first grid vector
+        if iDimension==1
+            index1 = (1:nGrid(1)-2)';
+            index2 = (2:nGrid(1)-1)';
+            index3 = (3:nGrid(1))';
         else
-            currentDimensionIndex = 1:nGrid(iCell);
-            index1 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index1, currentDimensionIndex), [], 1);
-            index2 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index2, currentDimensionIndex), [], 1);
-            index3 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index3, currentDimensionIndex), [], 1);
+            index1 = (1:nGrid(1))';
+            index2 = index1;
+            index3 = index1;
         end
+        
+        % loop over dimensions accumulating the contribution to the linear
+        % index vector in each dimension. Note this section of code works very
+        % similar to combining ndgrid and sub2ind. Basically, inspiration came
+        % from looking at ndgrid and sub2ind.
+        for iCell = 2:nDimensions
+            if iCell == iDimension
+                index1 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index1, (1:nGrid(iCell)-2)), [], 1);
+                index2 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index2, (2:nGrid(iCell)-1)), [], 1);
+                index3 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index3, (3:nGrid(iCell))), [], 1);
+            else
+                currentDimensionIndex = 1:nGrid(iCell);
+                index1 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index1, currentDimensionIndex), [], 1);
+                index2 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index2, currentDimensionIndex), [], 1);
+                index3 = reshape(bsxfun(@(indx, currentIndex) indx + (currentIndex-1)*multiplier(iCell-1), index3, currentDimensionIndex), [], 1);
+            end
+        end
+        
+        
+        % Scales as if there is the same number of residuals along the
+        % current dimension as there are fidelity equations total; use the
+        % square root because the residuals will be squared to minimize
+        % squared error.
+        smoothnessScale = sqrt(nScatteredPoints/nSmoothnessEquations(iDimension));
+        
+        % Axis Scaling. This equivalent to normalizing the full extent of the axis
+        % to 1.
+        axisScale = (xGridMax(iDimension) - xGridMin(iDimension)).^2;
+
+        
+        % Create the Areg for each dimension and store it a cell array.
+        Areg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
+            [index1, index2, index3], ...
+            smoothness(iDimension)*smoothnessScale*axisScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
+            nSmoothnessEquations(iDimension), ...
+            nTotalGridPoints);
     end
-
-% Create the Areg for each dimension and store it a cell array.
-Areg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
-    [index1, index2, index3], ...
-    smoothness(iDimension)*domainScale*smoothnessScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
-    nSmoothnessEquations(iDimension), ...
-    nTotalGridPoints);
-
 end
 
 %% Assemble and Solve the Overall Equation System
@@ -387,6 +400,7 @@ clear(getname(Areg));
 switch solver
     case '\'
         yGrid = reshape(A\[y;zeros(nTotalSmoothnessEquations,1)], nGrid);
+        
     case 'lsqr'
         % iterative solver - lsqr. No preconditioner here.
         tol = abs(max(y)-min(y))*1.e-13;
@@ -408,6 +422,8 @@ switch solver
                 warning('One of the scalar quantities calculated in LSQR was too small or too large to continue computing.');
         end
         
+    case 'normal'
+        yGrid = reshape((A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]), nGrid);
 end  % switch solver
 
 end %
