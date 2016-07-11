@@ -374,8 +374,9 @@ for iDimension=1:nDimensions
         % squared error.
         smoothnessScale = sqrt(nScatteredPoints/nSmoothnessEquations(iDimension));
         
-        % Axis Scaling. This equivalent to normalizing the full extent of the axis
-        % to 1.
+        % Axis Scaling. This is equivalent to normalizing the current axis
+        % to 0 to 1. i.e. If you scale one axis, the same smoothness factor
+        % can be used to get similar shaped topology.
         axisScale = (xGridMax(iDimension) - xGridMin(iDimension)).^2;
 
         

@@ -18,7 +18,7 @@ smoothness = 0.001;
 
 
 zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), {xGrid, yGrid}, smoothness, 'linear');
-zGrid2 = RegularizeData3D_mod(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bilinear', 'solver', '\');
+% zGrid2 = RegularizeData3D_mod(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bilinear', 'solver', '\');
 zGrid3 = RegularizeData3D_mod(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bilinear', 'solver', 'normal');
 
 
