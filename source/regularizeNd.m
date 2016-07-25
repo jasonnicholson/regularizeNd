@@ -75,7 +75,8 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          methods will tend to be well conditioned, the normal
 %          equations are not a bad choice of method to use. Beware
 %          when a small smoothing parameter is used, since this will
-%          make the equations less well conditioned.
+%          make the equations less well conditioned. The normal equation
+%          on fairly large grids is 3x faster than the \ alone.
 %
 %          '\' - uses matlab's backslash operator to solve the sparse
 %                     system.
@@ -85,7 +86,9 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          'normal' - Constructs the normal equation and solves.
 %                     x = (A'A)\(A'*y). From testing, this seems to be a well
 %                     conditioned and faster way to solve this type of
-%                     equation system than backslash x = A\y.
+%                     equation system than backslash x = A\y. Testing shows
+%                     that the normal equation is 3x faster than the \
+%                     solver for this type of problem.
 %
 %          DEFAULT: 'normal'
 %
@@ -138,6 +141,9 @@ end
 
 % calculate the number of dimension
 nDimensions = size(x,2);
+
+% check for the matching dimensionality
+assert(nDimensions == numel(xGrid), 'Dimensionality mismatch. The number of columns in %s does not match the number of cells in %s.', getname(x), getname(xGrid));
 
 % Check if smoothness is a scalar. If it is convert it to a vector
 if isscalar(smoothness)
