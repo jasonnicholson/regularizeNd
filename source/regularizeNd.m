@@ -139,6 +139,9 @@ else
     assert(all(smoothness>=0), '%s must be positive in all components.', getname(smoothness));
 end
 
+% check that the grid is of the right type
+assert(iscell(xGrid), '%s must be a cell array.', getname(xGrid));
+
 % calculate the number of dimension
 nDimensions = size(x,2);
 
@@ -406,14 +409,23 @@ clear(getname(Areg));
 % solve the full system
 switch solver
     case '\'
-        yGrid = reshape(A\[y;zeros(nTotalSmoothnessEquations,1)], nGrid);
+        if nDimensions == 1
+            yGrid = A\[y;zeros(nTotalSmoothnessEquations,1)];
+        elseif nDimensions > 1
+            yGrid = reshape(A\[y;zeros(nTotalSmoothnessEquations,1)], nGrid);
+        end
         
     case 'lsqr'
         % iterative solver - lsqr. No preconditioner here.
         tol = abs(max(y)-min(y))*1.e-13;
         
         [yGrid,flag] = lsqr(A,y,tol,maxIter);
-        yGrid = reshape(yGrid,nGrid);
+        if nDimensions == 1
+            % Do nothing
+        elseif nDimensions > 1
+            yGrid = reshape(yGrid,nGrid);
+        end
+        
         
         % display a warning if convergence problems
         switch flag
@@ -430,7 +442,11 @@ switch solver
         end
         
     case 'normal'
-        yGrid = reshape((A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]), nGrid);
+        if nDimensions == 1
+            yGrid = (A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]);
+        elseif nDimensions > 1
+            yGrid = reshape((A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]), nGrid);
+        end
 end  % switch solver
 
 end %
@@ -471,36 +487,39 @@ end
  
  %%
  function xx = ndGrid1D(x, dim,  arraySize)
-% copies x along all dimensions except the dimension dim
-% 
-% Inputs
-% x - column vector 
-% dim - The dimension that x is not copied
-% arraySize - The size of the output array. arraySize(dim) is not used.
-%
-% Outputs
-% xx - array with size arraySize except for the dimension dim. The length
-% of dimension dim is numel(x).
-%
-% Description
-% This is very similar to ndgrid except that ndgrid returns all arrays for
-% each input vector. This algorithm returns only one array. The nth output
-% array of ndgrid is same as this algoritm when dim = n. For instance, if
-% ndgrid is given three input vectors, the output size will be arraySize.
-% Calling ndGrid1D(x,3, arraySize) will return the same values as the 3rd
-% output of ndgrid.
-% 
-
-% reshape x into a vector with the proper dimensions. All dimensions are 1
-% expect the dimension dim.
-s = ones(1,length(arraySize));
-s(dim) = numel(x);
-x = reshape(x,s);
-
-% expand x along all the dimensions except dim
-arraySize(dim) = 1;
-xx = repmat(x, arraySize);
- end
+ % copies x along all dimensions except the dimension dim
+ %
+ % Inputs
+ % x - column vector
+ % dim - The dimension that x is not copied
+ % arraySize - The size of the output array. arraySize(dim) is not used.
+ %
+ % Outputs
+ % xx - array with size arraySize except for the dimension dim. The length
+ % of dimension dim is numel(x).
+ %
+ % Description
+ % This is very similar to ndgrid except that ndgrid returns all arrays for
+ % each input vector. This algorithm returns only one array. The nth output
+ % array of ndgrid is same as this algoritm when dim = n. For instance, if
+ % ndgrid is given three input vectors, the output size will be arraySize.
+ % Calling ndGrid1D(x,3, arraySize) will return the same values as the 3rd
+ % output of ndgrid.
+ %
+ 
+ % reshape x into a vector with the proper dimensions. All dimensions are 1
+ % expect the dimension dim.
+ s = ones(1,length(arraySize));
+ s(dim) = numel(x);
+ if length(arraySize) == 1
+     xx = x;
+ else
+     x = reshape(x,s);
+     % expand x along all the dimensions except dim
+     arraySize(dim) = 1;
+     xx = repmat(x, arraySize);
+ end % end if
+ end % end function
  
  %%
  function ndx = subscript2index(siz,varargin)
