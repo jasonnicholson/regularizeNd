@@ -112,7 +112,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %       becomes more linear because of the smoothness equations and no
 %       nearby fidelity equations. The linear relationship is a good
 %       choice when the relationship between x and y is unknown in
-%       extrapolaiton.
+%       extrapolation.
 %
 %  For introduction on regularization works, start here:
 %  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
