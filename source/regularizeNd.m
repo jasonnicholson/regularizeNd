@@ -1,31 +1,33 @@
-function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
+function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 % regularizeNd  Produces a smooth nD surface from scattered input data.
 %
 %   yGrid = regularizeNd(x, y, xGrid)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
-%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIter)
 %
 %% Inputs
-%      x - matrix, containing arbitrary scattered data. Each row contains
-%          one point. Each column corresponds to a dimension.
+%      x - column vector or matrix of column vectors, containing scattered
+%          data. Each row contains one point. Each column corresponds to a
+%          dimension.
 %
-%      y - vector or matrix, containing containing the corresponds values
-%          to x. y has the same number of rows as x.
+%      y - vector containing the corresponds values to x. y has the same
+%          number of rows as x.
 %
 %  xGrid - cell array containing vectors defining the nodes in the grid in
-%          each dimension. The grid vectors need not be equally spaced. The
-%          grid vectors must completely span the data. If the grid does not
-%          span the data, an error is thrown.
+%          each dimension. xGrid{1} corresponds with x(:,1) for instance.
+%          Unequal spacing in the grid vectors is allowed. The grid vectors
+%          must completely span x. For instance the values of x(:,1) must
+%          be within the bounds of xGrid{1}. If xGrid does not span x,
+%          an error is thrown. 
 %
 %  smoothness - scalar or vector. - The numerical "measure" of what we want
-%          to achieve along an axis, regardless of the resolution, the
-%          aspect ratio between axes, or the scale of the overall problem.
-%          The ratio of smoothness to fidelity of the output surface,
-%          a.k.a. ration of smoothness to "goodness of fit." This must be a
-%          positive real number. If it is a vector, it must have same
-%          number of elements as columns in x.
+%          to achieve along an axis/dimension, regardless of the
+%          resolution, the aspect ratio between axes, or the scale of the
+%          overall problem. The ratio of smoothness to fidelity of the
+%          output surface, a.k.a. ration of smoothness to "goodness of
+%          fit." This must be a positive real number. If it is a vector, it
+%          must have same number of elements as columns in x.
 %
 %          A smoothness of 1 gives equal weight to fidelity (goodness of fit)
 %          and smoothness of the output surface.  This results in noticeable
@@ -34,21 +36,17 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          0.1 applies a little bit of smoothing to the output surface.
 %
 %          If this parameter is a vector, then it defines the relative
-%          smoothing to be associated with each dimension. This allows the
-%          user to apply a different amount of smoothing in the each
-%          dimension.
+%          smoothing to be associated with each axis/dimension. This allows
+%          the user to apply a different amount of smoothing in the each
+%          axis/dimension.
 %
 %          DEFAULT: 0.01
 %
 %   interpMethod - character, denotes the interpolation scheme used
 %          to interpolate the data.
 %
-%          'cubic' - uses cubic interpolation within the grid
-%                     This is the most accurate because it accounts
-%                     for the fact that the output surface is not flat.
-%                     In some cases it may be slower than the other methods.
 %
-%          'linear' - use bilinear interpolation within the grid
+%          'linear' - Uses linear interpolation within the grid
 %
 %          'nearest' - nearest neighbor interpolation. This will
 %                     rarely be a good choice, but I included it
@@ -58,43 +56,35 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %
 %   solver - character flag - denotes the solver used for the
-%          resulting linear system. Different solvers will have
-%          different solution times depending upon the specific
-%          problem to be solved. Up to a certain size grid, the
-%          direct \ solver will often be speedy, until memory
-%          swaps causes problems.
+%          resulting linear system. The default is most often the best
+%          choice.
+
+%          What solver should you use? '\' may be best numerically for most
+%          smoothness parameters and high extents of extrapolation.
 %
-%          What solver should you use? Problems with a significant
-%          amount of extrapolation should avoid lsqr. \ may be
-%          best numerically for small smoothness parameters and
-%          high extents of extrapolation.
-%
-%          Large numbers of points will slow down the direct
-%          \, but when applied to the normal equations, \ can be
-%          quite fast. Since the equations generated by these
-%          methods will tend to be well conditioned, the normal
-%          equations are not a bad choice of method to use. Beware
-%          when a small smoothing parameter is used, since this will
-%          make the equations less well conditioned. The normal equation
-%          on fairly large grids is 3x faster than the \ alone.
+%          Large numbers of points will slow down the direct \, but when
+%          applied to the normal equations, \ can be quite fast. Since the
+%          equations generated by this regularization method tends to be
+%          well conditioned, the normal equations are not a bad choice of
+%          method to use. Beware when a small smoothing parameter is used,
+%          since this will make the equations less well conditioned. The
+%          normal equation on fairly large grids is 3x faster than the \
+%          alone.
 %
 %          '\' - uses matlab's backslash operator to solve the sparse
-%                     system.
+%                system.
 %
-%          'lsqr' - uses matlab's iterative lsqr solver
 %
 %          'normal' - Constructs the normal equation and solves.
 %                     x = (A'A)\(A'*y). From testing, this seems to be a well
 %                     conditioned and faster way to solve this type of
 %                     equation system than backslash x = A\y. Testing shows
 %                     that the normal equation is 3x faster than the \
-%                     solver for this type of problem.
+%                     solver for this type of problem. This isn't true in
+%                     most other problem types and is a bit unusual.
 %
 %          DEFAULT: 'normal'
 %
-%   'maxIter' - only applies to lsqr solvers - defines the maximum number
-%          of iterations for the lsqr iterative solver.
-%          DEFAULT: min(1e4, nTotalGridPoints)
 %
 %
 %% Output
@@ -102,12 +92,30 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %            points xGrid.
 %
 %% Description
-% Speed considerations:
-%  Remember that a LARGE system of linear equations needs solved. There
-%  will be as many unknowns as the total number of nodes in the final
-%  lattice. While these equations may be sparse, solving a system of 10000
-%  equations may take a second or so. Very large problems may benefit from
-%  the iterative solver lsqr.
+% regularizeNd answers the question what is the best possible lookup table
+% that the scattered data x and y in the least squares sense with
+% smoothing? regularizeNd is meant to calculate a smooth lookup table given
+% n-D scattered data. regularizeNd supports extrapolation from a scattered
+% data set.
+%
+% The calculated lookup table yGrid is meant to be used with
+% griddedInterpolant class with the conservative memory form. Call
+% griddedInterpolant like F = griddedInterpolant(xGrid, yGrid).
+% 
+% Desirable properties of regularizeNd
+%     - Calculates a relationship between the input x and the output y
+%       without definition of the functional form of x to y. 
+%     - Extrapolation is possible from a scattered data set. 
+%     - After creating the lookup table yGrid and using it with
+%       griddedInterpolant, as the query point moves away from the
+%       scattered data, the relationship between the input x and output y
+%       becomes more linear because of the smoothness equations and no
+%       nearby fidelity equations. The linear relationship is a good
+%       choice when the relationship between x and y is unknown in
+%       extrapolaiton.
+%
+%  For introduction on regularization works, start here:
+%  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
 %
 %
 %% Example
@@ -120,13 +128,15 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %  % Note: this is equivalent to the following call:
 %
-%  g = regularizeNd(x, y, xGrid, 0.01, 'linear', '\');
+%  g = regularizeNd(x, y, xGrid, 0.01, 'linear', 'normal');
 %
 
-
+%% TODO
+% TODO Added support for cubic interpolation. Note that cubic interpolation is very expensive as the number of dimensions increases. 
+% TODO Consider adding support for the lsqr solver. However, I don't see this as necessary.
 
 %% Input Checking and Default Values
-narginchk(3, 8);
+narginchk(3, 7);
 nargoutchk(0,1);
 
 % helper function used mostly for when variables are renamed
@@ -154,23 +164,19 @@ if isscalar(smoothness)
 end
 
 % Set default interp method or check method
-interpMethodsPossible = {'cubic', 'linear', 'nearest'};
 if nargin() < 5 || isempty(interpMethod)
     interpMethod = 'linear';
 else
+    interpMethodsPossible = {'linear', 'nearest'};
     assert(any(strcmpi(interpMethod, interpMethodsPossible)), '%s is not a possible interpolation method. Check your spelling.', interpMethod);
     interpMethod = lower(interpMethod);
 end
 
 % Set default solver or check the solver
-solversPossible = {'\', 'lsqr', 'normal'};
-if nargin() < 7 || (nargin()==7 && isempty(solver))
-    solver = 'normal';
-elseif nargin() == 8 && isempty(solver) && ~isempty(maxIter)
-    solver = 'lsqr';
-elseif nargin() == 8 && isempty(solver) && isempty(maxIter)
+if nargin() < 6 || (nargin()==6 && isempty(solver))
     solver = 'normal';
 else
+    solversPossible = {'\', 'normal'};
     assert(any(strcmpi(solver, solversPossible)), '%s is not an acceptable %s. Check spelling and try again.', solver, getname(solver));
 end
 
@@ -195,13 +201,6 @@ xGrid = cellfun(@(u) reshape(u,[],1), xGrid, 'UniformOutput', false);
 nGrid = cellfun(@(u) length(u), xGrid);
 nTotalGridPoints = prod(nGrid);
 
-% Set maxIter or check it otherwise
-if nargin()>7 && isempty(maxIter)
-    maxIter = min(1e4, nTotalGridPoints);
-elseif nargin()==8
-    assert(maxIter == fix(maxIter) & maxIter > 0, '%s must a positive integer.', getname(maxIter));
-end
-
 % Check input points are within min and max of grid.
 xGridMin = cellfun(@(u) min(u), xGrid);
 xGridMax = cellfun(@(u) max(u), xGrid);
@@ -213,13 +212,10 @@ dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
 % Check for monotonic increasing grid points in each dimension
 assert(all(cellfun(@(du) ~any(du<=0), dx)), 'All grid points in %s must be monotonically increasing.', getname(xGrid));
 
-% Check that there are enough points to form an output surface Cubic
-% interpolation requires 4 points in each output grid dimension.  Other
-% types require a 3 points in the output grid dimension because of the
-% numerical 2nd derivative needs three points.
+% Check that there are enough points to form an output surface. Linear and
+% nearest interpolation types require 3 points in each output grid
+% dimension because of the numerical 2nd derivative needs three points.
 switch interpMethod
-    case 'cubic'
-        minGridVectorLength = 4;
     case 'linear'
         minGridVectorLength = 3;
     case 'nearest'
@@ -274,6 +270,9 @@ switch interpMethod
         % Form the sparse A matrix for fidelity equations
         A = sparse((1:nScatteredPoints)', xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
+        % clean up a little
+        clear(getname(xWeightIndex), getname(weight));
+        
     case 'linear'  % linear interpolation in a cell
         
         % In linear interpolation, there is two weights per dimension
@@ -311,12 +310,11 @@ switch interpMethod
         % Form the sparse A matrix for fidelity equations
         A = sparse(repmat((1:nScatteredPoints)',1,2^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
-    case 'cubic'
-        error('Not ready yet.');
-%         A = sparse(AllRows(:), AllColumns(:), AllCoefficients(:), n, nGridPoints);
+        % clean up a little
+        clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
+    otherwise
+        error('Code should never reach this point. If it does, there is a bug.');
 end
-
-clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
 
 %% Smoothness Equations
 
@@ -327,7 +325,7 @@ clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
 % nGrid is [ 3 6 7 8] and ith row is 2, nEquationPerDimension contains
 % [3 4 7 8]. Therefore, the nSmoothnessEquations is 3*4*7*8=672 for 2nd dimension (2nd row).
 nEquationsPerDimension = repmat(nGrid, nDimensions,1);
-nEquationsPerDimension = nEquationsPerDimension - 2*eye(nDimensions);
+nEquationsPerDimension = nEquationsPerDimension - 2*ones(nDimensions);
 nSmoothnessEquations = prod(nEquationsPerDimension,2);
 
 % Calculate the total number of Smooth equations
@@ -414,39 +412,14 @@ switch solver
         elseif nDimensions > 1
             yGrid = reshape(A\[y;zeros(nTotalSmoothnessEquations,1)], nGrid);
         end
-        
-    case 'lsqr'
-        % iterative solver - lsqr. No preconditioner here.
-        tol = abs(max(y)-min(y))*1.e-13;
-        
-        [yGrid,flag] = lsqr(A,y,tol,maxIter);
-        if nDimensions == 1
-            % Do nothing
-        elseif nDimensions > 1
-            yGrid = reshape(yGrid,nGrid);
-        end
-        
-        
-        % display a warning if convergence problems
-        switch flag
-            case 0
-                % no problems with convergence
-            case 1
-                % lsqr iterated MAXIT times but did not converge.
-                warning('lsqr performed %d iterations but did not converge.', maxIter);
-            case 3
-                % lsqr stagnated, successive iterates were the same
-                warning('lsqr stagnated without apparent convergence.');
-            case 4
-                warning('One of the scalar quantities calculated in LSQR was too small or too large to continue computing.');
-        end
-        
     case 'normal'
         if nDimensions == 1
             yGrid = (A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]);
         elseif nDimensions > 1
             yGrid = reshape((A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]), nGrid);
         end
+    otherwise
+        error('Code should never reach this line. If it does, there is a bug.');
 end  % switch solver
 
 end %
