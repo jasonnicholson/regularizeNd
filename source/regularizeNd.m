@@ -117,19 +117,51 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %  For introduction on regularization works, start here:
 %  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
 %
+%% Acknowledgement
+% Special thanks to Peter Goldstein, author of RegularizeData3D, for his
+% coaching and help through writing regularizeNd.
 %
 %% Example
 %
-%  x = rand(100,2);
-%  y = exp(x(:,1)+2*x(:,2));
-%  xGrid = {0:.1:1, 0:.1:1};
+% % setup some input points, output points, and noise
+% x = 0.5:0.1:4.5;
+% y = 0.5:0.1:5.5;
+% [xx,yy] = ndgrid(x,y);
+% z = tanh(xx-3).*sin(2*pi/6*yy);
+% noise = (rand(size(xx))-0.5).*xx.*yy/30;
+% zNoise = z + noise;
+% 
+% % setup the grid for lookup table
+% xGrid = linspace(0,6,210);
+% yGrid = linspace(0,6.6,195);
+% gridPoints = {xGrid, yGrid};
+% 
+% % setup some difference in scale between the different dimensions/axes
+% xScale = 100;
+% x = xScale*x;
+% xx=xScale*xx;
+% xGrid = xScale*xGrid;
+% 
+% % smoothness parameter. i.e. fit is weighted 1000 times greater than
+% % smoothness.
+% smoothness = 0.001;
+% 
+% % regularize
+% zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness);
+% 
+% % plot and compare
+% surf(x,y,z', 'FaceColor', 'g')
+% hold all;
+% surf(x,y,zNoise')
+% surf(xGrid, yGrid, zGrid', 'FaceColor', 'r')
+% xlabel('x')
+% ylabel('y')
+% zlabel('z')
+% legend({'Exact', 'Noisy', 'regularizeNd'},'location', 'best');
 %
-%  g = regularizeNd(x, y, xGrid);
-%
-%  % Note: this is equivalent to the following call:
-%
-%  g = regularizeNd(x, y, xGrid, 0.01, 'linear', 'normal');
-%
+
+% Author(s): Jason Nicholson
+% $Revision: 1.1 $  $Date: 2016/02/08 12:34:18 $
 
 %% TODO
 % TODO Added support for cubic interpolation. Note that cubic interpolation is very expensive as the number of dimensions increases. 
@@ -325,7 +357,7 @@ end
 % nGrid is [ 3 6 7 8] and ith row is 2, nEquationPerDimension contains
 % [3 4 7 8]. Therefore, the nSmoothnessEquations is 3*4*7*8=672 for 2nd dimension (2nd row).
 nEquationsPerDimension = repmat(nGrid, nDimensions,1);
-nEquationsPerDimension = nEquationsPerDimension - 2*ones(nDimensions);
+nEquationsPerDimension = nEquationsPerDimension - 2*eye(nDimensions);
 nSmoothnessEquations = prod(nEquationsPerDimension,2);
 
 % Calculate the total number of Smooth equations
