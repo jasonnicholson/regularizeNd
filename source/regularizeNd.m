@@ -114,7 +114,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %       choice when the relationship between x and y is unknown in
 %       extrapolation.
 %
-%  For introduction on regularization works, start here:
+%  For an introduction on how regularization works, start here:
 %  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
 %
 %% Acknowledgement
@@ -164,8 +164,8 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 % $Revision: 1.1 $  $Date: 2016/02/08 12:34:18 $
 
 %% TODO
-% TODO Added support for cubic interpolation. Note that cubic interpolation is very expensive as the number of dimensions increases. 
-% TODO Consider adding support for the lsqr solver. However, I don't see this as necessary.
+% TODO Add support for cubic interpolation. Note that cubic interpolation is very expensive as the number of dimensions increases and thus not a large advantage in n-D.
+% TODO Consider adding support for the lsqr solver. However, I don't see this as necessary and have removed it for now.
 
 %% Input Checking and Default Values
 narginchk(3, 7);
@@ -190,7 +190,7 @@ nDimensions = size(x,2);
 % check for the matching dimensionality
 assert(nDimensions == numel(xGrid), 'Dimensionality mismatch. The number of columns in %s does not match the number of cells in %s.', getname(x), getname(xGrid));
 
-% Check if smoothness is a scalar. If it is convert it to a vector
+% Check if smoothness is a scalar. If it is, convert it to a vector
 if isscalar(smoothness)
     smoothness = ones(nDimensions,1).*smoothness;
 end
