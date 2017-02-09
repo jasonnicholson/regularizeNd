@@ -113,6 +113,13 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %       nearby fidelity equations. The linear relationship is a good
 %       choice when the relationship between x and y is unknown in
 %       extrapolation.
+%      - regularizeNd can handle 1D, 2D, nD input data to 1D output data.
+%        RegularizeData3D and gridfit can only handle 2D input and 1D out
+%       (total 3D). 
+%      - regularizeNd can handle setting the smoothness to 0 in any
+%        axis/dimension. This means no smoothing is applied in a particular
+%        axis/dimension and the data is just a least squares fit of a lookup
+%        table in that axis/dimension.
 %
 %  For an introduction on how regularization works, start here:
 %  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
