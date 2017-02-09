@@ -58,7 +58,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %   solver - character flag - denotes the solver used for the
 %          resulting linear system. The default is most often the best
 %          choice.
-
+%
 %          What solver should you use? '\' may be best numerically for most
 %          smoothness parameters and high extents of extrapolation.
 %
@@ -141,7 +141,8 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 % x = xScale*x;
 % xx=xScale*xx;
 % xGrid = xScale*xGrid;
-% 
+% gridPoints{1} = xGrid; 
+%
 % % smoothness parameter. i.e. fit is weighted 1000 times greater than
 % % smoothness.
 % smoothness = 0.001;
@@ -161,7 +162,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %
 
 % Author(s): Jason Nicholson
-% $Revision: 1.1 $  $Date: 2016/02/08 12:34:18 $
+% $Revision: 1.2 $  $Date: 2016/02/08 12:34:18 $
 
 %% TODO
 % TODO Add support for cubic interpolation. Note that cubic interpolation is very expensive as the number of dimensions increases and thus not a large advantage in n-D.
