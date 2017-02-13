@@ -352,6 +352,35 @@ switch interpMethod
         
         % clean up a little
         clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
+        
+    case cubic
+        
+        % Each cell has 4^nDimension nodes. The local dimension index label is 1, 2, 3, or 4 for each dimension. For instance, cells in 2d
+        % have 16 nodes with the following indexes:
+        % node label  =  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+        % index label = [1 1 1 1 2 2 2 2 3 3  3  3  4  4  4  4;
+        %                1 2 3 4 1 2 3 4 1 2  3  4  1  2  3  4]
+        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2bin(0:2^nDimensions-1))+1)';
+        
+        % Preallocate before loop
+        weight = ones(nScatteredPoints, 4^nDimensions);
+        xWeightIndex = cell(1, nDimensions);
+        
+        % Calculate weight for each point in the local cell
+        % After the for loop finishes, the rows of weight sum to 1 as a check.
+        for iDimension = 1:nDimensions
+            % multiply the weights from each dimension
+            weight = weight.*weights{iDimension}(:, localCellIndex(iDimension,:));
+            % compute the index corresponding to the weight
+            xWeightIndex{iDimension} = bsxfun(@plus, xIndex{iDimension}, localCellIndex(iDimension,:)-1);
+        end
+        
+        % calculate linear index
+        xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
+
+         % Form the sparse A matrix for fidelity equations
+        A = sparse(repmat((1:nScatteredPoints)',1,4^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
+        
     otherwise
         error('Code should never reach this point. If it does, there is a bug.');
 end
