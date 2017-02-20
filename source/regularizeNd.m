@@ -89,7 +89,8 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %
 %% Output
 %  yGrid   - array containing the fitted surface correspond to the grid
-%            points xGrid.
+%            points xGrid. yGrid is in the ndgrid format. In 2d, ndgrid
+%            format is the transpose of meshgrid format.
 %
 %% Description
 % regularizeNd answers the question what is the best possible lookup table
@@ -113,10 +114,10 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %       nearby fidelity equations. The linear relationship is a good
 %       choice when the relationship between x and y is unknown in
 %       extrapolation.
-%      - regularizeNd can handle 1D, 2D, nD input data to 1D output data.
+%     - regularizeNd can handle 1D, 2D, nD input data to 1D output data.
 %        RegularizeData3D and gridfit can only handle 2D input and 1D out
 %       (total 3D). 
-%      - regularizeNd can handle setting the smoothness to 0 in any
+%     - regularizeNd can handle setting the smoothness to 0 in any
 %        axis/dimension. This means no smoothing is applied in a particular
 %        axis/dimension and the data is just a least squares fit of a lookup
 %        table in that axis/dimension.
