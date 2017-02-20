@@ -354,7 +354,7 @@ switch interpMethod
         % clean up a little
         clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
         
-    case cubic
+    case 'cubic'
         
         % Each cell has 4^nDimension nodes. The local dimension index label is 1, 2, 3, or 4 for each dimension. For instance, cells in 2d
         % have 16 nodes with the following indexes:
