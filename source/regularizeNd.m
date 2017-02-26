@@ -360,12 +360,66 @@ switch interpMethod
         
     case 'cubic'
         
+        weights = cell(1, nDimensions);
+        for iDimension = 1:nDimensions
+            % Calculate low end index used interpolation. 4 points are
+            % needed so the low end index is the corresponds to the lowest
+            % used in the interpolation. The min and max ensures that the
+            % boundaries of the grid are respected.
+            xIndex{iDimension} = min(max(xIndex{iDimension}-1,1), nGrid(iDimension)-3);
+            
+            % Setup to calculate the weights
+            % The weights are based on cubic Lagrange polynomial
+            % interpolation. The alphas and betas below help keep the
+            % calculation readable and also save on a few floating point
+            % operations at the cost of memory.
+            % There are 4 cubic lagrange polynomials. They have the
+            % following form
+            % p1(x) = (x-x2)/(x1-x2)*(x-x3)/(x1-x3)*(x-x4)/(x1-x4)
+            % p2(x) = (x-x1)/(x2-x1)*(x-x3)/(x2-x3)*(x-x4)/(x2-x4)
+            % p3(x) = (x-x1)/(x3-x1)*(x-x2)/(x3-x2)*(x-x4)/(x3-x4)
+            % p1(x) = (x-x1)/(x4-x1)*(x-x2)/(x4-x2)*(x-x3)/(x4-x3)
+            % 
+            % The alphas and betas are defined as follows
+            % alpha1 = x - x1
+            % alpha2 = x - x2
+            % alpha3 = x - x3
+            % alpha4 = x - x4
+            %
+            % beta12 = x1 - x2
+            % beta13 = x1 - x3
+            % beta14 = x1 - x4
+            % beta23 = x2 - x3
+            % beta24 = x2 - x4
+            % beta34 = x3 - x4
+            alpha1 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension});
+            alpha2 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}+1);
+            alpha3 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}+2);
+            alpha4 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}+3);
+            beta12 = xGrid{iDimension}(xIndex{iDimension}) - xGrid{iDimension}(xIndex{iDimension}+1);
+            beta13 = xGrid{iDimension}(xIndex{iDimension}) - xGrid{iDimension}(xIndex{iDimension}+2);
+            beta14 = xGrid{iDimension}(xIndex{iDimension}) - xGrid{iDimension}(xIndex{iDimension}+3);
+            beta23 = xGrid{iDimension}(xIndex{iDimension}+1) - xGrid{iDimension}(xIndex{iDimension}+2);
+            beta24 = xGrid{iDimension}(xIndex{iDimension}+1) - xGrid{iDimension}(xIndex{iDimension}+3);
+            beta34 = xGrid{iDimension}(xIndex{iDimension}+2) - xGrid{iDimension}(xIndex{iDimension}+3);
+            
+            weights{iDimension} = [ alpha2./beta12.*alpha3./beta13.*alpha4./beta14, ...
+                                   -alpha1./beta12.*alpha3./beta23.*alpha4./beta24, ...
+                                    alpha1./beta13.*alpha2./beta23.*alpha4./beta34, ...
+                                   -alpha1./beta14.*alpha2./beta24.*alpha3./beta34];
+        end
+        
+        % clean up a little
+        clear(getname(alpha1), getname(alpha2), getname(alpha3), getname(alpha4), ...
+              getname(beta12), getname(beta13), getname(beta14), getname(beta23), ...
+              getname(beta24), getname(beta34));
+        
         % Each cell has 4^nDimension nodes. The local dimension index label is 1, 2, 3, or 4 for each dimension. For instance, cells in 2d
         % have 16 nodes with the following indexes:
         % node label  =  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
         % index label = [1 1 1 1 2 2 2 2 3 3  3  3  4  4  4  4;
         %                1 2 3 4 1 2 3 4 1 2  3  4  1  2  3  4]
-        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2bin(0:4^nDimensions-1))+1)';
+        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2base(0:4^nDimensions-1,4))+1)';
         
         % Preallocate before loop
         weight = ones(nScatteredPoints, 4^nDimensions);
