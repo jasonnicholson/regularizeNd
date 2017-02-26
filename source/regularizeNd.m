@@ -208,7 +208,7 @@ end
 if nargin() < 5 || isempty(interpMethod)
     interpMethod = 'linear';
 else
-    interpMethodsPossible = {'linear', 'nearest'};
+    interpMethodsPossible = {'cubic', 'linear', 'nearest'};
     assert(any(strcmpi(interpMethod, interpMethodsPossible)), '%s is not a possible interpolation method. Check your spelling.', interpMethod);
     interpMethod = lower(interpMethod);
 end
@@ -261,6 +261,10 @@ switch interpMethod
         minGridVectorLength = 3;
     case 'nearest'
         minGridVectorLength = 3;
+    case 'cubic'
+        minGridVectorLength = 4;
+    otherwise
+        error('Code should never reach this otherwise there is a bug.')
 end
 assert(all(nGrid >= minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method and numerical 2nd derivatives requires %d points.', interpMethod, minGridVectorLength);
         
@@ -361,7 +365,7 @@ switch interpMethod
         % node label  =  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
         % index label = [1 1 1 1 2 2 2 2 3 3  3  3  4  4  4  4;
         %                1 2 3 4 1 2 3 4 1 2  3  4  1  2  3  4]
-        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2bin(0:2^nDimensions-1))+1)';
+        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2bin(0:4^nDimensions-1))+1)';
         
         % Preallocate before loop
         weight = ones(nScatteredPoints, 4^nDimensions);
