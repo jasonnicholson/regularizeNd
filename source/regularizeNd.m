@@ -46,11 +46,31 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %          to interpolate the data.
 %
 %
-%          'linear' - Uses linear interpolation within the grid
+%          'linear' - Uses linear interpolation within the grid. linear
+%                     interpolation requires that extrema occur at the grid
+%                     points. linear should be smoother than nearest for
+%                     the same grid. As the number of dimension grows,
+%                    the number of grid points used to interpolate at a
+%                    query point grows with 2^nDimensions. i.e. 2d needs 4
+%                    points, 3d needs 8 points, 4d needs 16 points per
+%                    query point. Linear has good properies of speed and
+%                    accuracy.
 %
-%          'nearest' - nearest neighbor interpolation. This will
-%                     rarely be a good choice, but I included it
-%                     as an option for completeness.
+%          'nearest' - nearest neighbor interpolation. Nearest should
+%                      be the fastest because of simplicity but least
+%                      accurate.
+%
+%          'cubic' - Uses lagrange cubic interpolation. Cubic interpolation
+%                    allows extrema to occur at other locations besides the
+%                    grid points. Cubic should provide the most flexible
+%                    relationship for a given xGrid at the cost of
+%                    computation time. As the number of dimension grows,
+%                    the number of grid points used to interpolate at a
+%                    query point grows with 4^nDimensions. i.e. 2d needs 16
+%                    points, 3d needs 64 points, 4d needs 256 points per
+%                    query point. cubic has good properties of accuracy and
+%                    smoothness but should be the slowest.
+%
 %
 %          DEFAULT: 'linear'
 %
@@ -94,10 +114,10 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %
 %% Description
 % regularizeNd answers the question what is the best possible lookup table
-% that the scattered data x and y in the least squares sense with
-% smoothing? regularizeNd is meant to calculate a smooth lookup table given
-% n-D scattered data. regularizeNd supports extrapolation from a scattered
-% data set.
+% that the scattered data input x and output y in the least squares sense
+% with smoothing? regularizeNd is meant to calculate a smooth lookup table
+% given n-D scattered data. regularizeNd supports extrapolation from a
+% scattered data set as well.
 %
 % The calculated lookup table yGrid is meant to be used with
 % griddedInterpolant class with the conservative memory form. Call
@@ -157,6 +177,11 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 % 
 % % regularize
 % zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness);
+% % Note this s the same as 
+% % zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, 'linear', 'normal');
+%
+% % create girrdedInterpolant function
+% F = griddedInterpolant(gridPoints, zGrid, 'linear');
 % 
 % % plot and compare
 % surf(x,y,z', 'FaceColor', 'g')
@@ -170,11 +195,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %
 
 % Author(s): Jason Nicholson
-% $Revision: 1.2 $  $Date: 2016/02/08 12:34:18 $
-
-%% TODO
-% TODO Add support for cubic interpolation. Note that cubic interpolation is very expensive as the number of dimensions increases and thus not a large advantage in n-D.
-% TODO Consider adding support for the lsqr solver. However, I don't see this as necessary and have removed it for now.
+% $Revision: 1.3 $  $Date: 2016/02/26 22:19:21 $
 
 %% Input Checking and Default Values
 narginchk(3, 7);
@@ -271,40 +292,37 @@ assert(all(nGrid >= minGridVectorLength), 'Not enough grid points in each dimens
 
 %% Calculate Fidelity Equations
 
-% preallocate
-xIndex = cell(1,nDimensions);
-cellFraction = cell(1, nDimensions);
-
-% loop over dimensions calculating subscript index in each dimension for
-% scattered points.
-for iDimension = 1:nDimensions
-    % Find cell index
-    % determine the cell the x-points lie in the xGrid
-    % loop over the dimensions/columns, calculating cell index
-    [~,xIndex{iDimension}] = histc(x(:,iDimension), xGrid{iDimension});
-    
-    % For points that lie ON the max value of xGrid{iDimension} (i.e. the
-    % last value), histc returns an index that is equal to the length of
-    % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
-    % cells. Therefore, we need to find when a cell has an index equal to
-    % the length of nGrid(iDimension) and reduce the index by 1.
-    xIndex{iDimension}(xIndex{iDimension} == nGrid(iDimension))=nGrid(iDimension)-1;
-    
-    % Calculate the cell fraction. This corresponds to a value between 0 and 1.
-    % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
-    % the cell. The min and max functions help ensure the output is always
-    % between 0 and 1.
-    cellFraction{iDimension} = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}))./dx{iDimension}(xIndex{iDimension})));
-end
-
 switch interpMethod
     case 'nearest' % nearest neighbor interpolation in a cell
         
-        % calculate the index of nearest point
-        xWeightIndex = cellfun(@(fraction, index) round(fraction)+index, cellFraction, xIndex, 'UniformOutput', false);
+        % Preallocate before loop
+        xWeightIndex = cell(1, nDimensions);
         
+        for iDimension = 1:nDimensions
+            % Find cell index
+            % determine the cell the x-points lie in the xGrid
+            % loop over the dimensions/columns, calculating cell index
+            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
+            
+            % For points that lie ON the max value of xGrid{iDimension} (i.e. the
+            % last value), histc returns an index that is equal to the length of
+            % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
+            % cells. Therefore, we need to find when a cell has an index equal to
+            % the length of nGrid(iDimension) and reduce the index by 1.
+            xIndex(xIndex == nGrid(iDimension))=nGrid(iDimension)-1;
+            
+            % Calculate the cell fraction. This corresponds to a value between 0 and 1.
+            % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
+            % the cell. The min and max functions help ensure the output is always
+            % between 0 and 1.
+            cellFraction = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex))./dx{iDimension}(xIndex)));
+            
+            % calculate the index of nearest point
+            xWeightIndex{iDimension} = round(cellFraction)+xIndex;
+        end
+         
         % clean up a little
-        clear(getname(cellFraction));
+        clear(getname(cellFraction), getname(xIndex));
         
         % calculate linear index
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
@@ -318,15 +336,9 @@ switch interpMethod
         % clean up a little
         clear(getname(xWeightIndex), getname(weight));
         
-    case 'linear'  % linear interpolation in a cell
+    case 'linear'  % linear interpolation
         
-        % In linear interpolation, there is two weights per dimension
-        %                              weight 1    weight 2
-        weights = cellfun(@(fraction) [1-fraction, fraction], cellFraction, 'UniformOutput', false);
-        
-        % clean up a little
-        clear(getname(cellFraction));
-        
+        % This will be needed below
         % Each cell has 2^nDimension nodes. The local dimension index label is 1 or 2 for each dimension. For instance, cells in 2d
         % have 4 nodes with the following indexes:
         % node label  =  1  2  3  4
@@ -336,18 +348,46 @@ switch interpMethod
         % three is two, one. node 4 is two, two.
         localCellIndex = (arrayfun(@(digit) str2double(digit), dec2bin(0:2^nDimensions-1))+1)';
         
-        % preallocate before loop
+        % preallocate
         weight = ones(nScatteredPoints, 2^nDimensions);
         xWeightIndex = cell(1, nDimensions);
         
-        % Calculate weight for each point in the local cell
-        % After the for loop finishes, the rows of weight sum to 1 as a check.
+        % loop over dimensions calculating subscript index in each dimension for
+        % scattered points.
         for iDimension = 1:nDimensions
+            % Find cell index
+            % determine the cell the x-points lie in the xGrid
+            % loop over the dimensions/columns, calculating cell index
+            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
+            
+            % For points that lie ON the max value of xGrid{iDimension} (i.e. the
+            % last value), histc returns an index that is equal to the length of
+            % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
+            % cells. Therefore, we need to find when a cell has an index equal to
+            % the length of nGrid(iDimension) and reduce the index by 1.
+            xIndex(xIndex == nGrid(iDimension))=nGrid(iDimension)-1;
+            
+            % Calculate the cell fraction. This corresponds to a value between 0 and 1.
+            % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
+            % the cell. The min and max functions help ensure the output is always
+            % between 0 and 1.
+            cellFraction = min(1,max(0,(x(:,iDimension) - xGrid{iDimension}(xIndex))./dx{iDimension}(xIndex)));
+            
+            % In linear interpolation, there is two weights per dimension
+            %                                weight 1      weight 2
+            weightsCurrentDimension = [1-cellFraction, cellFraction];
+            
+            % Calculate weights
+            % After the for loop finishes, the rows of weight sum to 1 as a check.
             % multiply the weights from each dimension
-            weight = weight.*weights{iDimension}(:, localCellIndex(iDimension,:));
+            weight = weight.*weightsCurrentDimension(:, localCellIndex(iDimension,:));
+            
             % compute the index corresponding to the weight
-            xWeightIndex{iDimension} = bsxfun(@plus, xIndex{iDimension}, localCellIndex(iDimension,:)-1);
+            xWeightIndex{iDimension} = bsxfun(@plus, xIndex, localCellIndex(iDimension,:)-1);
         end
+        
+        % clean up a little
+        clear(getname(cellFraction), getname(xIndex), getname(weightsCurrentDimension), getname(localCellIndex));
         
         % calculate linear index
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
@@ -356,29 +396,53 @@ switch interpMethod
         A = sparse(repmat((1:nScatteredPoints)',1,2^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
         % clean up a little
-        clear(getname(xWeightIndex), getname(weight), getname(localCellIndex));
+        clear(getname(xWeightIndex), getname(weight));
         
     case 'cubic'
         
-        weights = cell(1, nDimensions);
+        % This will be needed below.
+        % Each cubic interpolation has 4^nDimension nodes. The local 
+        % dimension index label is 1, 2, 3, or 4 for each dimension. For 
+        % instance, cubic interpolation in 2d has 16 nodes with the 
+        % following indexes:
+        %    node label  =  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+        % localCellIndex = [1 1 1 1 2 2 2 2 3 3  3  3  4  4  4  4;
+        %                   1 2 3 4 1 2 3 4 1 2  3  4  1  2  3  4]
+        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2base(0:4^nDimensions-1,4))+1)';
+        
+        % Preallocate before loop
+        weight = ones(nScatteredPoints, 4^nDimensions);
+        xWeightIndex = cell(1, nDimensions);
+        
         for iDimension = 1:nDimensions
-            % Calculate low end index used interpolation. 4 points are
-            % needed so the low end index is the corresponds to the lowest
-            % used in the interpolation. The min and max ensures that the
-            % boundaries of the grid are respected.
-            xIndex{iDimension} = min(max(xIndex{iDimension}-1,1), nGrid(iDimension)-3);
+            % Find cell index. Determine the cell the x-points lie in the
+            % current xGrid dimension.
+            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
             
-            % Setup to calculate the weights
-            % The weights are based on cubic Lagrange polynomial
+            % Calculate low index used in cubic interpolation. 4 points are
+            % needed  for cubic interpolation. The low index corresponds to
+            % the smallest grid point used in the interpolation. The min
+            % and max ensures that the boundaries of the grid are
+            % respected. For example, give a point x = 1.6 and a xGrid =
+            % [0,1,2,3,4,5]. The points used for cubic interpolation would
+            % be [0,1,2,3]. If x = 0.5, the points used would be [0,1,2,3];
+            % this respects the bounds of the grid. If x = 4.9, the points
+            % used would be [2,3,4,5]; again this respects the bounds of
+            % the grid. 
+            xIndex = min(max(xIndex-1,1), nGrid(iDimension)-3);
+            
+            % Setup to calculate the 1d weights in the current dimension.
+            % The 1d weights are based on cubic Lagrange polynomial
             % interpolation. The alphas and betas below help keep the
             % calculation readable and also save on a few floating point
-            % operations at the cost of memory.
-            % There are 4 cubic lagrange polynomials. They have the
+            % operations at the cost of memory. There are 4 cubic lagrange
+            % polynomials that correspond to the weights. They have the
             % following form
-            % p1(x) = (x-x2)/(x1-x2)*(x-x3)/(x1-x3)*(x-x4)/(x1-x4)
-            % p2(x) = (x-x1)/(x2-x1)*(x-x3)/(x2-x3)*(x-x4)/(x2-x4)
-            % p3(x) = (x-x1)/(x3-x1)*(x-x2)/(x3-x2)*(x-x4)/(x3-x4)
-            % p1(x) = (x-x1)/(x4-x1)*(x-x2)/(x4-x2)*(x-x3)/(x4-x3)
+            %
+            % p1(x) = (x-x2)/(x1-x2)*(x-x3)/(x1-x3)*(x-x4)/(x1-x4) 
+            % p2(x) = (x-x1)/(x2-x1)*(x-x3)/(x2-x3)*(x-x4)/(x2-x4) 
+            % p3(x) = (x-x1)/(x3-x1)*(x-x2)/(x3-x2)*(x-x4)/(x3-x4) 
+            % p4(x) = (x-x1)/(x4-x1)*(x-x2)/(x4-x2)*(x-x3)/(x4-x3)
             % 
             % The alphas and betas are defined as follows
             % alpha1 = x - x1
@@ -392,53 +456,45 @@ switch interpMethod
             % beta23 = x2 - x3
             % beta24 = x2 - x4
             % beta34 = x3 - x4
-            alpha1 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension});
-            alpha2 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}+1);
-            alpha3 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}+2);
-            alpha4 = x(:,iDimension) - xGrid{iDimension}(xIndex{iDimension}+3);
-            beta12 = xGrid{iDimension}(xIndex{iDimension}) - xGrid{iDimension}(xIndex{iDimension}+1);
-            beta13 = xGrid{iDimension}(xIndex{iDimension}) - xGrid{iDimension}(xIndex{iDimension}+2);
-            beta14 = xGrid{iDimension}(xIndex{iDimension}) - xGrid{iDimension}(xIndex{iDimension}+3);
-            beta23 = xGrid{iDimension}(xIndex{iDimension}+1) - xGrid{iDimension}(xIndex{iDimension}+2);
-            beta24 = xGrid{iDimension}(xIndex{iDimension}+1) - xGrid{iDimension}(xIndex{iDimension}+3);
-            beta34 = xGrid{iDimension}(xIndex{iDimension}+2) - xGrid{iDimension}(xIndex{iDimension}+3);
+            alpha1 = x(:,iDimension) - xGrid{iDimension}(xIndex);
+            alpha2 = x(:,iDimension) - xGrid{iDimension}(xIndex+1);
+            alpha3 = x(:,iDimension) - xGrid{iDimension}(xIndex+2);
+            alpha4 = x(:,iDimension) - xGrid{iDimension}(xIndex+3);
+            beta12 = xGrid{iDimension}(xIndex) - xGrid{iDimension}(xIndex+1);
+            beta13 = xGrid{iDimension}(xIndex) - xGrid{iDimension}(xIndex+2);
+            beta14 = xGrid{iDimension}(xIndex) - xGrid{iDimension}(xIndex+3);
+            beta23 = xGrid{iDimension}(xIndex+1) - xGrid{iDimension}(xIndex+2);
+            beta24 = xGrid{iDimension}(xIndex+1) - xGrid{iDimension}(xIndex+3);
+            beta34 = xGrid{iDimension}(xIndex+2) - xGrid{iDimension}(xIndex+3);
             
-            weights{iDimension} = [ alpha2./beta12.*alpha3./beta13.*alpha4./beta14, ...
-                                   -alpha1./beta12.*alpha3./beta23.*alpha4./beta24, ...
-                                    alpha1./beta13.*alpha2./beta23.*alpha4./beta34, ...
-                                   -alpha1./beta14.*alpha2./beta24.*alpha3./beta34];
+            weightsCurrentDimension = [ alpha2./beta12.*alpha3./beta13.*alpha4./beta14, ...
+                                       -alpha1./beta12.*alpha3./beta23.*alpha4./beta24, ...
+                                        alpha1./beta13.*alpha2./beta23.*alpha4./beta34, ...
+                                       -alpha1./beta14.*alpha2./beta24.*alpha3./beta34];
+
+            % Accumulate the weight contribution for each dimension by
+            % multiplication. After the for loop finishes, the rows of
+            % weight sum to 1 as a check
+            weight = weight.*weightsCurrentDimension(:, localCellIndex(iDimension,:));
+            
+            % compute the index corresponding to the weight
+            xWeightIndex{iDimension} = bsxfun(@plus, xIndex, localCellIndex(iDimension,:)-1);
         end
         
         % clean up a little
         clear(getname(alpha1), getname(alpha2), getname(alpha3), getname(alpha4), ...
               getname(beta12), getname(beta13), getname(beta14), getname(beta23), ...
-              getname(beta24), getname(beta34));
+              getname(beta24), getname(beta34), getname(weightsCurrentDimension), ...
+              getname(xIndex), getname(localCellIndex));
         
-        % Each cell has 4^nDimension nodes. The local dimension index label is 1, 2, 3, or 4 for each dimension. For instance, cells in 2d
-        % have 16 nodes with the following indexes:
-        % node label  =  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
-        % index label = [1 1 1 1 2 2 2 2 3 3  3  3  4  4  4  4;
-        %                1 2 3 4 1 2 3 4 1 2  3  4  1  2  3  4]
-        localCellIndex = (arrayfun(@(digit) str2double(digit), dec2base(0:4^nDimensions-1,4))+1)';
-        
-        % Preallocate before loop
-        weight = ones(nScatteredPoints, 4^nDimensions);
-        xWeightIndex = cell(1, nDimensions);
-        
-        % Calculate weight for each point in the local cell
-        % After the for loop finishes, the rows of weight sum to 1 as a check.
-        for iDimension = 1:nDimensions
-            % multiply the weights from each dimension
-            weight = weight.*weights{iDimension}(:, localCellIndex(iDimension,:));
-            % compute the index corresponding to the weight
-            xWeightIndex{iDimension} = bsxfun(@plus, xIndex{iDimension}, localCellIndex(iDimension,:)-1);
-        end
-        
-        % calculate linear index
+        % convert linear index
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
 
          % Form the sparse A matrix for fidelity equations
         A = sparse(repmat((1:nScatteredPoints)',1,4^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
+        
+        % clean up a little
+        clear(getname(xWeightIndex), getname(weight));
         
     otherwise
         error('Code should never reach this point. If it does, there is a bug.');

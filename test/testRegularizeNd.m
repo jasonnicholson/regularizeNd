@@ -11,23 +11,23 @@ z = tanh(xx-3).*sin(2*pi/6*yy);
 noise = (rand(size(xx))-0.5).*xx.*yy/30;
 zNoise = z + noise;
 xx = xScale*xx;
-xGrid = linspace(0,6,2100);
+xGrid = linspace(0,6,210);
 xGrid = xScale*xGrid;
 yGrid = linspace(0,6.6,195);
-smoothness = 0.001;
+smoothness = [1e-6 1e-7];
 
 
-zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), {xGrid, yGrid}, smoothness, 'nearest', '\');
+zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), {xGrid, yGrid}, smoothness, 'cubic', '\');
 % zGrid2 = RegularizeData3D_mod(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bilinear', 'solver', '\');
-zGrid3 = RegularizeData3D_mod(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'nearest', 'solver', '\');
+zGrid3 = RegularizeData3D_mod(xx(:), yy(:), zNoise(:) ,xGrid, yGrid, 'smoothness', smoothness, 'interp', 'bicubic', 'solver', '\');
 
-% figure
-% surf(xx,yy,z, 'FaceColor', 'g')
-% hold all;
-% surf(xx,yy,zNoise)
-% surf(xGrid, yGrid, zGrid', 'FaceColor', 'r')
-% surf(xGrid, yGrid, zGrid3, 'FaceColor', 'b')
-% legend({'Exact', 'Noisy', 'regularizeNd', 'RegularizeData3D'},'location', 'best');
+figure
+surf(xx,yy,z, 'FaceColor', 'g')
+hold all;
+surf(xx,yy,zNoise)
+surf(xGrid, yGrid, zGrid', 'FaceColor', 'r')
+surf(xGrid, yGrid, zGrid3, 'FaceColor', 'b')
+legend({'Exact', 'Noisy', 'regularizeNd', 'RegularizeData3D'},'location', 'best');
 
 % xp = 0.49:4.5;
 % yp = 0.49:5.5;
