@@ -1,4 +1,4 @@
-%% 
+%% Simple Example
 % This is a simple example of using regularizeNd.
 
 clc; clear; close all;
