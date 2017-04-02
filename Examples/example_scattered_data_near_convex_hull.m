@@ -1,8 +1,8 @@
-%% Interpolation Results Poor Near the Convex Hull
-
+%% regularizeNd can handle issues near convex hull that scatteredInterpolant can't
+%
 % This example was adapted from the scatteredInterpolant examples from
 % Mathworks.
-
+%
 % This example shows an interpolated surface that deteriorates near the
 % convex hull for scatteredInterpolant. regularizeNd can approximate the
 % surface hear the convex hull without problem. Note that regularizeNd is
