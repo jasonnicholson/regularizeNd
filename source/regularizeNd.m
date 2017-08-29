@@ -105,6 +105,18 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %                     general recommendation in numerical analysis but is 
 %                     has been proven to be true through testing.
 %
+%         'trust-region'  - Uses an iterative approach. Sometimes the '\'
+%                           or 'normal' option cannot solve certain
+%                           problems. For instance, in rare cases, MATLAB
+%                           may crash or run out of memory for certain
+%                           problems. If this happens, try the trust-region
+%                           solver. The trust-region solver requires
+%                           fminunc which is in the Optimization Toolbox.
+%                           In the future, I want to remove this
+%                           dependency. For now, this is a workaround to
+%                           solve problems for which 'normal' or '\' do not
+%                           work.
+%
 %          DEFAULT: 'normal'
 %
 %
@@ -242,7 +254,7 @@ end
 if nargin() < 6 || (nargin()==6 && isempty(solver))
     solver = 'normal';
 else
-    solversPossible = {'\', 'normal'};
+    solversPossible = {'\', 'normal', 'trust-region'};
     assert(any(strcmpi(solver, solversPossible)), '%s is not an acceptable %s. Check spelling and try again.', solver, getname(solver));
 end
 
@@ -607,10 +619,22 @@ switch solver
         elseif nDimensions > 1
             yGrid = reshape((A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]), nGrid);
         end
+    case 'trust-region'
+        AA = A'*A;
+        b = [y;sparse(nTotalSmoothnessEquations,1)];
+        d = A'*b;
+        options = optimoptions('fminunc', 'Algorithm', 'trust-region', 'Display', 'iter-detailed', 'SpecifyObjectiveGradient', true(), 'HessianFcn', 'objective', 'FunctionTolerance', 1e-10, 'OptimalityTolerance', 1e-9);
+        yGrid = reshape(fminunc(@costFunction, zeros(nTotalGridPoints,1),options), nGrid);
     otherwise
         error('Code should never reach this line. If it does, there is a bug.');
 end  % switch solver
 
+%% Nested Cost Function used by fminunc
+    function [cost, gradient, hessian] = costFunction(x)
+        cost = 0.5*norm(A*x-b)^2;
+        gradient = AA*x-d;
+        hessian = AA;
+    end
 end %
 
 
