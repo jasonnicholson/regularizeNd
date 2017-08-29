@@ -211,7 +211,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
 %
 
 % Author(s): Jason Nicholson
-% $Revision: 1.3 $  $Date: 2016/02/26 22:19:21 $
+% $Revision: 1.4 $  $Date: 2017/08/29 11:54:00 $
 
 %% Input Checking and Default Values
 narginchk(3, 7);
