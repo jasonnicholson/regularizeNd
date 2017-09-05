@@ -700,7 +700,6 @@ switch solver
                 % the try-catch block.
                 preconditioner = 'none';
                 
-                
                 % Try to calculate the ichol preconditioner
                 try
                     L = ichol(AA);
@@ -736,11 +735,36 @@ switch solver
                         [yGrid, flag] = feval(solver, AA, d, solverTolerance, maxIterations, L, U);
                     otherwise
                         error('Code should never reach this. Something is wrong with the preconditioner swithch statement. Fix it.');
-                end % end preconditioner
-                
+                end % end pcg, symmlq preconditioner switch statement
                 
             case 'lsqr'
-                [yGrid, flag] = lsqr(A,[y;zeros(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations);
+                % setup a flag for use with an if statement. This is better
+                % than paying the overhead of calling the solver inside
+                % the try-catch block.
+                preconditioner = 'none';
+                
+                % Try to calculate the ichol preconditioner
+                try
+                    L = ichol(A'*A);
+                    preconditioner = 'ichol';
+                catch exception
+                    % Check that the ichol failed because of a nonpositive
+                    % pivot.
+                    if ~strcmpi(exception.identifier, 'MATLAB:ichol:Breakdown')
+                        warning('Unknown problem when trying to calculate preconditioner for %s solver.\nError in using ichol.\n%s', solver, exception1.message);
+                    end % end if exception check
+                end % end ichol try-catch block
+                
+                % Call lsqr differently depending on the preconditioner
+                switch preconditioner
+                    case 'none'
+                        [yGrid, flag] = lsqr(A,[y;zeros(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations);
+                    case 'ichol'
+                        [yGrid, flag] = lsqr(A,[y;zeros(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations, L');
+                    otherwise
+                        error('Code should never reach this. Something is wrong with the preconditioner swithch statement. Fix it.');
+                end % end lsqr preconditioner switch statement
+                
             otherwise
                 error('Code should never reach this. Something is wrong with iterative solver switch statement.');
         end % end iterative solver switch block
