@@ -751,7 +751,7 @@ switch solver
                     % Check that the ichol failed because of a nonpositive
                     % pivot.
                     if ~strcmpi(exception.identifier, 'MATLAB:ichol:Breakdown')
-                        warning('Unknown problem when trying to calculate preconditioner for %s solver.\nError in using ichol.\n%s', solver, exception1.message);
+                        warning('Unknown problem when trying to calculate preconditioner for %s solver.\nError in using ichol.\n%s', solver, exception.message);
                     end % end if exception check
                 end % end ichol try-catch block
                 
