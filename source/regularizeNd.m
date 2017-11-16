@@ -47,63 +47,78 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %   interpMethod - character, denotes the interpolation scheme used
 %          to interpolate the data.
 %
+%          Even though there is a computational complexity difference between
+%          linear, nearest, and cubic interpolation methods, the
+%          interpolation method is not the dominant factor in the
+%          calculation time in regularizeNd. The dominant factor in
+%          calculation time is the size of the grid and the solver used. So
+%          in general, do not choose your interpolation method based on
+%          computational complexity. Choose your interpolation method because
+%          of the accuracty and shape that you are looking to obtain.
 %
 %          'linear' - Uses linear interpolation within the grid. linear
 %                     interpolation requires that extrema occur at the grid
 %                     points. linear should be smoother than nearest for
 %                     the same grid. As the number of dimension grows,
-%                    the number of grid points used to interpolate at a
-%                    query point grows with 2^nDimensions. i.e. 2d needs 4
-%                    points, 3d needs 8 points, 4d needs 16 points per
-%                    query point. Linear has good properies of speed and
-%                    accuracy.
+%                     the number of grid points used to interpolate at a
+%                     query point grows with 2^nDimensions. i.e. 2d needs 4
+%                     points, 3d needs 8 points, 4d needs 16 points per
+%                     query point. In general, linear can use smaller
+%                     smoothness values than cubic and still be well
+%                     conditioned.
 %
-%          'nearest' - nearest neighbor interpolation. Nearest should
-%                      be the fastest because of simplicity but least
-%                      accurate.
+%          'nearest' - Nearest neighbor interpolation. Nearest should
+%                      be the least complex but least smooth.
 %
-%          'cubic' - Uses lagrange cubic interpolation. Cubic interpolation
+%          'cubic' - Uses Lagrange cubic interpolation. Cubic interpolation
 %                    allows extrema to occur at other locations besides the
 %                    grid points. Cubic should provide the most flexible
-%                    relationship for a given xGrid at the cost of
-%                    computation time. As the number of dimension grows,
-%                    the number of grid points used to interpolate at a
-%                    query point grows with 4^nDimensions. i.e. 2d needs 16
-%                    points, 3d needs 64 points, 4d needs 256 points per
-%                    query point. cubic has good properties of accuracy and
-%                    smoothness but should be the slowest.
-%
+%                    relationship for a given xGrid. As the number of
+%                    dimension grows, the number of grid points used to
+%                    interpolate at a query point grows with 4^nDimensions.
+%                    i.e. 2d needs 16 points, 3d needs 64 points, 4d needs
+%                    256 points per query point. cubic has good properties
+%                    of accuracy and smoothness but is the most complex
+%                    interpMethod to calculate.
 %
 %          DEFAULT: 'linear'
 %
 %
-%   solver - character flag - denotes the solver used for the
-%          resulting linear system. The default is most often the best
-%          choice.
+%   solver - string that denotes the solver used for the
+%            resulting linear system. The default is most often the best
+%            choice.
 %
-%          What solver should you use? '\' may be best numerically for most
-%          smoothness parameters and high extents of extrapolation. If you
-%          receive rank deficiency warnings, try the '\' solver. Otherwise,
-%          use the 'normal' solver because it is usually faster than the '\'
-%          solver.
+%          What solver should you use? The short answer is use 'normal' as
+%          a first guess. '\' may be best numerically for most smoothness
+%          parameters and high extents of extrapolation. If you receive
+%          rank deficiency warnings with 'normal', try the '\' solver.
+%          Otherwise, use the 'normal' solver because it is usually faster
+%          than the '\' solver.
 %
-%          Large numbers of points will slow down the direct '\'. Since the
-%          equations generated tends to be well conditioned, the 'normal' 
-%          solver is  a good choice. Beware using 'normal' when a small
-%          smoothing parameter is used, since this will make the equations
-%          less well conditioned. The 'normal' solver for large grids
-%          is 3x faster than the '\'.
+%          The larger the numbers of grid points, the larger the solve time.
+%          Since the equations generated tends to be well conditioned, the
+%          'normal' solver is  a good choice. Beware using 'normal' when a
+%          small smoothing parameter is used, since this will make the
+%          equations less well conditioned. The 'normal' solver for large
+%          grids is 3x faster than the '\'.
 %
 %          Use the 'pcg', 'symmlq', or 'lsqr' solver when the 'normal' and
-%          '\' fail. Out of memory error with 'normal' or '\' are reason to
-%          try the iterative solvers. This is rare however it happens.
-%          Start with the 'pcg' solver. Then 'symmlq'. Finally try 'lsqr'
-%          solver. The 'lsqr' solver is usually slow compared to the 'pcg'
-%          'symmlq' solver.
+%          '\' fail. Out of memory errors with 'normal' or '\' are reason to
+%          try the iterative solvers. These errors are rare however they
+%          happen. Start with the 'pcg' solver. Then 'symmlq'. Finally try
+%          'lsqr' solver. The 'lsqr' solver is usually slow compared to the
+%          'pcg' and 'symmlq' solver.
 %
 %          '\' - uses matlab's backslash operator to solve the sparse
 %                system.
 %
+%          'lsqr' - Uses the MATLAB lsqr solver. This solver is not
+%                   recommended. Try 'pcg' or 'symmlq' first and use
+%                   'lsqr' as a last resort. Experiments have shown that
+%                   'pcg' and 'symmlq' solvers are faster and just as
+%                   accurate as 'lsqr' for the matrices generated by
+%                   regularizeNd. The same preconditioner as
+%                   the 'pcg' solver is used.
 %
 %          'normal' - Constructs the normal equation and solves.
 %                     x = (A'A)\(A'*y). From testing, this seems to be a well
@@ -115,40 +130,19 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %                     A'*A will have less nonzero elements than A. i.e.
 %                     nnz(A'*A) < nnz(A).
 %                 
-%          'lsqr' - Uses the iterative lsqr solver. This solver is not
-%                    recommended. Try 'pcg' or 'symmlq' first and use
-%                    'lsqr' as a last resort. Experiments have shown that
-%                    'pcg' and 'symmlq' solvers are faster and just as
-%                    accurate 'lsqr' for the matrices generated by
-%                    regularizeNd. The preconditioners do not help the
-%                    'lsqr' solver in experiment. The Incomplete Cholesky
-%                    factorization and Incomplete LU factorization actually
-%                    slow down lsqr and therefore are not used.
+%          'pcg' - Calls the MATLAB pcg iterative solver that solves the
+%                  normal equaiton, (A'A)*x = A'*y, for x. Use this solver
+%                  first when 'normal' and '\' fail. The 'pcg' solver tries
+%                  to generate the Incomplete Cholesky Factorization
+%                  (ichol) as a preconditioner. If Incomplete Cholesky
+%                  Factorization fails, then diagonal compensation is
+%                  added. There may be a case where the preconditioner just
+%                  cannot be calculated and thus no preconditioner is used.
 %
-%          'pcg' - Iterative solver that solves the normal equaiton,
-%                 (A'A)*x = A'*y, for x. Use this solver first when
-%                 'normal' and '\' fail. The 'pcg' solver tries to generate
-%                 Incomplete Cholesky factorization or Incomplete LU
-%                 factorization as a preconditioner. Incomplete Cholesky
-%                 factorization is tried first and then Incomplete LU
-%                 factorization is tried if Incomplete Cholesky
-%                 factorization fails. It is possible that both
-%                 preconditioner fail. If both preconditioners fail, then
-%                 'pcg' solver proceeds without a preconditioner. The
-%                 preconditioner has a speed up of 5 versus when a
-%                 preconditioner does not exist.
-%
-%          'symmlq' - Iterative solver that solves the normal equaiton,
-%                 (A'A)*x = A'*y, for x. Use this solver if 'pcg' has issues.
-%                 The 'symmlq' solver tries to generate Incomplete Cholesky
-%                 factorization or Incomplete LU factorization as a
-%                 preconditioner. Incomplete Cholesky factorization is
-%                 tried first and then Incomplete LU factorization is tried
-%                 if Incomplete Cholesky factorization fails. It is
-%                 possible that both preconditioner fail. If both
-%                 preconditioners fail, then 'symmlq' solver proceeds
-%                 without a preconditioner. The preconditioner has a speed
-%                 up of 5 versus when a preconditioner does not exist.
+%          'symmlq' - Calls the MATLAB symlq iterative solver that solves
+%                     the normal equaiton, (A'A)*x = A'*y, for x. Use this
+%                     solver if 'pcg' has issues. 'symmlq' uses the same
+%                     preconditioner as 'pcg'.
 %
 %          DEFAULT: 'normal'
 %
@@ -162,6 +156,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %          DEFAULT: min(1e5,  nTotalGridPoints)
 %
+%
 %   solverTolerance - Only used if the solver is set to the iterative
 %                     solvers, 'lsqr', 'pcg', or 'symmlq'. The
 %                     solverTolerance is used with 'lsqr', 'pcg', or
@@ -170,10 +165,12 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 %          DEFAULT: 1e-11*abs(max(y) - min(y))
 %
+%
 %% Output
-%  yGrid   - array containing the fitted surface correspond to the grid
-%            points xGrid. yGrid is in the ndgrid format. In 2d, ndgrid
-%            format is the transpose of meshgrid format.
+%  yGrid   - array containing the fitted surface or hypersurface
+%            corresponding to the grid points xGrid. yGrid is in the ndgrid
+%            format. In 2d, ndgrid format is the transpose of meshgrid
+%            format.
 %
 %% Description
 % regularizeNd answers the question what is the best possible lookup table
@@ -251,7 +248,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 % % plot and compare
 % surf(x,y,z', 'FaceColor', 'g')
 % hold all;
-% surf(x,y,zNoise')
+% surf(x,y,zNoise','FaceColor', 'm')
 % surf(xGrid, yGrid, zGrid', 'FaceColor', 'r')
 % xlabel('x')
 % ylabel('y')
@@ -260,7 +257,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 
 % Author(s): Jason Nicholson
-% $Revision: 1.4 $  $Date: 2017/08/29 11:54:00 $
+% $Revision: 1.5 $  $Date: 2017/11/16 17:03:00 $
 
 %% Input Checking and Default Values
 narginchk(3, 8);
@@ -425,7 +422,7 @@ switch interpMethod
         weight  = 1;
         
         % Form the sparse A matrix for fidelity equations
-        A = sparse((1:nScatteredPoints)', xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
+        Afidelity = sparse((1:nScatteredPoints)', xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'linear'  % linear interpolation
         
@@ -484,7 +481,7 @@ switch interpMethod
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
         
         % Form the sparse A matrix for fidelity equations
-        A = sparse(repmat((1:nScatteredPoints)',1,2^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
+        Afidelity = sparse(repmat((1:nScatteredPoints)',1,2^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'cubic'
         
@@ -579,7 +576,7 @@ switch interpMethod
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
 
          % Form the sparse A matrix for fidelity equations
-        A = sparse(repmat((1:nScatteredPoints)',1,4^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
+        Afidelity = sparse(repmat((1:nScatteredPoints)',1,4^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     otherwise
         error('Code should never reach this point. If it does, there is a bug.');
@@ -606,7 +603,7 @@ nTotalSmoothnessEquations = sum(nSmoothnessEquations);
 %%% Calculate regularization matrices
 
 % Preallocate the regularization equations
-Areg = cell(nDimensions, 1);
+Lreg = cell(nDimensions, 1);
 
 % compute the index multiplier for each dimension. This is used for
 % calculating the linear index.
@@ -616,7 +613,7 @@ multiplier = cumprod(nGrid);
 for iDimension=1:nDimensions
     if smoothness(iDimension) == 0
         nTotalSmoothnessEquations = nTotalSmoothnessEquations - nSmoothnessEquations(iDimension);
-        Areg{iDimension} = [];
+        Lreg{iDimension} = [];
     else
         % initialize the index for the first grid vector
         if iDimension==1
@@ -660,7 +657,7 @@ for iDimension=1:nDimensions
 
         
         % Create the Areg for each dimension and store it a cell array.
-        Areg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
+        Lreg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
             [index1, index2, index3], ...
             smoothness(iDimension)*smoothnessScale*axisScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
             nSmoothnessEquations(iDimension), ...
@@ -674,93 +671,50 @@ clear(getname(index1), getname(index2), getname(index3), getname(xGrid));
 %% Assemble and Solve the Overall Equation System
 
 % concatenate the fidelity equations and smoothing equations together
-A = vertcat(A, Areg{:});
+A = vertcat(Afidelity, Lreg{:});
 
 % clean up
-clear(getname(Areg)); 
+clear(getname(Afidelity), getname(Lreg)); 
 
 % solve the full system
 switch solver
     case '\'
-            yGrid = A\[y;zeros(nTotalSmoothnessEquations,1)];
+            yGrid = A\[y;sparse(nTotalSmoothnessEquations,1)];
     case 'normal'
-            yGrid = (A'*A)\(A'*[y;zeros(nTotalSmoothnessEquations,1)]);
+            yGrid = (A'*A)\(A'*[y;sparse(nTotalSmoothnessEquations,1)]);
     case {'lsqr', 'pcg', 'symmlq'}    
         switch solver
             case {'pcg', 'symmlq'}
                 % setup needed normal equation matrices
                 AA = A'*A;
-                d = A'*[y;zeros(nTotalSmoothnessEquations,1)];
+                d = A'*[y;sparse(nTotalSmoothnessEquations,1)];
                 
                 % clean up
                 clear(getname(A), getname(y));
                 
-                % setup a flag for use with an if statement. This is better
-                % than paying the overhead of calling the pcg solver inside
-                % the try-catch block.
-                preconditioner = 'none';
-                
-                % Try to calculate the ichol preconditioner
-                try
-                    L = ichol(AA);
-                    preconditioner = 'ichol';
-                catch exception1
-                    % Check that the ichol failed because of a
-                    % nonpositive pivot.
-                    if ~strcmpi(exception1.identifier, 'MATLAB:ichol:Breakdown')
-                        warning('Unknown problem when trying to calculate preconditioner for %s solver.\nError in using ichol.\n%s', solver, exception1.message);
-                    end % end if exception1 check
-                    
-                    % Try to calculate ilu preconditioner
-                    try
-                        [L,U] = ilu(AA);
-                        preconditioner = 'ilu';
-                    catch exception2
-                        % Check that the preconditioner failed because of a
-                        % nonpositive pivot.
-                        if ~strcmpi(exception2.identifier, 'MATLAB:ilu:ZeroPivot')
-                            warning('Unknown problem when trying to calculate preconditioner for %s solver.\nError in using ilu.\n%s', solver, exception2.message);
-                        end % end if exception2 check
-                    end % end ilu try-catch block
-                end % end ichol try-catch block
-                
+                % calculate preconditioner if possible
+                [M, preconditioner] = calculatePreconditioner(AA);
                 
                 % Call pcg or symmlq differently depending on the preconditioner
                 switch preconditioner
                     case 'none'
-                        [yGrid, flag] = feval(solver, AA, d, solverTolerance, maxIterations);
+                        [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations);
                     case 'ichol'
-                        [yGrid, flag] = feval(solver, AA, d, solverTolerance, maxIterations, L, L');
-                    case 'ilu'
-                        [yGrid, flag] = feval(solver, AA, d, solverTolerance, maxIterations, L, U);
+                        [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations, M, M');
                     otherwise
                         error('Code should never reach this. Something is wrong with the preconditioner swithch statement. Fix it.');
                 end % end pcg, symmlq preconditioner switch statement
                 
             case 'lsqr'
-                % setup a flag for use with an if statement. This is better
-                % than paying the overhead of calling the solver inside
-                % the try-catch block.
-                preconditioner = 'none';
-                
-                % Try to calculate the ichol preconditioner
-                try
-                    L = ichol(A'*A);
-                    preconditioner = 'ichol';
-                catch exception
-                    % Check that the ichol failed because of a nonpositive
-                    % pivot.
-                    if ~strcmpi(exception.identifier, 'MATLAB:ichol:Breakdown')
-                        warning('Unknown problem when trying to calculate preconditioner for %s solver.\nError in using ichol.\n%s', solver, exception.message);
-                    end % end if exception check
-                end % end ichol try-catch block
+                % calculate preconditioner if possible
+                [M, preconditioner] = calculatePreconditioner(A'*A);
                 
                 % Call lsqr differently depending on the preconditioner
                 switch preconditioner
                     case 'none'
-                        [yGrid, flag] = lsqr(A,[y;zeros(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations);
+                        [yGrid, solverExitFlag] = lsqr(A,[y;sparse(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations);
                     case 'ichol'
-                        [yGrid, flag] = lsqr(A,[y;zeros(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations, L');
+                        [yGrid, solverExitFlag] = lsqr(A,[y;sparse(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations, M');
                     otherwise
                         error('Code should never reach this. Something is wrong with the preconditioner swithch statement. Fix it.');
                 end % end lsqr preconditioner switch statement
@@ -770,7 +724,7 @@ switch solver
         end % end iterative solver switch block
         
         % Check the iterative solver flag
-        switch flag
+        switch solverExitFlag
             case 0
                 % Do nothing. This is good.
             case 1
@@ -788,6 +742,9 @@ switch solver
     otherwise
         error('Code should never reach this line. If it does, there is a bug.');
 end  % switch solver
+
+% convert to a full column vector
+yGrid = full(yGrid);
 
 % reshape if needed
 if nDimensions > 1
@@ -867,7 +824,7 @@ end
  end % end function
  
  %%
- function ndx = subscript2index(siz,varargin)
+function ndx = subscript2index(siz,varargin)
 % Computes the linear index from the subscripts for an n dimensional array
 %
 % Inputs
@@ -887,3 +844,85 @@ for i = 2:length(varargin)
     ndx = ndx + (varargin{i}-1)*k(i-1);
 end
 end
+
+%%
+function [M, preconditioner] = calculatePreconditioner(AA)
+% Calculate the incomplete cholesky decomposition where L*L'~AA. Use
+% diagonal compensation if the incomplete cholesky decomposition does not
+% exist for AA so that L*L'~AA + alpha*diag(diag(AA)).
+
+% set preconditioner to none starting out
+preconditioner = 'none';
+M = [];
+
+% Try to calculate the ichol preconditioner
+try
+    M = ichol(AA);
+    preconditioner = 'ichol';
+catch
+    % initial calculations for diaganol compensation
+    diagonalCompensation0 = full(max(sum(abs(AA),2)./diag(AA)));
+    
+    % check that the diaganol compensation is not nan or inf
+    if ~isfinite(diagonalCompensation0)
+        % Not possible to calculate diaganol compensation. Don't compute
+        % preconditioner.
+    else
+        % find the bounds of a good diagonal compensation seperated by a
+        % factor of 10
+        diagonalCompensationNew = diagonalCompensation0;
+        diagonalCompensationFailure = [];
+        diagonalCompensationSuccess = [];
+        MAX_PRECONDITIONER_BOUNDS_RECALCULATIONS = 20;
+        for iDiagonalCompensation=1:MAX_PRECONDITIONER_BOUNDS_RECALCULATIONS
+            % Try to calculate ichol with diagonal compensation. If ichol
+            % is successful, divide the diagonal compensation by 10 and try
+            % again. If there is a failure, multiply 10 and try again.
+            try
+                M = ichol(AA, struct('diagcomp', diagonalCompensationNew));
+                diagonalCompensationSuccess = diagonalCompensationNew;
+                diagonalCompensationNew = diagonalCompensationNew/10;
+            catch
+                diagonalCompensationFailure = diagonalCompensationNew;
+                diagonalCompensationNew = diagonalCompensationNew*10;
+            end
+            
+            % Check whether we have diagonalCompensationFailure and
+            % diagonalCompensationSuccess. Quit the loop if we have both.
+            if ~isempty(diagonalCompensationFailure) && ~isempty(diagonalCompensationSuccess)
+                break;
+            end
+        end % end for loop for diagonal compensation seperated by a factor 10
+        
+        % Make sure we have a diagonalCompensationFailure and
+        % diagonalCompensationSuccess. Only proceed if we have both.
+        if ~isempty(diagonalCompensationFailure) && ~isempty(diagonalCompensationSuccess)
+            % Use a binary search to better find a better diagonal compensation
+            MAX_PRECONDITIONER_BINARY_RECALCULATIONS = 3;
+            for iDiagonalCompensation=1:MAX_PRECONDITIONER_BINARY_RECALCULATIONS
+                diagonalCompensationNew = (diagonalCompensationFailure + diagonalCompensationSuccess)/2;
+                try
+                    M = ichol(AA, struct('diagcomp', diagonalCompensationNew));
+                    diagonalCompensationSuccess = diagonalCompensationNew;
+                catch
+                    diagonalCompensationFailure = diagonalCompensationNew;
+                end
+                
+                % break the loop diagonalCompensationFailure and
+                % diagonalCompensationSuccess are close together.
+                if diagonalCompensationFailure + 1000*eps(diagonalCompensationFailure) > diagonalCompensationSuccess
+                    break;
+                end
+            end % end binary search for loop
+            
+            % Make sure we have a preconditioner
+            if ~isempty(M)
+                preconditioner = 'ichol';
+            else
+                % Do nothing. No preconditioner.
+            end % end check for preconditioner
+        end % end check for diagonal compensation bounds
+    end % end initial compensation guess
+end % end ichol try-catch block
+end % end calculatePreconditioner
+

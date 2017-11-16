@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>regularizeNd</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-02"><meta name="DC.source" content="regularizeNdDoc.m"><style type="text/css">
+      --><title>regularizeNd</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-11-16"><meta name="DC.source" content="regularizeNdDoc.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -70,10 +70,11 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 yGrid = regularizeNd(x, y, xGrid, smoothness)
 yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod)
 yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
-</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#7">Output</a></li><li><a href="#8">Description</a></li><li><a href="#10">Acknowledgement</a></li><li><a href="#11">Example</a></li></ul></div><h2 id="1">Inputs</h2><p><b>x</b> - column vector or matrix of column vectors, containing scattered data. Each row contains one point. Each column corresponds to a dimension.</p><p><b>y</b> - vector containing the corresponds values to x. y has the same number of rows as x.</p><p><b>xGrid</b> - cell array containing vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1) for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.</p><p><b>smoothness</b> - scalar or vector. - The numerical "measure" of what we want to achieve along an axis/dimension, regardless of the resolution, the aspect ratio between axes, or the scale of the overall problem. The ratio of smoothness to fidelity of the output surface, i.e. ratio of smoothness to "goodness of fit." This must be a positive real number. If it is a vector, it must have same number of elements as columns in x.</p><p>A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output surface.  This results in noticeable smoothing. If your input data has little or no noise, use 0.01 to give smoothness 1% as much weight as goodness of fit. 0.1 applies a little bit of smoothing to the output surface.</p><p>If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension. This allows the user to apply a different amount of smoothing in the each axis/dimension.</p><pre class="language-matlab">DEFAULT: 0.01
-</pre><p><b>interpMethod</b> - character, denotes the interpolation scheme used to interpolate the data.</p><div><ul><li>'linear' - Uses linear interpolation within the grid. linear                     interpolation requires that extrema occur at the grid                     points. linear should be smoother than nearest for                     the same grid. As the number of dimension grows,                    the number of grid points used to interpolate at a                    query point grows with 2^nDimensions. i.e. 2d needs 4                    points, 3d needs 8 points, 4d needs 16 points per                    query point. Linear has good properies of speed and                    accuracy.</li></ul></div><div><ul><li>'nearest' - nearest neighbor interpolation. Nearest should                      be the fastest because of simplicity but least                      accurate.</li></ul></div><div><ul><li>'cubic' - Uses lagrange cubic interpolation. Cubic interpolation                    allows extrema to occur at other locations besides the                    grid points. Cubic should provide the most flexible                    relationship for a given xGrid at the cost of                    computation time. As the number of dimension grows,                    the number of grid points used to interpolate at a                    query point grows with 4^nDimensions. i.e. 2d needs 16                    points, 3d needs 64 points, 4d needs 256 points per                    query point. cubic has good properties of accuracy and                    smoothness but should be the slowest.</li></ul></div><pre class="language-matlab">DEFAULT: <span class="string">'linear'</span>
-</pre><p><b>solver</b> - character flag - denotes the solver used for the          resulting linear system. The default is most often the best          choice.</p><p>What solver should you use? '\' may be best numerically for most          smoothness parameters and high extents of extrapolation. If you          receive rank deficiency warnings, try the '\' solver. Otherwise,          use the 'normal' solver because it is usually faster than the '\'          solver.</p><p>Large numbers of points will slow down the direct '\'. Since the          equations generated by this regularization method tends to be          well conditioned, the 'normal' solver is  a good choice. Beware          using 'normal' when a small smoothing parameter is used,          since this will make the equations less well conditioned. The          'normal' solver for fairly large grids is 3x faster than the '\'.</p><div><ul><li>'\' - uses matlab's backslash operator to solve the sparse                system.</li></ul></div><div><ul><li>'normal' - Constructs the normal equation and solves.                     x = (A'A)\(A'*y). From testing, this seems to be a well                     conditioned and faster way to solve this type of                     equation system than backslash x = A\y. Testing shows                     that the normal equation is 3x faster than the \                     solver for this type of problem. This goes against the                     general recommendation in numerical analysis but is                     has been proven to be true through testing.</li></ul></div><pre class="language-matlab">DEFAULT: <span class="string">'normal'</span>
-</pre><h2 id="7">Output</h2><p><b>yGrid</b> - array containing the fitted surface correspond to the grid            points xGrid. yGrid is in the ndgrid format. In 2d, ndgrid            format is the transpose of meshgrid format.</p><h2 id="8">Description</h2><p>regularizeNd answers the question what is the best possible lookup table that the scattered data input x and output y in the least squares sense with smoothing? regularizeNd is meant to calculate a smooth lookup table given n-D scattered data. regularizeNd supports extrapolation from a scattered data set as well.</p><p>The calculated lookup table yGrid is meant to be used with griddedInterpolant class with the conservative memory form. Call griddedInterpolant like F = griddedInterpolant(xGrid, yGrid).</p><p>Desirable properties of regularizeNd:</p><div><ul><li>Calculates a relationship between the input x and the output y       without definition of the functional form of x to y.</li><li>Often the fit is superior to polynomial type fitting without       the wiggles.</li><li>Extrapolation is possible from a scattered data set.</li><li>After creating the lookup table yGrid and using it with       griddedInterpolant, as the query point moves away from the       scattered data, the relationship between the input x and output y       becomes more linear because of the smoothness equations and no       nearby fidelity equations. The linear relationship is a good       choice when the relationship between x and y is unknown in       extrapolation.</li><li>regularizeNd can handle 1D, 2D, nD input data to 1D output data.        RegularizeData3D and gridfit can only handle 2D input and 1D out       (total 3D).</li><li>regularizeNd can handle setting the smoothness to 0 in any        axis/dimension. This means no smoothing is applied in a particular        axis/dimension and the data is just a least squares fit of a lookup        table in that axis/dimension.</li></ul></div><p>For an introduction on how regularization works, start here: <a href="https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/">https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/</a></p><h2 id="10">Acknowledgement</h2><p>Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.</p><h2 id="11">Example</h2><pre class="codeinput"><span class="comment">% setup some input points, output points, and noise</span>
+yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIterations)
+yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIterations, solverTolerance)
+</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#9">Output</a></li><li><a href="#10">Description</a></li><li><a href="#12">Acknowledgement</a></li><li><a href="#13">Example</a></li></ul></div><h2 id="1">Inputs</h2><p><b>x</b> - column vector or matrix of column vectors, containing scattered data. Each row contains one point. Each column corresponds to a dimension.</p><p><b>y</b> - vector containing the corresponds values to x. y has the same number of rows as x.</p><p><b>xGrid</b> - cell array containing vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1) for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.</p><p><b>smoothness</b> - scalar or vector. - The numerical "measure" of what we want to achieve along an axis/dimension, regardless of the resolution, the aspect ratio between axes, or the scale of the overall problem. The ratio of smoothness to fidelity of the output surface, i.e. ratio of smoothness to "goodness of fit." This must be a positive real number. If it is a vector, it must have same number of elements as columns in x.</p><p>A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output surface.  This results in noticeable smoothing. If your input data has little or no noise, use 0.01 to give smoothness 1% as much weight as goodness of fit. 0.1 applies a little bit of smoothing to the output surface.</p><p>If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension. This allows the user to apply a different amount of smoothing in the each axis/dimension.</p><pre class="language-matlab">DEFAULT: 0.01
+</pre><p><b>interpMethod</b> - string that denotes the interpolation scheme used to interpolate the data.</p><p>Even though there is a computational complexity difference between          linear, nearest, and cubic interpolation methods, the          interpolation method is not the dominant factor in the          calculation time in regularizeNd. The dominant factor in          calculation time is the size of the grid and the solver used. So          in general, do not choose your interpolation method based on          computational complexity. Choose your interpolation method because          of the accuracty and shape that you are looking to obtain.</p><div><ul><li>'linear' - Uses linear interpolation within the grid. linear                     interpolation requires that extrema occur at the grid                     points. linear should be smoother than nearest for                     the same grid. As the number of dimension grows,                     the number of grid points used to interpolate at a                     query point grows with 2^nDimensions. i.e. 2d needs 4                     points, 3d needs 8 points, 4d needs 16 points per                     query point. In general, linear can use smaller                     smoothness values than cubic and still be well                     conditioned.</li></ul></div><div><ul><li>'nearest' - Nearest neighbor interpolation. Nearest should                      be the least complex but least smooth.</li></ul></div><div><ul><li>'cubic' - Uses Lagrange cubic interpolation. Cubic interpolation                    allows extrema to occur at other locations besides the                    grid points. Cubic should provide the most flexible                    relationship for a given xGrid. As the number of                    dimension grows, the number of grid points used to                    interpolate at a query point grows with 4^nDimensions.                    i.e. 2d needs 16 points, 3d needs 64 points, 4d needs                    256 points per query point. cubic has good properties                    of accuracy and smoothness but is the most complex                    interpMethod to calculate.</li></ul></div><pre class="language-matlab">DEFAULT: <span class="string">'linear'</span>
+</pre><p><b>solver</b> - character string that denotes the solver used for the          resulting linear system. The default is most often the best          choice.</p><p>What solver should you use? The short answer is use 'normal' as          a first guess. '\' may be best numerically for most smoothness          parameters and high extents of extrapolation. If you receive          rank deficiency warnings with 'normal', try the '\' solver.          Otherwise, use the 'normal' solver because it is usually faster          than the '\' solver.</p><p>The larger the numbers of grid points, the larger the solve time. Since the          equations generated tends to be well conditioned, the 'normal'          solver is  a good choice. Beware using 'normal' when a small          smoothing parameter is used, since this will make the equations          less well conditioned. The 'normal' solver for large grids          is 3x faster than the '\'.</p><p>Use the 'pcg', 'symmlq', or 'lsqr' solver when the 'normal' and          '\' fail. Out of memory errors with 'normal' or '\' are reason to          try the iterative solvers. These errors are rare however they          happen. Start with the 'pcg' solver. Then 'symmlq'. Finally try          'lsqr' solver. The 'lsqr' solver is usually slow compared to the          'pcg' and 'symmlq' solver.</p><div><ul><li>'\' - uses matlab's backslash operator to solve the sparse                system.</li></ul></div><div><ul><li>'lsqr' - Uses the MATLAB lsqr solver. This solver is not                   recommended. Try 'pcg' or 'symmlq' first and use                   'lsqr' as a last resort. Experiments have shown that                   'pcg' and 'symmlq' solvers are faster and just as                   accurate as 'lsqr' for the matrices generated by                   regularizeNd. The same preconditioner as                   the 'pcg' solver is used.</li></ul></div><div><ul><li>'normal' - Constructs the normal equation and solves.                     x = (A'A)\(A'*y). From testing, this seems to be a well                     conditioned and faster way to solve this type of                     equation system than backslash x = A\y. Testing shows                     that the normal equation is 3x faster than the '\'                     solver for this type of problem. A'*A preserves the                     sparsity and is symmetric positive definite. Often                     A'*A will have less nonzero elements than A. i.e.                     nnz(A'*A) &lt; nnz(A).</li></ul></div><div><ul><li>'pcg' - Calls the MATLAB pcg iterative solver that solves the                  normal equaiton, (A'A)*x = A'*y, for x. Use this solver                  first when 'normal' and '\' fail. The 'pcg' solver tries                  to generate the Incomplete Cholesky Factorization                  (ichol) as a preconditioner. If Incomplete Cholesky                  Factorization fails, then diagonal compensation is                  added. There may be a case where the preconditioner just                  cannot be calculated and thus no preconditioner is used.</li></ul></div><div><ul><li>'symmlq' - Calls the MATLAB symlq iterative solver that solves                     the normal equaiton, (A'A)*x = A'*y, for x. Use this                     solver if 'pcg' has issues. 'symmlq' uses the same                     preconditioner as 'pcg'.</li></ul></div><pre>        DEFAULT: 'normal'</pre><p><b>maxIterations</b> - Only used if the solver is set to the iterative                   solvers, 'lsqr', 'pcg', or 'symmlq'. Reducing this will                   speed up the solver at the cost of accuracy. Increasing                   it will increase accuracy at the cost of time. The                   default value is the smaller of 100,000 and the number                   of nodes in the grid.</p><pre>        DEFAULT: min(1e5,  nTotalGridPoints)</pre><p><b>solverTolerance</b> - Only used if the solver is set to the iterative                     solvers, 'lsqr', 'pcg', or 'symmlq'. The                     solverTolerance is used with 'lsqr', 'pcg', or                     'symmlq'. Smaller increases accuracy and reduces                     speed. Larger decreases accuracy and increases speed.</p><pre>        DEFAULT: 1e-11*abs(max(y) - min(y))</pre><h2 id="9">Output</h2><p><b>yGrid</b> - array containing the fitted surface or hypersurface            corresponding to the grid points xGrid. yGrid is in the ndgrid            format. In 2d, ndgrid format is the transpose of meshgrid            format.</p><h2 id="10">Description</h2><p>regularizeNd answers the question what is the best possible lookup table that the scattered data input x and output y in the least squares sense with smoothing? regularizeNd is meant to calculate a smooth lookup table given n-D scattered data. regularizeNd supports extrapolation from a scattered data set as well.</p><p>The calculated lookup table yGrid is meant to be used with griddedInterpolant class with the conservative memory form. Call griddedInterpolant like F = griddedInterpolant(xGrid, yGrid).</p><p>Desirable properties of regularizeNd:</p><div><ul><li>Calculates a relationship between the input x and the output y       without definition of the functional form of x to y.</li><li>Often the fit is superior to polynomial type fitting without       the wiggles.</li><li>Extrapolation is possible from a scattered data set.</li><li>After creating the lookup table yGrid and using it with       griddedInterpolant, as the query point moves away from the       scattered data, the relationship between the input x and output y       becomes more linear because of the smoothness equations and no       nearby fidelity equations. The linear relationship is a good       choice when the relationship between x and y is unknown in       extrapolation.</li><li>regularizeNd can handle 1D, 2D, nD input data to 1D output data.        RegularizeData3D and gridfit can only handle 2D input and 1D out       (total 3D).</li><li>regularizeNd can handle setting the smoothness to 0 in any        axis/dimension. This means no smoothing is applied in a particular        axis/dimension and the data is just a least squares fit of a lookup        table in that axis/dimension.</li></ul></div><p>For an introduction on how regularization works, start here: <a href="https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/">https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/</a></p><h2 id="12">Acknowledgement</h2><p>Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.</p><h2 id="13">Example</h2><pre class="codeinput"><span class="comment">% setup some input points, output points, and noise</span>
 x = 0.5:0.1:4.5;
 y = 0.5:0.1:5.5;
 [xx,yy] = ndgrid(x,y);
@@ -100,8 +101,8 @@ gridPoints{1} = xGrid;
 smoothness = 0.001;
 
 <span class="comment">% regularize</span>
-zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness);
-<span class="comment">% Note this s the same as</span>
+zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, [], <span class="string">'lsqr'</span>);
+<span class="comment">% Note this is the same as</span>
 <span class="comment">% zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, 'linear', 'normal');</span>
 
 <span class="comment">% create girrdedInterpolant function</span>
@@ -112,7 +113,7 @@ screenSize = get(0, <span class="string">'screenSize'</span>);
 figure(<span class="string">'position'</span>, [screenSize(3:4)*.1, 800, 600]);
 surf(x,y,z', <span class="string">'FaceColor'</span>, <span class="string">'g'</span>)
 hold <span class="string">all</span>;
-surf(x,y,zNoise')
+surf(x,y,zNoise', <span class="string">'FaceColor'</span>, <span class="string">'m'</span>)
 surf(xGrid, yGrid, zGrid', <span class="string">'FaceColor'</span>, <span class="string">'r'</span>)
 xlabel(<span class="string">'x'</span>)
 ylabel(<span class="string">'y'</span>)
@@ -127,6 +128,8 @@ legend({<span class="string">'Exact'</span>, <span class="string">'Noisy'</span>
 %   yGrid = regularizeNd(x, y, xGrid, smoothness)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod)
 %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIterations)
+%   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIterations, solverTolerance)
 %
 %% Inputs
 % *x* - column vector or matrix of column vectors, containing scattered
@@ -161,76 +164,133 @@ legend({<span class="string">'Exact'</span>, <span class="string">'Noisy'</span>
 %
 %   DEFAULT: 0.01
 %%%
-% *interpMethod* - character, denotes the interpolation scheme used to
+% *interpMethod* - string that denotes the interpolation scheme used to
 % interpolate the data.
-% 
+%
+% Even though there is a computational complexity difference between
+%          linear, nearest, and cubic interpolation methods, the
+%          interpolation method is not the dominant factor in the
+%          calculation time in regularizeNd. The dominant factor in
+%          calculation time is the size of the grid and the solver used. So
+%          in general, do not choose your interpolation method based on
+%          computational complexity. Choose your interpolation method because
+%          of the accuracty and shape that you are looking to obtain.
+%
 % * 'linear' - Uses linear interpolation within the grid. linear
 %                     interpolation requires that extrema occur at the grid
 %                     points. linear should be smoother than nearest for
 %                     the same grid. As the number of dimension grows,
-%                    the number of grid points used to interpolate at a
-%                    query point grows with 2^nDimensions. i.e. 2d needs 4
-%                    points, 3d needs 8 points, 4d needs 16 points per
-%                    query point. Linear has good properies of speed and
-%                    accuracy.
+%                     the number of grid points used to interpolate at a
+%                     query point grows with 2^nDimensions. i.e. 2d needs 4
+%                     points, 3d needs 8 points, 4d needs 16 points per
+%                     query point. In general, linear can use smaller
+%                     smoothness values than cubic and still be well
+%                     conditioned.
 %
-% * 'nearest' - nearest neighbor interpolation. Nearest should
-%                      be the fastest because of simplicity but least
-%                      accurate.
+% * 'nearest' - Nearest neighbor interpolation. Nearest should
+%                      be the least complex but least smooth.
 % 
-% * 'cubic' - Uses lagrange cubic interpolation. Cubic interpolation
+% * 'cubic' - Uses Lagrange cubic interpolation. Cubic interpolation
 %                    allows extrema to occur at other locations besides the
 %                    grid points. Cubic should provide the most flexible
-%                    relationship for a given xGrid at the cost of
-%                    computation time. As the number of dimension grows,
-%                    the number of grid points used to interpolate at a
-%                    query point grows with 4^nDimensions. i.e. 2d needs 16
-%                    points, 3d needs 64 points, 4d needs 256 points per
-%                    query point. cubic has good properties of accuracy and
-%                    smoothness but should be the slowest.
-%
+%                    relationship for a given xGrid. As the number of
+%                    dimension grows, the number of grid points used to
+%                    interpolate at a query point grows with 4^nDimensions.
+%                    i.e. 2d needs 16 points, 3d needs 64 points, 4d needs
+%                    256 points per query point. cubic has good properties
+%                    of accuracy and smoothness but is the most complex
+%                    interpMethod to calculate.
 %
 %   DEFAULT: 'linear'
 %
 %%%
-% *solver* - character flag - denotes the solver used for the
+% *solver* - character string that denotes the solver used for the
 %          resulting linear system. The default is most often the best
 %          choice.
 %
-% What solver should you use? '\' may be best numerically for most
-%          smoothness parameters and high extents of extrapolation. If you
-%          receive rank deficiency warnings, try the '\' solver. Otherwise,
-%          use the 'normal' solver because it is usually faster than the '\'
-%          solver.
+% What solver should you use? The short answer is use 'normal' as
+%          a first guess. '\' may be best numerically for most smoothness
+%          parameters and high extents of extrapolation. If you receive
+%          rank deficiency warnings with 'normal', try the '\' solver.
+%          Otherwise, use the 'normal' solver because it is usually faster
+%          than the '\' solver.
 %
-% Large numbers of points will slow down the direct '\'. Since the
-%          equations generated by this regularization method tends to be
-%          well conditioned, the 'normal' solver is  a good choice. Beware
-%          using 'normal' when a small smoothing parameter is used,
-%          since this will make the equations less well conditioned. The
-%          'normal' solver for fairly large grids is 3x faster than the '\'.
+% The larger the numbers of grid points, the larger the solve time. Since the
+%          equations generated tends to be well conditioned, the 'normal' 
+%          solver is  a good choice. Beware using 'normal' when a small
+%          smoothing parameter is used, since this will make the equations
+%          less well conditioned. The 'normal' solver for large grids
+%          is 3x faster than the '\'.
+%
+% Use the 'pcg', 'symmlq', or 'lsqr' solver when the 'normal' and
+%          '\' fail. Out of memory errors with 'normal' or '\' are reason to
+%          try the iterative solvers. These errors are rare however they
+%          happen. Start with the 'pcg' solver. Then 'symmlq'. Finally try
+%          'lsqr' solver. The 'lsqr' solver is usually slow compared to the
+%          'pcg' and 'symmlq' solver.
 %
 % * '\' - uses matlab's backslash operator to solve the sparse
 %                system.
 %
+%                 
+% * 'lsqr' - Uses the MATLAB lsqr solver. This solver is not
+%                   recommended. Try 'pcg' or 'symmlq' first and use
+%                   'lsqr' as a last resort. Experiments have shown that
+%                   'pcg' and 'symmlq' solvers are faster and just as
+%                   accurate as 'lsqr' for the matrices generated by
+%                   regularizeNd. The same preconditioner as
+%                   the 'pcg' solver is used.
 %
 % * 'normal' - Constructs the normal equation and solves.
 %                     x = (A'A)\(A'*y). From testing, this seems to be a well
 %                     conditioned and faster way to solve this type of
 %                     equation system than backslash x = A\y. Testing shows
-%                     that the normal equation is 3x faster than the \
-%                     solver for this type of problem. This goes against the
-%                     general recommendation in numerical analysis but is 
-%                     has been proven to be true through testing.
+%                     that the normal equation is 3x faster than the '\'
+%                     solver for this type of problem. A'*A preserves the
+%                     sparsity and is symmetric positive definite. Often
+%                     A'*A will have less nonzero elements than A. i.e.
+%                     nnz(A'*A) < nnz(A).
 %
-%   DEFAULT: 'normal'
+% * 'pcg' - Calls the MATLAB pcg iterative solver that solves the
+%                  normal equaiton, (A'A)*x = A'*y, for x. Use this solver
+%                  first when 'normal' and '\' fail. The 'pcg' solver tries
+%                  to generate the Incomplete Cholesky Factorization
+%                  (ichol) as a preconditioner. If Incomplete Cholesky
+%                  Factorization fails, then diagonal compensation is
+%                  added. There may be a case where the preconditioner just
+%                  cannot be calculated and thus no preconditioner is used.
 %
+% * 'symmlq' - Calls the MATLAB symlq iterative solver that solves
+%                     the normal equaiton, (A'A)*x = A'*y, for x. Use this
+%                     solver if 'pcg' has issues. 'symmlq' uses the same
+%                     preconditioner as 'pcg'.
 %
+%          DEFAULT: 'normal'
+%
+%%%
+% *maxIterations* - Only used if the solver is set to the iterative
+%                   solvers, 'lsqr', 'pcg', or 'symmlq'. Reducing this will
+%                   speed up the solver at the cost of accuracy. Increasing
+%                   it will increase accuracy at the cost of time. The
+%                   default value is the smaller of 100,000 and the number
+%                   of nodes in the grid.
+%
+%          DEFAULT: min(1e5,  nTotalGridPoints)
+%
+%%%
+% *solverTolerance* - Only used if the solver is set to the iterative
+%                     solvers, 'lsqr', 'pcg', or 'symmlq'. The
+%                     solverTolerance is used with 'lsqr', 'pcg', or
+%                     'symmlq'. Smaller increases accuracy and reduces
+%                     speed. Larger decreases accuracy and increases speed.
+%
+%          DEFAULT: 1e-11*abs(max(y) - min(y))
 %
 %% Output
-% *yGrid* - array containing the fitted surface correspond to the grid
-%            points xGrid. yGrid is in the ndgrid format. In 2d, ndgrid
-%            format is the transpose of meshgrid format.
+% *yGrid* - array containing the fitted surface or hypersurface
+%            corresponding to the grid points xGrid. yGrid is in the ndgrid
+%            format. In 2d, ndgrid format is the transpose of meshgrid
+%            format.
 %
 %% Description
 % regularizeNd answers the question what is the best possible lookup table
@@ -301,8 +361,8 @@ gridPoints{1} = xGrid;
 smoothness = 0.001;
 
 % regularize
-zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness);
-% Note this s the same as 
+zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, [], 'lsqr');
+% Note this is the same as 
 % zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, 'linear', 'normal');
 
 % create girrdedInterpolant function
@@ -313,7 +373,7 @@ screenSize = get(0, 'screenSize');
 figure('position', [screenSize(3:4)*.1, 800, 600]);
 surf(x,y,z', 'FaceColor', 'g')
 hold all;
-surf(x,y,zNoise')
+surf(x,y,zNoise', 'FaceColor', 'm')
 surf(xGrid, yGrid, zGrid', 'FaceColor', 'r')
 xlabel('x')
 ylabel('y')
