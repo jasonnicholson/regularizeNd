@@ -847,9 +847,9 @@ end
 
 %%
 function [M, preconditioner] = calculatePreconditioner(AA)
-% Calculate the incomplete cholesky decomposition where L*L'~AA. Use
+% Calculate the incomplete cholesky decomposition where M*M'~AA. Use
 % diagonal compensation if the incomplete cholesky decomposition does not
-% exist for AA so that L*L'~AA + alpha*diag(diag(AA)).
+% exist for AA so that M*M'~AA + alpha*diag(diag(AA)).
 
 % set preconditioner to none starting out
 preconditioner = 'none';
