@@ -8,4 +8,4 @@ and here
 https://mathformeremortals.wordpress.com/2013/09/02/regularizedata3d-the-excel-spreadsheet-function-to-regularize-3d-data-to-a-smooth-surface/
 
 
-The basic idea is that a lookup table is fitted to the scattered data while a required level of smoothness. The smoothness parameter trades between goodness of fit and smoothness of the curve (1-D), surface (2-D), or hypersurface (n-D).
+The basic idea is that a lookup table is fitted to the scattered data with a required level of smoothness. The smoothness parameter trades between goodness of fit and smoothness of the curve (1-D), surface (2-D), or hypersurface (n-D).
