@@ -37,8 +37,9 @@ yGrid2 = regularizeNd(x, y, xGrid2, smoothness);
 
 %% Plot the Regularized Lookup Table and Test Data
 % plot test data
-screenSize = get(0,'screensize');
-figure('position', [screenSize(3:4)*0.2, screenSize(3:4)*0.6])
+
+% screenSize = get(0,'screensize');
+% figure('position', [screenSize(3:4)*0.2, screenSize(3:4)*0.6])
 plot(x,y,'rx', 'MarkerSize', 20, 'DisplayName', 'Test Points')
 xlabel('x')
 ylabel('y')
