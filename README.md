@@ -1,7 +1,7 @@
 # regularizeNd
 Creates a gridded lookup table from scattered data in n dimensions.
 
-regularizeNd is function written in MATLAB that extends functionality of RegularizeData3d from 2-D input to n-D output. More background can be found here:
+regularizeNd is function written in MATLAB that extends functionality of RegularizeData3d from 2-D input to n-D input. More background can be found here:
 https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
 
 and here
