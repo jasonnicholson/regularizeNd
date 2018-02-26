@@ -257,7 +257,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 
 % Author(s): Jason Nicholson
-% $Revision: 1.5 $  $Date: 2017/11/16 17:03:00 $
+% $Revision: 1.6 $  $Date: 2017/12/10 18:04:00 $
 
 %% Input Checking and Default Values
 narginchk(3, 8);
@@ -614,6 +614,14 @@ for iDimension=1:nDimensions
     if smoothness(iDimension) == 0
         nTotalSmoothnessEquations = nTotalSmoothnessEquations - nSmoothnessEquations(iDimension);
         Lreg{iDimension} = [];
+        
+        % In the special case you try to fit a lookup table with no
+        % smothing, index1, index2, and index3 do not exist. The clear
+        % statement later would throw an eror if index1, index2, and
+        % index3 did not exist.
+        index1=[];
+        index2=[];
+        index3=[];
     else
         % initialize the index for the first grid vector
         if iDimension==1
