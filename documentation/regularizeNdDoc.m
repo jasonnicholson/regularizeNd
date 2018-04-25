@@ -51,7 +51,7 @@
 %          calculation time is the size of the grid and the solver used. So
 %          in general, do not choose your interpolation method based on
 %          computational complexity. Choose your interpolation method because
-%          of the accuracty and shape that you are looking to obtain.
+%          of accuracy and shape that you are looking to obtain.
 %
 % * 'linear' - Uses linear interpolation within the grid. linear
 %                     interpolation requires that extrema occur at the grid
@@ -129,7 +129,7 @@
 %                     nnz(A'*A) < nnz(A).
 %
 % * 'pcg' - Calls the MATLAB pcg iterative solver that solves the
-%                  normal equaiton, (A'A)*x = A'*y, for x. Use this solver
+%                  normal equation, (A'A)*x = A'*y, for x. Use this solver
 %                  first when 'normal' and '\' fail. The 'pcg' solver tries
 %                  to generate the Incomplete Cholesky Factorization
 %                  (ichol) as a preconditioner. If Incomplete Cholesky
@@ -138,7 +138,7 @@
 %                  cannot be calculated and thus no preconditioner is used.
 %
 % * 'symmlq' - Calls the MATLAB symlq iterative solver that solves
-%                     the normal equaiton, (A'A)*x = A'*y, for x. Use this
+%                     the normal equation, (A'A)*x = A'*y, for x. Use this
 %                     solver if 'pcg' has issues. 'symmlq' uses the same
 %                     preconditioner as 'pcg'.
 %

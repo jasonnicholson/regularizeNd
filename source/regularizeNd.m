@@ -54,7 +54,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %          calculation time is the size of the grid and the solver used. So
 %          in general, do not choose your interpolation method based on
 %          computational complexity. Choose your interpolation method because
-%          of the accuracty and shape that you are looking to obtain.
+%          of accuracy and shape that you are looking to obtain.
 %
 %          'linear' - Uses linear interpolation within the grid. linear
 %                     interpolation requires that extrema occur at the grid
@@ -131,7 +131,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %                     nnz(A'*A) < nnz(A).
 %                 
 %          'pcg' - Calls the MATLAB pcg iterative solver that solves the
-%                  normal equaiton, (A'A)*x = A'*y, for x. Use this solver
+%                  normal equation, (A'A)*x = A'*y, for x. Use this solver
 %                  first when 'normal' and '\' fail. The 'pcg' solver tries
 %                  to generate the Incomplete Cholesky Factorization
 %                  (ichol) as a preconditioner. If Incomplete Cholesky
@@ -140,7 +140,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %                  cannot be calculated and thus no preconditioner is used.
 %
 %          'symmlq' - Calls the MATLAB symlq iterative solver that solves
-%                     the normal equaiton, (A'A)*x = A'*y, for x. Use this
+%                     the normal equation, (A'A)*x = A'*y, for x. Use this
 %                     solver if 'pcg' has issues. 'symmlq' uses the same
 %                     preconditioner as 'pcg'.
 %
@@ -327,7 +327,7 @@ nTotalGridPoints = prod(nGrid);
 if nargin() == 6 && any(strcmpi(iterativeSolvers, solver))
     maxIterations = min(1e5, nTotalGridPoints);
 elseif nargin() == 7 && any(strcmpi(iterativeSolvers, solver))
-    message = sprintf('%s must be a postive scalar integer.', getname(maxIterations));
+    message = sprintf('%s must be a positive scalar integer.', getname(maxIterations));
     assert(isscalar(maxIterations), message);
     assert(fix(maxIterations)==maxIterations, message);
     assert(maxIterations>0, message);
@@ -339,7 +339,7 @@ end
 if any(nargin() == [6 7]) && any(strcmpi(iterativeSolvers, solver))
     solverTolerance = abs(max(y)-min(y))*1e-11;
 elseif nargin() ==8 && any(strcmpi(iterativeSolvers, solver))
-    message = sprintf('%s must be a postive scalar.', getname(solverTolerance));
+    message = sprintf('%s must be a positive scalar.', getname(solverTolerance));
     assert(isscalar(solverTolerance), message);
     assert(solverTolerance>0, message);
 else
@@ -421,7 +421,7 @@ switch interpMethod
         % the weight for nearest interpolation is just 1
         weight  = 1;
         
-        % Form the sparse A matrix for fidelity equations
+        % Form the sparse Afidelity matrix for fidelity equations
         Afidelity = sparse((1:nScatteredPoints)', xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'linear'  % linear interpolation
@@ -480,7 +480,7 @@ switch interpMethod
         % calculate linear index
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
         
-        % Form the sparse A matrix for fidelity equations
+        % Form the sparse Afidelity matrix for fidelity equations
         Afidelity = sparse(repmat((1:nScatteredPoints)',1,2^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     case 'cubic'
@@ -520,7 +520,7 @@ switch interpMethod
             % The 1d weights are based on cubic Lagrange polynomial
             % interpolation. The alphas and betas below help keep the
             % calculation readable and also save on a few floating point
-            % operations at the cost of memory. There are 4 cubic lagrange
+            % operations at the cost of memory. There are 4 cubic Lagrange
             % polynomials that correspond to the weights. They have the
             % following form
             %
@@ -575,7 +575,7 @@ switch interpMethod
         % convert linear index
         xWeightIndex = subscript2index(nGrid, xWeightIndex{:});
 
-         % Form the sparse A matrix for fidelity equations
+         % Form the sparse Afidelity matrix for fidelity equations
         Afidelity = sparse(repmat((1:nScatteredPoints)',1,4^nDimensions), xWeightIndex, weight, nScatteredPoints, nTotalGridPoints);
         
     otherwise
@@ -616,8 +616,8 @@ for iDimension=1:nDimensions
         Lreg{iDimension} = [];
         
         % In the special case you try to fit a lookup table with no
-        % smothing, index1, index2, and index3 do not exist. The clear
-        % statement later would throw an eror if index1, index2, and
+        % smoothing, index1, index2, and index3 do not exist. The clear
+        % statement later would throw an error if index1, index2, and
         % index3 did not exist.
         index1=[];
         index2=[];
@@ -664,7 +664,7 @@ for iDimension=1:nDimensions
         axisScale = (xGridMax(iDimension) - xGridMin(iDimension)).^2;
 
         
-        % Create the Areg for each dimension and store it a cell array.
+        % Create the Lreg for each dimension and store it a cell array.
         Lreg{iDimension} = sparse(repmat((1:nSmoothnessEquations(iDimension))',1,3), ...
             [index1, index2, index3], ...
             smoothness(iDimension)*smoothnessScale*axisScale*secondDerivativeWeights(xGrid{iDimension},nGrid(iDimension), iDimension, nGrid), ...
@@ -710,7 +710,7 @@ switch solver
                     case 'ichol'
                         [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations, M, M');
                     otherwise
-                        error('Code should never reach this. Something is wrong with the preconditioner swithch statement. Fix it.');
+                        error('Code should never reach this. Something is wrong with the preconditioner switch statement. Fix it.');
                 end % end pcg, symmlq preconditioner switch statement
                 
             case 'lsqr'
@@ -724,7 +724,7 @@ switch solver
                     case 'ichol'
                         [yGrid, solverExitFlag] = lsqr(A,[y;sparse(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations, M');
                     otherwise
-                        error('Code should never reach this. Something is wrong with the preconditioner swithch statement. Fix it.');
+                        error('Code should never reach this. Something is wrong with the preconditioner switch statement. Fix it.');
                 end % end lsqr preconditioner switch statement
                 
             otherwise
@@ -811,7 +811,7 @@ end
  % Description
  % This is very similar to ndgrid except that ndgrid returns all arrays for
  % each input vector. This algorithm returns only one array. The nth output
- % array of ndgrid is same as this algoritm when dim = n. For instance, if
+ % array of ndgrid is same as this algorithm when dim = n. For instance, if
  % ndgrid is given three input vectors, the output size will be arraySize.
  % Calling ndGrid1D(x,3, arraySize) will return the same values as the 3rd
  % output of ndgrid.
@@ -855,9 +855,10 @@ end
 
 %%
 function [M, preconditioner] = calculatePreconditioner(AA)
-% Calculate the incomplete cholesky decomposition where M*M'~AA. Use
-% diagonal compensation if the incomplete cholesky decomposition does not
-% exist for AA so that M*M'~AA + alpha*diag(diag(AA)).
+% Calculate the incomplete Cholesky decomposition where M*M'~AA. Use
+% diagonal compensation if the incomplete Cholesky decomposition does not
+% exist for AA so that M*M'~AA + alpha*diag(diag(AA)). This algorithm should 
+% be robust at always producing a preconditioner. 
 
 % set preconditioner to none starting out
 preconditioner = 'none';
@@ -868,15 +869,15 @@ try
     M = ichol(AA);
     preconditioner = 'ichol';
 catch
-    % initial calculations for diaganol compensation
+    % initial calculations for diagonal compensation
     diagonalCompensation0 = full(max(sum(abs(AA),2)./diag(AA)));
     
-    % check that the diaganol compensation is not nan or inf
+    % check that the diagonal compensation is not nan or inf
     if ~isfinite(diagonalCompensation0)
-        % Not possible to calculate diaganol compensation. Don't compute
+        % Not possible to calculate diagonal compensation. Don't compute
         % preconditioner.
     else
-        % find the bounds of a good diagonal compensation seperated by a
+        % find the bounds of a good diagonal compensation separated by a
         % factor of 10
         diagonalCompensationNew = diagonalCompensation0;
         diagonalCompensationFailure = [];
@@ -900,7 +901,7 @@ catch
             if ~isempty(diagonalCompensationFailure) && ~isempty(diagonalCompensationSuccess)
                 break;
             end
-        end % end for loop for diagonal compensation seperated by a factor 10
+        end % end for loop for diagonal compensation separated by a factor 10
         
         % Make sure we have a diagonalCompensationFailure and
         % diagonalCompensationSuccess. Only proceed if we have both.
