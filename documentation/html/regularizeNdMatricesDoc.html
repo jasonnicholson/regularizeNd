@@ -1,0 +1,146 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>regularizeNdMatrices</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-15"><meta name="DC.source" content="regularizeNdMatricesDoc.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>regularizeNdMatrices</h1><!--introduction--><p>Returns the needed matrices used in the regulareNd problem. Often used for constrained problems.</p><pre class="language-matlab">[Afidelity, Lreg] = regularizeNdMatrices(x, xGrid)
+[Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness)
+[Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness, interpMethod)
+</pre><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#5">Output</a></li><li><a href="#6">Description</a></li><li><a href="#7">Acknowledgement</a></li></ul></div><h2 id="1">Inputs</h2><p><b>x</b> - column vector or matrix of column vectors, containing scattered data. Each row contains one point. Each column corresponds to a dimension.</p><p><b>xGrid</b> - cell array containing vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1) for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.</p><p><b>smoothness</b> - scalar or vector. - The numerical "measure" of what we want to achieve along an axis/dimension, regardless of the resolution, the aspect ratio between axes, or the scale of the overall problem. The ratio of smoothness to fidelity of the output surface, i.e. ratio of smoothness to "goodness of fit." This must be a positive real number. If it is a vector, it must have same number of elements as columns in x.</p><p>A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output surface.  This results in noticeable smoothing.  If your input data has little or no noise, use 0.01 to give smoothness 1% as much weight as goodness of fit. 0.1 applies a little bit of smoothing to the output surface.</p><p>If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension. This allows the user to apply a different amount of smoothing in the each axis/dimension.</p><pre class="language-matlab">DEFAULT: 0.01
+</pre><p><b>interpMethod</b> - character, denotes the interpolation scheme used to interpolate the data.</p><p>Even though there is a computational complexity difference between linear, nearest, and cubic interpolation methods, the interpolation method is not the dominant factor in the calculation time in regularizeNd. The dominant factor in calculation time is the size of the grid and the solver used. So in general, do not choose your interpolation method based on computational complexity. Choose your interpolation method because of the accuracty and shape that you are looking to obtain.</p><div><ul><li>'linear' - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid points. linear should be smoother than nearest for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a query point grows with 2^nDimensions. i.e. 2d needs 4 points, 3d needs 8 points, 4d needs 16 points per query point. In general, linear can use smaller smoothness values than cubic and still be well conditioned.</li></ul></div><div><ul><li>'nearest' - Nearest neighbor interpolation. Nearest should be the least complex but least smooth.</li></ul></div><div><ul><li>'cubic' - Uses Lagrange cubic interpolation. Cubic interpolation allows extrema to occur at other locations besides the grid points. Cubic should provide the most flexible relationship for a given xGrid. As the number of dimension grows, the number of grid points used to interpolate at a query point grows with 4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic has good properties of accuracy and smoothness but is the most complex interpMethod to calculate.</li></ul></div><pre class="language-matlab">DEFAULT: <span class="string">'linear'</span>
+</pre><h2 id="5">Output</h2><p><b>Afidelity</b>   - matirx. contains the fidelity equations. size(A,1) == size(x,1) == size(y,1). The number of rows in A corresponds to the number of points in x,y. The number of columns corresponds to the number points in the grid.</p><p><b>Lreg</b> - Cell array. L{i} corresponds to the scaled 2nd derivative regularization of the ith dimension.</p><h2 id="6">Description</h2><p>regularizeNdMatrices is most often is used for adding contraints to what regularizeNd would produce. The matrices output from regularizeNdMatrices are used with constraint matrices in a linear least squares constrained optimization problem. % For an example of how to do constrained optimization with regularizeNdMatrices, see "constraint_and_Mapping_Example" example.</p><p>regularizeNdMatrices outputs the matrices used in regularizeNd. There are two parts: the fidelity part and the regularization part. The fidelity controls the accuracy of the fitted lookup table. The regularization part controls the smoothness of the lookup table.</p><p>For an introduction on how regularization works, start here:  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/</p><h2 id="7">Acknowledgement</h2><p>Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% regularizeNdMatrices
+% Returns the needed matrices used in the regulareNd problem. Often used for constrained problems.
+%
+%   [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid)
+%   [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness)
+%   [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness, interpMethod)
+%
+%% Inputs
+% *x* - column vector or matrix of column vectors, containing scattered data. Each row contains one point. Each column corresponds to a dimension.
+%%%
+% *xGrid* - cell array containing vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1) for instance. Unequal spacing in
+% the grid vectors is allowed. The grid vectors must completely span x. For instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does
+% not span x, an error is thrown.
+%%%
+% *smoothness* - scalar or vector. - The numerical "measure" of what we want to achieve along an axis/dimension, regardless of the resolution, the aspect ratio
+% between axes, or the scale of the overall problem. The ratio of smoothness to fidelity of the output surface, i.e. ratio of smoothness to "goodness of fit."
+% This must be a positive real number. If it is a vector, it must have same number of elements as columns in x.
+% 
+% A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output surface.  This results in noticeable smoothing.  If your input
+% data has little or no noise, use 0.01 to give smoothness 1% as much weight as goodness of fit. 0.1 applies a little bit of smoothing to the output surface.
+% 
+% If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension. This allows the user to apply a different
+% amount of smoothing in the each axis/dimension.
+%
+%   DEFAULT: 0.01
+%%%
+% *interpMethod* - character, denotes the interpolation scheme used to interpolate the data.
+%
+% Even though there is a computational complexity difference between linear, nearest, and cubic interpolation methods, the interpolation method is not the
+% dominant factor in the calculation time in regularizeNd. The dominant factor in calculation time is the size of the grid and the solver used. So in general,
+% do not choose your interpolation method based on computational complexity. Choose your interpolation method because of the accuracty and shape that you are
+% looking to obtain.
+%
+% * 'linear' - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid points. linear should be smoother than
+% nearest for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a query point grows with 2^nDimensions. i.e. 2d
+% needs 4 points, 3d needs 8 points, 4d needs 16 points per query point. In general, linear can use smaller smoothness values than cubic and still be well
+% conditioned.
+%
+% * 'nearest' - Nearest neighbor interpolation. Nearest should be the least complex but least smooth.
+%
+% * 'cubic' - Uses Lagrange cubic interpolation. Cubic interpolation allows extrema to occur at other locations besides the grid points. Cubic should provide
+% the most flexible relationship for a given xGrid. As the number of dimension grows, the number of grid points used to interpolate at a query point grows with
+% 4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic has good properties of accuracy and smoothness but is
+% the most complex interpMethod to calculate.
+%
+%   DEFAULT: 'linear'
+%
+%% Output
+% *Afidelity*   - matirx. contains the fidelity equations. size(A,1) == size(x,1) == size(y,1). The number of rows in A corresponds to the number of points in
+% x,y. The number of columns corresponds to the number points in the grid.
+%
+% *Lreg* - Cell array. L{i} corresponds to the scaled 2nd derivative regularization of the ith dimension.
+%
+%% Description
+% regularizeNdMatrices is most often is used for adding contraints to what regularizeNd would produce. The matrices output from regularizeNdMatrices are used
+% with constraint matrices in a linear least squares constrained optimization problem. % For an example of how to do constrained optimization with
+% regularizeNdMatrices, see "constraint_and_Mapping_Example" example.
+% 
+% regularizeNdMatrices outputs the matrices used in regularizeNd. There are two parts: the fidelity part and the regularization part. The fidelity controls the
+% accuracy of the fitted lookup table. The regularization part controls the smoothness of the lookup table.
+%
+%
+% For an introduction on how regularization works, start here:
+%  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
+%
+%% Acknowledgement
+% Special thanks to Peter Goldstein, author of RegularizeData3D, for his
+% coaching and help through writing regularizeNd.
+%
+##### SOURCE END #####
+--></body></html>
