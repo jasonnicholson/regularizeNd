@@ -1,0 +1,249 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="1575400764" file="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox\regularizeNd.prj" location="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox" name="regularizeNd" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>regularizeNd</param.appname>
+    <param.authnamewatermark>Jason Nicholson</param.authnamewatermark>
+    <param.email>jashale@yahoo.com</param.email>
+    <param.company />
+    <param.summary>Create a gridded lookup table of scattered data in n dimensions.</param.summary>
+    <param.description>regularizeNd Fits a nD lookup table with smoothness to scattered data. Constraints are possible. 
+regularizeNd answers the question what is the best possible lookup table that the scattered data input x and output y in the least squares sense with smoothing? regularizeNd is meant to calculate a smooth lookup table given n-D scattered data. regularizeNd supports extrapolation from a scattered data set. 
+The calculated lookup table, yGrid, is meant to be used with griddedInterpolant class with the conservative memory form. Call griddedInterpolant like 
+
+xGrid = cell array of grid vectors 
+smoothness = smoothness value or vector 
+yGrid = regularizeNd(xData, yData, xGrid, smoothness); 
+F = griddedInterpolant(xGrid, yGrid). 
+
+Desirable properties of regularizeNd: 
+-Calculates a relationship between the input x and the output y without definition of the functional form of x to y. 
+-Often the fit is superior to polynomial type fitting without the wiggles. 
+-Extrapolation is possible from a scattered data set. 
+-After creating the lookup table yGrid and using it with griddedInterpolant, as the query point moves away from the scattered data, the relationship between the input x and output y becomes more linear because of the smoothness equations and no nearby fidelity equations. The linear relationship is a good choice when the relationship between x and y is unknown in extrapolation. 
+-regularizeNd can handle 1D, 2D, nD input data to 1D output data. RegularizeData3D and gridfit can only handle 2D input and 1D out (total 3D). 
+-regularizeNd can handle setting the smoothness to 0 in any/some axis/dimension. This means no smoothing is applied in a particular axis/dimension and the data is just a least squares fit of a lookup table in that axis/dimension. Note this is not recommended and often can lead to an ill-conditioned fitting problem. However, I have found it useful so I left this as an option. 
+- Constraints are possible with the function regularizeNdMatrices. See the example.
+
+The source code is locate here: 
+https://github.com/jasonnicholson/regularizeNd
+
+For an introduction on how regularization of a lookup table works, start here: https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
+
+Acknowledgement 
+Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.</param.description>
+    <param.screenshot />
+    <param.version>2.1.3</param.version>
+    <param.output>${PROJECT_ROOT}\regularizeNd.mltbx</param.output>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.guid>52e7788b-f05d-40ed-91ea-761a516847ba</param.guid>
+    <param.exclude.filters>% List files contained in your toolbox folder that you would like to exclude
+% from packaging.  Excludes should be listed relative to the toolbox folder.
+% Some examples of how to specify excludes are provided below:
+%
+% A single file in the toolbox folder:
+% .svn
+%
+% A single file in a subfolder of the toolbox folder:
+% example/.svn
+%
+% All files in a subfolder of the toolbox folder:
+% example/*
+%
+% All files of a certain name in all subfolders of the toolbox folder:
+% **/.svn
+%
+% All files matching a pattern in all subfolders of the toolbox folder:
+% **/*.bak
+%
+toolbox</param.exclude.filters>
+    <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
+    <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;examples&gt;
+   &lt;exampleCategory name="From RegularizeData3D"&gt;
+      &lt;example name="coarse_vs_fine_grids" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From RegularizeData3D/html/coarse_vs_fine_grids.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From RegularizeData3D/coarse_vs_fine_grids.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="cubic_vs_linear" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From RegularizeData3D/html/cubic_vs_linear.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From RegularizeData3D/cubic_vs_linear.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="readme" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From RegularizeData3D/html/readme.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From RegularizeData3D/readme.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+   &lt;exampleCategory name="From gridfit"&gt;
+      &lt;example name="demo_from_gridfit" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From gridfit/html/demo_from_gridfit.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From gridfit/demo_from_gridfit.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="readme" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From gridfit/html/readme.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From gridfit/readme.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+   &lt;exampleCategory name="Examples"&gt;
+      &lt;example name="constraint_and_Mapping_Example" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/constraint_and_Mapping_Example.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/constraint_and_Mapping_Example.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="example1" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/example1.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/example1.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="example1D" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/example1D.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/example1D.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="exampleIterativeSolver" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/exampleIterativeSolver.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/exampleIterativeSolver.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="example_4D_input" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/example_4D_input.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/example_4D_input.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="example_scattered_data_near_convex_hull" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/example_scattered_data_near_convex_hull.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/example_scattered_data_near_convex_hull.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="example_solver_differences" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/example_solver_differences.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/example_solver_differences.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+&lt;/examples&gt;</param.examples>
+    <param.demosxml />
+    <param.apps />
+    <param.registered.apps />
+    <param.docs>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\info.xml</param.docs>
+    <param.getting.started.guide>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\doc\GettingStarted.mlx</param.getting.started.guide>
+    <param.matlabpath.excludes />
+    <param.javaclasspath.excludes />
+    <param.exported.on.package>true</param.exported.on.package>
+    <param.release.start />
+    <param.release.end />
+    <param.release.current.only>false</param.release.current.only>
+    <param.compatiblity.windows>true</param.compatiblity.windows>
+    <param.compatiblity.macos>true</param.compatiblity.macos>
+    <param.compatiblity.linux>true</param.compatiblity.linux>
+    <param.compatiblity.matlabonline>true</param.compatiblity.matlabonline>
+    <param.installation.map />
+    <param.additional.sw.names />
+    <param.additional.sw.licenses />
+    <param.additional.sw.win.url />
+    <param.additional.sw.mac.url />
+    <param.additional.sw.linux.url />
+    <unset>
+      <param.company />
+      <param.screenshot />
+      <param.output />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.exclude.pcodedmfiles />
+      <param.demosxml />
+      <param.apps />
+      <param.registered.apps />
+      <param.matlabpath.excludes />
+      <param.javaclasspath.excludes />
+      <param.release.start />
+      <param.release.end />
+      <param.release.current.only />
+      <param.compatiblity.windows />
+      <param.compatiblity.macos />
+      <param.compatiblity.linux />
+      <param.compatiblity.matlabonline />
+      <param.installation.map />
+      <param.additional.sw.names />
+      <param.additional.sw.licenses />
+      <param.additional.sw.win.url />
+      <param.additional.sw.mac.url />
+      <param.additional.sw.linux.url />
+    </unset>
+    <fileset.rootdir>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\demos.xml</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\doc</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\Examples</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\info.xml</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\lsqConstrainedAlternative.m</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\regularizeNd.m</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\regularizeNdMatrices.m</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\source\lsqConstrainedAlternative.m</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\source\regularizeNd.m</file>
+      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\source\regularizeNdMatrices.m</file>
+      <file>${MATLAB_ROOT}\toolbox\matlab\demos\seamount.mat</file>
+    </fileset.depfun.excluded>
+    <fileset.package />
+    <build-deliverables>
+      <file location="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox" name="regularizeNd.mltbx" optional="false">C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox\regularizeNd.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2018b</root>
+      <toolboxes>
+        <toolbox name="matlabcoder" />
+        <toolbox name="embeddedcoder" />
+        <toolbox name="fixedpoint" />
+        <toolbox name="neuralnetwork" />
+      </toolboxes>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
