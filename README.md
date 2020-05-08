@@ -1,3 +1,5 @@
+[![View regularizeNd on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/61436-regularizend)
+
 # regularizeNd
 Creates a gridded lookup table from scattered data in n dimensions.
 
