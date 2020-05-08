@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="1575400764" file="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox\regularizeNd.prj" location="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox" name="regularizeNd" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="1575400764" file="C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\utilities\regularizeNd.prj" location="C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\utilities" name="regularizeNd" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>regularizeNd</param.appname>
     <param.authnamewatermark>Jason Nicholson</param.authnamewatermark>
     <param.email>jashale@yahoo.com</param.email>
@@ -131,8 +131,8 @@ toolbox</param.exclude.filters>
     <param.demosxml />
     <param.apps />
     <param.registered.apps />
-    <param.docs>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\info.xml</param.docs>
-    <param.getting.started.guide>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\doc\GettingStarted.mlx</param.getting.started.guide>
+    <param.docs>C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\info.xml</param.docs>
+    <param.getting.started.guide>C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\doc\GettingStarted.mlx</param.getting.started.guide>
     <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
     <param.exported.on.package>true</param.exported.on.package>
@@ -178,27 +178,18 @@ toolbox</param.exclude.filters>
       <param.additional.sw.linux.url />
     </unset>
     <fileset.rootdir>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build</file>
+      <file>C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build</file>
     </fileset.rootdir>
     <fileset.rootfiles>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\demos.xml</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\doc</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\Examples</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\info.xml</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\lsqConstrainedAlternative.m</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\regularizeNd.m</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\regularizeNdMatrices.m</file>
+      <file>C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\build\doc</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\source\lsqConstrainedAlternative.m</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\source\regularizeNd.m</file>
-      <file>C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\source\regularizeNdMatrices.m</file>
       <file>${MATLAB_ROOT}\toolbox\matlab\demos\seamount.mat</file>
     </fileset.depfun.excluded>
     <fileset.package />
     <build-deliverables>
-      <file location="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox" name="regularizeNd.mltbx" optional="false">C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox\regularizeNd.mltbx</file>
+      <file location="C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\utilities" name="regularizeNd.mltbx" optional="false">C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\utilities\regularizeNd.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
