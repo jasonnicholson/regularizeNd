@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="1213741669" file="C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation\regularizeNd.prj" location="C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation" name="regularizeNd" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="1213741669" file="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation\regularizeNd.prj" location="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation" name="regularizeNd" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>regularizeNd</param.appname>
     <param.authnamewatermark>Jason Nicholson</param.authnamewatermark>
     <param.email>jashale@yahoo.com</param.email>
@@ -31,7 +31,7 @@ For an introduction on how regularization of a lookup table works, start here: h
 Acknowledgement 
 Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.</param.description>
     <param.screenshot>${PROJECT_ROOT}\toolbox image.jpg</param.screenshot>
-    <param.version>2.2.0</param.version>
+    <param.version>2.2.1</param.version>
     <param.output>${PROJECT_ROOT}\regularizeNd.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -136,6 +136,9 @@ toolbox</param.exclude.filters>
     <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
     <param.exported.on.package>true</param.exported.on.package>
+    <param.required.addons />
+    <param.matlab.project.id />
+    <param.matlab.project.name />
     <param.release.start />
     <param.release.end />
     <param.release.current.only>false</param.release.current.only>
@@ -162,6 +165,9 @@ toolbox</param.exclude.filters>
       <param.registered.apps />
       <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
+      <param.required.addons />
+      <param.matlab.project.id />
+      <param.matlab.project.name />
       <param.release.start />
       <param.release.end />
       <param.release.current.only />
@@ -194,15 +200,17 @@ toolbox</param.exclude.filters>
     </fileset.depfun.excluded>
     <fileset.package />
     <build-deliverables>
-      <file location="C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation" name="regularizeNd.mltbx" optional="false">C:\Users\jlb6jxe\OneDrive-Deere&amp;Co\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation\regularizeNd.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="regularizeNd.mltbx" optional="false">C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation\regularizeNd.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2018b</root>
+      <root>C:\Program Files\MATLAB\R2020b</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
         <toolbox name="embeddedcoder" />
+        <toolbox name="gpucoder" />
         <toolbox name="fixedpoint" />
+        <toolbox name="matlabhdlcoder" />
         <toolbox name="neuralnetwork" />
       </toolboxes>
       <toolbox>
@@ -216,9 +224,19 @@ toolbox</param.exclude.filters>
         </embeddedcoder>
       </toolbox>
       <toolbox>
+        <gpucoder>
+          <enabled>true</enabled>
+        </gpucoder>
+      </toolbox>
+      <toolbox>
         <fixedpoint>
           <enabled>true</enabled>
         </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
       </toolbox>
       <toolbox>
         <neuralnetwork>
