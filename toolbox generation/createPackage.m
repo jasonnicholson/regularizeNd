@@ -41,5 +41,5 @@ end
 copyfile("..\Examples\", BUILD_FOLDER_NAME + "\Examples");
 
 %% Package Toolbox
-PROJECT_FILE = "regularizeNd.prj";
-matlab.addons.toolbox.packageToolbox(PROJECT_FILE)
+% PROJECT_FILE = "regularizeNd.prj";
+% matlab.addons.toolbox.packageToolbox(PROJECT_FILE)
