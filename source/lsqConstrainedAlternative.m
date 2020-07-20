@@ -4,10 +4,19 @@ function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %   x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %
 %% Inputs
-% C - Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the expression C*x - d. C is M-by-N, where M is the number of equations, and N is the number of elements of x.
-% d - Constant vector, specified as a vector of doubles. d represents the additive constant term in the expression C*x - d. d is M-by-1, where M is the number of equations.
-% AInequality - Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear coefficients in the constraints AInequality*x ? bInequality. A has size Mineq-by-N, where Mineq is the number of constraints and N is the number of elements of x. To save memory, pass A as a sparse matrix.
-% bInequality - Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the constant vector in the constraints AInequality*x ? bInequality. b has length Mineq, where A is Mineq-by-N.
+% C - Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the
+%     expression C*x - d. C is M-by-N, where M is the number of equations, and N is the number of elements of x.
+%
+% d - Constant vector, specified as a vector of doubles. d represents the additive constant term in the expression C*x -
+%     d. d is M-by-1, where M is the number of equations.
+%
+% AInequality - Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear
+%     coefficients in the constraints AInequality*x ? bInequality. A has size Mineq-by-N, where Mineq is the number of
+%     constraints and N is the number of elements of x. To save memory, pass A as a sparse matrix.
+%
+% bInequality - Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the
+%     constant vector in the constraints AInequality*x ? bInequality. b has length Mineq, where A is Mineq-by-N.
+%
 % 
 %% Outputs
 % x - Solution, returned as a vector that minimizes the norm of C*x-d subject to the constraints.
@@ -19,15 +28,17 @@ function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %
 % subject to AInequality*x <= bInequality
 %
-% lsqConstrainedAlternative reformulates a linear optimization problem with inequality constraint to a minimal distance problem and uses lsqnonneg to solve the
-% problem. Minimal distance problem looks like this:
+% lsqConstrainedAlternative reformulates a linear optimization problem with inequality constraint to a minimal distance
+% problem and uses lsqnonneg to solve the problem. Minimal distance problem looks like this:
 %    minimize ||x||^2
 %       x
 %
 %     subject to   Abar*x <= bbar 
 % 
-% See the following link for discussion: https://www.mathworks.com/matlabcentral/answers/402953-reformulate-a-constrained-linear-least-square-problem?s_tid=prof_contriblnk
-% For more information see: Lawson, C. L., and R. J. Hanson. "Solving Least Squares Problems, Classics in Applied Mathematics, SIAM, 1995."
+% See the following link for discussion:
+% https://www.mathworks.com/matlabcentral/answers/402953-reformulate-a-constrained-linear-least-square-problem?s_tid=prof_contriblnk
+% For more information see: Lawson, C. L., and R. J. Hanson. "Solving Least Squares Problems, Classics in Applied
+% Mathematics, SIAM, 1995."
 %
 %% Example
 % C = [0.9501    0.7620    0.6153    0.4057

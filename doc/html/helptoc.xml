@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding="utf-8"?>
 <toc version="2.0">
-    <tocitem target="GettingStarted.html">Getting Started</tocitem>
-    <tocitem target="regularizeNdDoc.html">regularizeNd</tocitem>
-    <tocitem target="regularizeNdMatricesDoc.html">regularizeNdMatrices</tocitem>
+    <tocitem target="index.html">regularizeNd Toolbox
+        <tocitem target="GettingStarted.html">Getting Started</tocitem>
+        <tocitem target="regularizeNdDoc.html">regularizeNd</tocitem>
+        <tocitem target="regularizeNdMatricesDoc.html">regularizeNdMatrices</tocitem>
+    </tocitem>
 </toc>
