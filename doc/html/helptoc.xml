@@ -4,5 +4,6 @@
         <tocitem target="GettingStarted.html">Getting Started</tocitem>
         <tocitem target="regularizeNdDoc.html">regularizeNd</tocitem>
         <tocitem target="regularizeNdMatricesDoc.html">regularizeNdMatrices</tocitem>
+        <tocitem target="lsqConstrainedAlternativeDoc.html">lsqConstrainedAlternative</tocitem>
     </tocitem>
 </toc>
