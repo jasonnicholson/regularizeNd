@@ -1,7 +1,7 @@
 function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
-% Solve the least squares inequality constraint problem by reformulation to minimal distance problem
+% lsqConstrainedAlternative solves the least squares inequality constraint problem by reformulation to minimal distance problem
 %
-%   x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
+%       x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %
 %% Inputs
 % C - Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the
@@ -11,15 +11,17 @@ function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %     d. d is M-by-1, where M is the number of equations.
 %
 % AInequality - Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear
-%     coefficients in the constraints AInequality*x ? bInequality. A has size Mineq-by-N, where Mineq is the number of
-%     constraints and N is the number of elements of x. To save memory, pass A as a sparse matrix.
+%     coefficients in the constraints AInequality*x <= bInequality. AInequality has size Mineq-by-N, where Mineq is the
+%     number of constraints and N is the number of elements of x. To save memory, pass AInequality as a sparse matrix.
 %
 % bInequality - Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the
-%     constant vector in the constraints AInequality*x ? bInequality. b has length Mineq, where A is Mineq-by-N.
+%     constant vector in the constraints AInequality*x <= bInequality. bInequality has length Mineq, where AInequality
+%     is Mineq-by-N.
 %
 % 
 %% Outputs
-% x - Solution, returned as a vector that minimizes the norm of C*x-d subject to the constraints.
+% x - Solution, returned as a vector that minimizes the two norm of C*x-d subject to the constraints, AInequality*x <=
+%     bInequality.
 %
 %% Description
 % Solves:
@@ -37,6 +39,7 @@ function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 % 
 % See the following link for discussion:
 % https://www.mathworks.com/matlabcentral/answers/402953-reformulate-a-constrained-linear-least-square-problem?s_tid=prof_contriblnk
+%
 % For more information see: Lawson, C. L., and R. J. Hanson. "Solving Least Squares Problems, Classics in Applied
 % Mathematics, SIAM, 1995."
 %
@@ -51,19 +54,20 @@ function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %     0.8131
 %     0.0098
 %     0.1388];
-% A = [0.2027    0.2721    0.7467    0.4659
-%     0.1987    0.1988    0.4450    0.4186
-%     0.6037    0.0152    0.9318    0.8462];
-% b = [0.5251
-%     0.2026
-%     0.6721];
+% AInequality = [0.2027    0.2721    0.7467    0.4659
+%                0.1987    0.1988    0.4450    0.4186
+%                0.6037    0.0152    0.9318    0.8462];
+% bInequality = [0.5251
+%                0.2026
+%                0.6721];
 %
-% x = lsqConstrainedAlternative(C, d, A, b)
-% % Compare with lsqlin(C, d, A, b)
+% x = lsqConstrainedAlternative(C, d, AInequality, bInequality)
+% % Compare with lsqlin(C, d, AInequality, bInequality)
 %
+% See Also lsqlin, regularizeNdMatrices
 
 % Author(s): Jason Nicholson
-% $Revision: 1.0 $  $Date: 2019/01/15 19:35:00 $
+% $Revision: 1.1 $  $Date: 2020/07/21 08:03:50 $
 
 % Transform into minimal distance
 [Q,R] = qr(C,0);
