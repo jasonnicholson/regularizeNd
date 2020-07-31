@@ -103,7 +103,6 @@ function [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness, interpMe
 %
 
 % Author(s): Jason Nicholson
-% $Revision: 1.0 $  $Date: 2018/01/12 16:48:00 $
 
 %% Input Checking and Default Values
 narginchk(2, 4);
@@ -203,14 +202,7 @@ switch interpMethod
             % Find cell index
             % determine the cell the x-points lie in the xGrid
             % loop over the dimensions/columns, calculating cell index
-            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
-            
-            % For points that lie ON the max value of xGrid{iDimension} (i.e. the
-            % last value), histc returns an index that is equal to the length of
-            % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
-            % cells. Therefore, we need to find when a cell has an index equal to
-            % the length of nGrid(iDimension) and reduce the index by 1.
-            xIndex(xIndex == nGrid(iDimension))=nGrid(iDimension)-1;
+            [~,~,xIndex] = histcounts(x(:,iDimension), xGrid{iDimension});
             
             % Calculate the cell fraction. This corresponds to a value between 0 and 1.
             % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
@@ -256,14 +248,7 @@ switch interpMethod
             % Find cell index
             % determine the cell the x-points lie in the xGrid
             % loop over the dimensions/columns, calculating cell index
-            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
-            
-            % For points that lie ON the max value of xGrid{iDimension} (i.e. the
-            % last value), histc returns an index that is equal to the length of
-            % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
-            % cells. Therefore, we need to find when a cell has an index equal to
-            % the length of nGrid(iDimension) and reduce the index by 1.
-            xIndex(xIndex == nGrid(iDimension))=nGrid(iDimension)-1;
+            [~,~,xIndex] = histcounts(x(:,iDimension), xGrid{iDimension});
             
             % Calculate the cell fraction. This corresponds to a value between 0 and 1.
             % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
@@ -312,7 +297,7 @@ switch interpMethod
         for iDimension = 1:nDimensions
             % Find cell index. Determine the cell the x-points lie in the
             % current xGrid dimension.
-            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
+            [~,~,xIndex] = histcounts(x(:,iDimension), xGrid{iDimension});
             
             % Calculate low index used in cubic interpolation. 4 points are
             % needed  for cubic interpolation. The low index corresponds to

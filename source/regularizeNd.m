@@ -257,7 +257,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 %
 
 % Author(s): Jason Nicholson
-% $Revision: 1.6 $  $Date: 2017/12/10 18:04:00 $
+
 
 %% Input Checking and Default Values
 narginchk(3, 8);
@@ -393,14 +393,7 @@ switch interpMethod
             % Find cell index
             % determine the cell the x-points lie in the xGrid
             % loop over the dimensions/columns, calculating cell index
-            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
-            
-            % For points that lie ON the max value of xGrid{iDimension} (i.e. the
-            % last value), histc returns an index that is equal to the length of
-            % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
-            % cells. Therefore, we need to find when a cell has an index equal to
-            % the length of nGrid(iDimension) and reduce the index by 1.
-            xIndex(xIndex == nGrid(iDimension))=nGrid(iDimension)-1;
+            [~,~,xIndex] = histcounts(x(:,iDimension), xGrid{iDimension});
             
             % Calculate the cell fraction. This corresponds to a value between 0 and 1.
             % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
@@ -446,14 +439,7 @@ switch interpMethod
             % Find cell index
             % determine the cell the x-points lie in the xGrid
             % loop over the dimensions/columns, calculating cell index
-            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
-            
-            % For points that lie ON the max value of xGrid{iDimension} (i.e. the
-            % last value), histc returns an index that is equal to the length of
-            % xGrid{iDimension}. xGrid{iDimension} describes nGrid(iDimension)-1
-            % cells. Therefore, we need to find when a cell has an index equal to
-            % the length of nGrid(iDimension) and reduce the index by 1.
-            xIndex(xIndex == nGrid(iDimension))=nGrid(iDimension)-1;
+            [~,~,xIndex] = histcounts(x(:,iDimension), xGrid{iDimension});
             
             % Calculate the cell fraction. This corresponds to a value between 0 and 1.
             % 0 corresponds to the beginning of the cell. 1 corresponds to the end of
@@ -502,13 +488,13 @@ switch interpMethod
         for iDimension = 1:nDimensions
             % Find cell index. Determine the cell the x-points lie in the
             % current xGrid dimension.
-            [~,xIndex] = histc(x(:,iDimension), xGrid{iDimension});
+            [~,~,xIndex] = histcounts(x(:,iDimension), xGrid{iDimension});
             
             % Calculate low index used in cubic interpolation. 4 points are
             % needed  for cubic interpolation. The low index corresponds to
             % the smallest grid point used in the interpolation. The min
             % and max ensures that the boundaries of the grid are
-            % respected. For example, give a point x = 1.6 and a xGrid =
+            % respected. For example, given a point x = 1.6 and a xGrid =
             % [0,1,2,3,4,5]. The points used for cubic interpolation would
             % be [0,1,2,3]. If x = 0.5, the points used would be [0,1,2,3];
             % this respects the bounds of the grid. If x = 4.9, the points
@@ -706,9 +692,9 @@ switch solver
                 % Call pcg or symmlq differently depending on the preconditioner
                 switch preconditioner
                     case 'none'
-                        [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations);
+                        [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations); %#ok<FVAL>
                     case 'ichol'
-                        [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations, M, M');
+                        [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations, M, M'); %#ok<FVAL>
                     otherwise
                         error('Code should never reach this. Something is wrong with the preconditioner switch statement. Fix it.');
                 end % end pcg, symmlq preconditioner switch statement
