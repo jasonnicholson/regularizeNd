@@ -61,15 +61,35 @@ toolbox</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;examples&gt;
+   &lt;exampleCategory name="From RegularizeData3D"&gt;
+      &lt;example name="coarse_vs_fine_grids" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From RegularizeData3D/html/coarse_vs_fine_grids.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From RegularizeData3D/coarse_vs_fine_grids.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+      &lt;example name="cubic_vs_linear" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From RegularizeData3D/html/cubic_vs_linear.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From RegularizeData3D/cubic_vs_linear.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+   &lt;exampleCategory name="From gridfit"&gt;
+      &lt;example name="demo_from_gridfit" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/From gridfit/html/demo_from_gridfit.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/From gridfit/demo_from_gridfit.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
    &lt;exampleCategory name="Examples"&gt;
+      &lt;example name="START_HERE_example1" type="html"&gt;
+         &lt;file type="source"&gt;/Examples/html/START_HERE_example1.html&lt;/file&gt;
+         &lt;file type="main"&gt;/Examples/START_HERE_example1.mlx&lt;/file&gt;
+         &lt;file type="thumbnail"&gt;/Examples/html/START_HERE_example1.png&lt;/file&gt;
+         &lt;file type="image"&gt;/Examples/html/START_HERE_example1_01.png&lt;/file&gt;
+      &lt;/example&gt;
       &lt;example name="constraint_and_Mapping_Example" type="html"&gt;
          &lt;file type="source"&gt;/Examples/html/constraint_and_Mapping_Example.html&lt;/file&gt;
          &lt;file type="main"&gt;/Examples/constraint_and_Mapping_Example.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="example1" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/example1.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/example1.mlx&lt;/file&gt;
          &lt;file type="thumbnail"/&gt;
       &lt;/example&gt;
       &lt;example name="example1D" type="html"&gt;
@@ -107,6 +127,9 @@ toolbox</param.exclude.filters>
     <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
     <param.exported.on.package>false</param.exported.on.package>
+    <param.required.addons />
+    <param.matlab.project.id />
+    <param.matlab.project.name />
     <param.release.start />
     <param.release.end />
     <param.release.current.only>false</param.release.current.only>
@@ -134,6 +157,9 @@ toolbox</param.exclude.filters>
       <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
       <param.exported.on.package />
+      <param.required.addons />
+      <param.matlab.project.id />
+      <param.matlab.project.name />
       <param.release.start />
       <param.release.end />
       <param.release.current.only />
@@ -166,15 +192,17 @@ toolbox</param.exclude.filters>
     </fileset.depfun.excluded>
     <fileset.package />
     <build-deliverables>
-      <file location="C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation" name="regularizeNd.mltbx" optional="false">C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation\regularizeNd.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="regularizeNd.mltbx" optional="false">C:\OneDrive - Deere &amp; Co\Documents\MATLAB\Projects\regularizeNd\toolbox generation\regularizeNd.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2018b</root>
+      <root>C:\Program Files\MATLAB\R2020b</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
         <toolbox name="embeddedcoder" />
+        <toolbox name="gpucoder" />
         <toolbox name="fixedpoint" />
+        <toolbox name="matlabhdlcoder" />
         <toolbox name="neuralnetwork" />
       </toolboxes>
       <toolbox>
@@ -188,9 +216,19 @@ toolbox</param.exclude.filters>
         </embeddedcoder>
       </toolbox>
       <toolbox>
+        <gpucoder>
+          <enabled>true</enabled>
+        </gpucoder>
+      </toolbox>
+      <toolbox>
         <fixedpoint>
           <enabled>true</enabled>
         </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
       </toolbox>
       <toolbox>
         <neuralnetwork>
