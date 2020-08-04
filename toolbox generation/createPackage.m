@@ -20,8 +20,8 @@ copyfile('..\source', BUILD_FOLDER_NAME);
 documentationFolder = BUILD_FOLDER_NAME + "\doc";
 mkdir(documentationFolder);
 
-% Copy getting started live script to doc folder
-copyfile("..\doc\GettingStarted.mlx", documentationFolder);
+% Copy Live script documentation to documentation folder
+copyfile("..\doc\*.mlx", documentationFolder);
 
 % check that documentation is up to date
 checkHtmlFilesAreUpToDate("..\doc", "publish");
@@ -54,6 +54,7 @@ copyfile("..\Examples\", BUILD_FOLDER_NAME + "\Examples");
 beep;
 fprintf("Open the package toolbox with the prj file. Then modify the demos.xml file manually. Use demos.xml template as a starting point.\n");
 
+%%
 function checkHtmlFilesAreUpToDate(sourceFileDirectory, whatToDoFlag)
 % checkHtmlFilesAreUpToDate checks that html files exist and are up to date that were generated from mlx files
 
