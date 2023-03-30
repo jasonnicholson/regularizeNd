@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# git-conventional-commits is installed via npm in this repo. Run npm ci to install
+npx git-conventional-commits commit-msg-hook "$1"
