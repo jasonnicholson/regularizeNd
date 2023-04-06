@@ -31,7 +31,7 @@ For an introduction on how regularization of a lookup table works, start here: h
 Acknowledgement 
 Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.</param.description>
     <param.screenshot>${PROJECT_ROOT}\toolbox image.jpg</param.screenshot>
-    <param.version>2.4.0</param.version>
+    <param.version>2.4.1</param.version>
     <param.output>${PROJECT_ROOT}\regularizeNd.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -59,70 +59,11 @@ Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching 
 %
 toolbox</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
-    <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;examples&gt;
-   &lt;exampleCategory name="From RegularizeData3D"&gt;
-      &lt;example name="coarse_vs_fine_grids" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/From RegularizeData3D/html/coarse_vs_fine_grids.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/From RegularizeData3D/coarse_vs_fine_grids.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="cubic_vs_linear" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/From RegularizeData3D/html/cubic_vs_linear.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/From RegularizeData3D/cubic_vs_linear.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-   &lt;/exampleCategory&gt;
-   &lt;exampleCategory name="From gridfit"&gt;
-      &lt;example name="demo_from_gridfit" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/From gridfit/html/demo_from_gridfit.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/From gridfit/demo_from_gridfit.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-   &lt;/exampleCategory&gt;
-   &lt;exampleCategory name="Examples"&gt;
-      &lt;example name="START_HERE_example1" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/START_HERE_example1.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/START_HERE_example1.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"&gt;/Examples/html/START_HERE_example1.png&lt;/file&gt;
-         &lt;file type="image"&gt;/Examples/html/START_HERE_example1_01.png&lt;/file&gt;
-      &lt;/example&gt;
-      &lt;example name="constraint_and_Mapping_Example" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/constraint_and_Mapping_Example.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/constraint_and_Mapping_Example.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="example1D" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/example1D.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/example1D.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="exampleIterativeSolver" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/exampleIterativeSolver.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/exampleIterativeSolver.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="example_4D_input" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/example_4D_input.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/example_4D_input.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="example_scattered_data_near_convex_hull" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/example_scattered_data_near_convex_hull.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/example_scattered_data_near_convex_hull.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-      &lt;example name="example_solver_differences" type="html"&gt;
-         &lt;file type="source"&gt;/Examples/html/example_solver_differences.html&lt;/file&gt;
-         &lt;file type="main"&gt;/Examples/example_solver_differences.mlx&lt;/file&gt;
-         &lt;file type="thumbnail"/&gt;
-      &lt;/example&gt;
-   &lt;/exampleCategory&gt;
-&lt;/examples&gt;</param.examples>
+    <param.examples />
     <param.demosxml />
     <param.apps />
     <param.registered.apps />
-    <param.docs>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\info.xml</param.docs>
+    <param.docs />
     <param.getting.started.guide>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\doc\GettingStarted.mlx</param.getting.started.guide>
     <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
@@ -151,9 +92,11 @@ toolbox</param.exclude.filters>
       <param.products.version />
       <param.platforms />
       <param.exclude.pcodedmfiles />
+      <param.examples />
       <param.demosxml />
       <param.apps />
       <param.registered.apps />
+      <param.docs />
       <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
       <param.exported.on.package />
@@ -178,14 +121,8 @@ toolbox</param.exclude.filters>
       <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build</file>
     </fileset.rootdir>
     <fileset.rootfiles>
-      <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\demos.xml</file>
       <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\doc</file>
       <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\Examples</file>
-      <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\info.xml</file>
-      <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\lsqConstrainedAlternative.m</file>
-      <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\monotonicConstraint.m</file>
-      <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\regularizeNd.m</file>
-      <file>C:\Users\jason\OneDrive\Documents\MATLAB\Projects\regularizeNd\build\regularizeNdMatrices.m</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
@@ -195,21 +132,8 @@ toolbox</param.exclude.filters>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2020a</root>
-      <toolboxes>
-        <toolbox name="fixedpoint" />
-        <toolbox name="neuralnetwork" />
-      </toolboxes>
-      <toolbox>
-        <fixedpoint>
-          <enabled>true</enabled>
-        </fixedpoint>
-      </toolbox>
-      <toolbox>
-        <neuralnetwork>
-          <enabled>true</enabled>
-        </neuralnetwork>
-      </toolbox>
+      <root>C:\Program Files\MATLAB\R2023a</root>
+      <toolboxes />
     </matlab>
     <platform>
       <unix>false</unix>

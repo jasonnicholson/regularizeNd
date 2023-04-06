@@ -29,6 +29,9 @@ checkHtmlFilesAreUpToDate("..\doc", "publish");
 % copy published documentation pages and helptoc.xml
 copyfile("..\doc\html", documentationFolder);
 
+% copy the changelog
+copyfile("..\CHANGELOG.md",BUILD_FOLDER_NAME);
+
 % build the documentation search database
 % use try-catch to make sure path is restored
 try
