@@ -4,30 +4,23 @@ convention:
   - feat
   - fix
   - perf
-  - refactor
-  - style
-  - test
-  - build
-  - ops
   - docs
   - chore
-  - merge
-  - revert
   commitScopes: []
-  releaseTagGlobPattern: ^[0-9]+\.[0-9]+\.[0-9]+
+  releaseTagGlobPattern: "[0-9]*.[0-9]*.[0-9]*"
 changelog:
   commitTypes:
   - feat
   - fix
   - perf
-  - merge
-  includeInvalidCommits: true
-  commitIgnoreRegexPattern: "^WIP "
+  - docs
+  includeInvalidCommits: false
+  commitIgnoreRegexPattern: 
   headlines:
     feat: Features
     fix: Bug Fixes
-    perf: Performance Improvements
-    merge: Merges
+    perf: Performance improvements
+    docs: Documentation
     breakingChange: BREAKING CHANGES
 
   ## GitHub
