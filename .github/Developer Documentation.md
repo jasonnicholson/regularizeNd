@@ -85,8 +85,8 @@ The `body` shall include the motivation for the change and contrast this with pr
 
 ### Footer
 * If defining **Breaking Changes** in the footer, it shall start with the word `BREAKING CHANGES:` followed by space or two newlines. The rest of the commit message is then used to describe the breaking change. Note, that BREAKING CHANGES can be used with any type and increments the MAJOR version.
-    * The ! mark should be used with the commit type in commit subject but may be left out. `git-conventional-commits` does not enforce this and 
-**reference Issues** that this commit refers to.
+    * The ! mark should be used with the commit type in commit subject but may be left out. `git-conventional-commits` does not enforce use of the exclamation point.
+* **reference Issues** that this commit refers to.
 * Is an **optional** part of the format
 * **optionally** reference an issue by its id.
 
