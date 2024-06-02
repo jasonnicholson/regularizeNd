@@ -212,11 +212,16 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   nDimensions = size(x,2);
 
   % check for the matching dimensionality
-  assert(nDimensions == numel(xGrid), 'Dimensionality mismatch. The number of columns in %s does not match the number of cells in %s.', getname(x), getname(xGrid));
+  assert(nDimensions == numel(xGrid), ...
+    "regularizeNd:dimensionMismatch", ...
+    "Dimensionality mismatch. The number of columns in %s does not match the number of cells in %s.", getname(x), getname(xGrid));
 
   % Check if smoothness is a scalar. If it is, convert it to a vector
   if isscalar(smoothness)
     smoothness = ones(nDimensions,1).*smoothness;
+  else
+    assert(numel(smoothness)==nDimensions,"regularizeNd:smoothnessDimensionMismatch", ...
+      "The number of elements in %s must match the number of cells in %s", getname(smoothness), getname(xGrid));
   end
 
   % arrange the grid vector as column vectors. This is helpful with arrayfun and cellfun calls because the shape is always the
@@ -229,18 +234,23 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 
   % Check y rows matches the number in x
   nScatteredPoints = size(x,1);
-  assert( nScatteredPoints == size(y, 1), '%s must have same number of rows as %s',getname(x), getname(y));
+  assert( nScatteredPoints == size(y, 1), "regularizeNd:numberOfPointsMismatch" , ...
+    "%s must have same number of rows as %s",getname(x), getname(y));
 
   % Check input points are within min and max of grid.
   xGridMin = cellfun(@(u) min(u), xGrid);
   xGridMax = cellfun(@(u) max(u), xGrid);
-  assert(all(x>=xGridMin,"all") & all(x <= xGridMax,"all"), 'All %s points must be within the range of the grid vectors', getname(x));
+  assert(all(x>=xGridMin,"all") & all(x <= xGridMax,"all"), ...
+    "regularizeNd:pointsNotWithinRange", ...
+    "All %s points must be within the range of the grid vectors", getname(x));
 
   % calculate the difference between grid points for each dimension
   dx = cellfun(@(uGrid) diff(uGrid), xGrid, 'UniformOutput', false);
 
   % Check for monotonic increasing grid points in each dimension
-  assert(all(cellfun(@(du) ~any(du<=0), dx)), 'All grid points in %s must be monotonically increasing.', getname(xGrid));
+  assert(all(cellfun(@(du) ~any(du<=0), dx)), ...
+    "regularizeNd:gridVectorsNotMonotonicIncreasing", ...
+    "All grid points in %s must be monotonically increasing.", getname(xGrid));
 
   % Check that there are enough points to form an output hypersurface. Linear and nearest interpolation types require 3 points
   % in each output grid dimension because of the numerical 2nd derivative needs three points. Cubic interpolation requires 4
@@ -255,7 +265,9 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
     otherwise
       error('Code should never reach this otherwise there is a bug.')
   end
-  assert(all(nGrid >= minGridVectorLength), 'Not enough grid points in each dimension. %s interpolation method and numerical 2nd derivatives requires %d points.', interpMethod, minGridVectorLength);
+  assert(all(nGrid >= minGridVectorLength), ...
+    "regularizeNd:notEnoughGridPointsInDimension", ...
+    "Not enough grid points in each dimension. %s interpolation method and numerical 2nd derivatives requires %d points.", interpMethod, minGridVectorLength);
 
 
   %% Calculate Fidelity Equations
