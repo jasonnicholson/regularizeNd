@@ -27,6 +27,8 @@ classdef regularizeNdTest < matlab.unittest.TestCase
       testCase.verifyError(@() regularizeNd(x, y, badGrid3), errorToCheck6, errorToCheck6);
       
       testCase.verifyNoError(@() regularizeNd(x, y, xGrid, smoothness), "check regularizeNd with good inputs")
+      testCase.verifyNoError(@() regularizeNd(x, y, xGrid), "check regularizeNd minimum good inputs")
+      testCase.verifyNoError(@() regularizeNdMatrices(x, xGrid), "check regularizeNdMatrices default with good inputs")
     end
 
 
