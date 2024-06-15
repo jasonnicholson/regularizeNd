@@ -62,8 +62,14 @@ function [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness, interpMe
   %
   % Lreg - Cell array. L{i} corresponds to the scaled 2nd derivative regularization of the ith dimension.
   %% Description
-  % This function setups up the matrices used by regularizeNd. This function is useful if you want to solve a constrained
-  % version of regularizeNd problem.
+  % regularizeNdMatrices is most often is used for adding contraints to what regularizeNd would produce. The matrices output
+  % from regularizeNdMatrices are used with constraint matrices in a linear least squares constrained optimization problem.
+  % For an example of how to do constrained optimization with regularizeNdMatrices, see "constraint_and_Mapping_Example"
+  % example.
+  %
+  % regularizeNdMatrices outputs the matrices used in regularizeNd. There are two parts: the fidelity part and the
+  % regularization part. The fidelity controls the accuracy of the fitted lookup table. The regularization part controls the
+  % smoothness of the lookup table.
   %
   %  For an introduction on how regularization works, start here:
   %  https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
@@ -71,6 +77,10 @@ function [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness, interpMe
   %% Acknowledgement
   % Special thanks to Peter Goldstein, author of RegularizeData3D, for his
   % coaching and help through writing regularizeNd.
+  %
+  %% Version
+  % * 2024-06-16. Version 3.+  The arguments block was implemented. This implies that all text strings are now case
+  %   sensitive. Passing an empty argument doesn't work.
   %
   %% Example
   %

@@ -145,6 +145,10 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   %% Acknowledgement
   % Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.
   %
+  %% Version
+  % * 2024-06-16. Version 3.+  The arguments block was implemented. This implies that all text strings are now case
+  %   sensitive. Passing an empty argument doesn't work.
+  %
   %% Example
   %
   % % setup some input points, output points, and noise
