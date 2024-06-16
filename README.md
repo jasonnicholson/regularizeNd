@@ -8,7 +8,7 @@ regularizeNd is function written in MATLAB that extends functionality of Regular
 
 The basic idea is that a lookup table is fitted to the scattered data with a required level of smoothness. The smoothness parameter trades between goodness of fit and smoothness of the curve (1-D), surface (2-D), or hypersurface (n-D).
 
-Browse the Mathworks File Exchange for examples: https://www.mathworks.com/matlabcentral/fileexchange/61436-regularizend#examples_tab
+On the MathWorks File Exchange, checkout the Examples tab: [regularizeNd at MathWorks File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/61436-regularizend)
 
 # Demo
 

@@ -1,3 +1,11 @@
+## **3.0.2**&emsp;<sub><sup>2024-06-15 ([28e436a...d389783](https://github.com/jasonnicholson/regularizeNd/compare/28e436a079c43b1b1a66cd2fa0a94e713ddd6b34...d389783b1cd9ed6b5c56fde3563f217ba6f2e570?diff=split))</sup></sub>
+
+### Bug Fixes
+
+- Fixed "File Not Found" issue on MathWorks file exchange by modifying \.prj file ([d389783](https://github.com/jasonnicholson/regularizeNd/commit/d389783b1cd9ed6b5c56fde3563f217ba6f2e570))
+
+<br>
+
 ## **3.0.0**&emsp;<sub><sup>2024-06-15 ([2c7bbe7...d7c4b71](https://github.com/jasonnicholson/regularizeNd/compare/2c7bbe725a35b8902766c55cad2df02a904ba01b...d7c4b7171d58d237ca29dd8f6885a77513c2dca6?diff=split))</sup></sub>
 
 ### Documentation
