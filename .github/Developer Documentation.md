@@ -24,7 +24,7 @@ npm -v
 6. Generate the Changelog by `npx git-conventional-commits changelog --release  <version> --file 'CHANGELOG.md'` 
 7. Run the `toolbox generation\createPackage.m` script. 
 8. Set the version in the `toolbox generation\regularizeNd.prj` in MATLAB. Use `toolbox generation\regularizeNd.prj` to create the toolbox package.
-9. Updating the changelog, version, and `regularizeNd.prj` is a `chore` type commit. Tag the commit with the version number.
+9. Commit. The changelog, version, and `regularizeNd.prj` is a `chore` type commit. Tag the commit with the version number.
 
 # Semantic versioning
 This repo adheres to [semantic versioning](https://semver.org/). 
