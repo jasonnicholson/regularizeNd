@@ -1,3 +1,10 @@
+## **3.0.3**&emsp;<sub><sup>2024-06-18 ([83bd288...83bd288](https://github.com/jasonnicholson/regularizeNd/compare/83bd28886f4727c45e5128e0a9b3d7609a191245...83bd28886f4727c45e5128e0a9b3d7609a191245?diff=split))</sup></sub>
+
+### Documentation
+* fixing examples that weren't working\. ([83bd288](https://github.com/jasonnicholson/regularizeNd/commit/83bd28886f4727c45e5128e0a9b3d7609a191245))
+
+<br>
+
 ## **3.0.2**&emsp;<sub><sup>2024-06-15 ([28e436a...d389783](https://github.com/jasonnicholson/regularizeNd/compare/28e436a079c43b1b1a66cd2fa0a94e713ddd6b34...d389783b1cd9ed6b5c56fde3563f217ba6f2e570?diff=split))</sup></sub>
 
 ### Bug Fixes

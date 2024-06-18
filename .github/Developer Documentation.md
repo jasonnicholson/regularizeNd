@@ -20,10 +20,10 @@ npm -v
 2. Run `post-clone-script.sh`.
 3. Develop.
 4. Commit using conventional commits.
-5. Determine the next version by `git-conventional-commits version`.
-6. Generate the Changelog by `git-conventional-commits changelog --release  <version> --file 'CHANGELOG.md'` 
-7. Set the version in the `toolbox generation\regularizeNd.prj` in MATLAB. 
-8. Run the `toolbox generation\createPackage.m` script. Use `toolbox generation\regularizeNd.prj` to create the toolbox package. 
+5. Determine the next version by `npx git-conventional-commits version`.
+6. Generate the Changelog by `npx git-conventional-commits changelog --release  <version> --file 'CHANGELOG.md'` 
+7. Run the `toolbox generation\createPackage.m` script. 
+8. Set the version in the `toolbox generation\regularizeNd.prj` in MATLAB. Use `toolbox generation\regularizeNd.prj` to create the toolbox package.
 9. Updating the changelog, version, and `regularizeNd.prj` is a `chore` type commit. Tag the commit with the version number.
 
 # Semantic versioning
