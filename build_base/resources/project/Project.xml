@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project MetadataType="monolithic">
+    <Categories Location="Root">
+        <Category Location="Deployment_Category_d514a4aa-ce41-4e28-8c3a-7239e6f98bff">
+            <Info DataType="None" Name="Toolbox - build Toolbox" ReadOnly="0" SingleValued="0"/>
+            <Label Location="Deployment_GettingStartedGuideFile_d514a4aa-ce41-4e28-8c3a-7239e6f98bff">
+                <Info Name="Getting Started Guide" ReadOnly="WRITABLE"/>
+            </Label>
+            <Label Location="Deployment_ToolboxAppGalleryFiles_d514a4aa-ce41-4e28-8c3a-7239e6f98bff">
+                <Info Name="App Gallery File" ReadOnly="WRITABLE"/>
+            </Label>
+            <Label Location="Deployment_ToolboxImageFile_d514a4aa-ce41-4e28-8c3a-7239e6f98bff">
+                <Info Name="Toolbox Image File" ReadOnly="WRITABLE"/>
+            </Label>
+        </Category>
+        <Category Location="FileClassCategory">
+            <Info DataType="None" Name="Classification" ReadOnly="1" SingleValued="1"/>
+            <Label Location="artifact">
+                <Info Name="Artifact" ReadOnly="READ_ONLY"/>
+            </Label>
+            <Label Location="convenience">
+                <Info Name="Convenience" ReadOnly="READ_ONLY"/>
+            </Label>
+            <Label Location="derived">
+                <Info Name="Derived" ReadOnly="READ_ONLY"/>
+            </Label>
+            <Label Location="design">
+                <Info Name="Design" ReadOnly="READ_ONLY"/>
+            </Label>
+            <Label Location="none">
+                <Info Name="None" ReadOnly="READ_ONLY"/>
+            </Label>
+            <Label Location="other">
+                <Info Name="Other" ReadOnly="READ_ONLY"/>
+            </Label>
+            <Label Location="test">
+                <Info Name="Test" ReadOnly="READ_ONLY"/>
+            </Label>
+        </Category>
+    </Categories>
+    <Files Location="MathWorksDeploymentConfigs">
+        <Info configMapData="{&quot;build Toolbox&quot;:&quot;MathWorksDeploymentConfig{7029e06f-493c-47af-b60f-a84a327b15a5}&quot;}"/>
+        <DIR_SIGNIFIER Location="1">
+            <Info/>
+        </DIR_SIGNIFIER>
+    </Files>
+    <Files Location="MathWorksDeploymentConfig{7029e06f-493c-47af-b60f-a84a327b15a5}">
+        <DIR_SIGNIFIER Location="1">
+            <Info/>
+        </DIR_SIGNIFIER>
+        <Info ToolboxConfigModel="{&quot;entries&quot;:[{&quot;content&quot;:{&quot;appGalleryLabel&quot;:{&quot;content&quot;:{&quot;categoryID&quot;:&quot;Deployment_Category_d514a4aa-ce41-4e28-8c3a-7239e6f98bff&quot;,&quot;labelID&quot;:&quot;Deployment_ToolboxAppGalleryFiles_d514a4aa-ce41-4e28-8c3a-7239e6f98bff&quot;},&quot;type&quot;:&quot;deployment.toolbox.model.ProjectLabel&quot;,&quot;uuid&quot;:&quot;c9d68ee2-ee1e-461d-a249-d9057e6650bf&quot;},&quot;authorEmail&quot;:&quot;jason@jasonhnicholson.com&quot;,&quot;authorName&quot;:&quot;Jason H. Nicholson&quot;,&quot;description&quot;:&quot;https://github.com/jasonnicholson/regularizeNd&quot;,&quot;gettingStartedGuideLabel&quot;:{&quot;content&quot;:{&quot;categoryID&quot;:&quot;Deployment_Category_d514a4aa-ce41-4e28-8c3a-7239e6f98bff&quot;,&quot;labelID&quot;:&quot;Deployment_GettingStartedGuideFile_d514a4aa-ce41-4e28-8c3a-7239e6f98bff&quot;},&quot;type&quot;:&quot;deployment.toolbox.model.ProjectLabel&quot;,&quot;uuid&quot;:&quot;e50c903d-5b1e-4681-97f2-75f514ab4706&quot;},&quot;maxRelease&quot;:&quot;R2025b&quot;,&quot;minRelease&quot;:&quot;R2020b&quot;,&quot;outputFileName&quot;:&quot;regularizeNd-toolbox.mltbx&quot;,&quot;outputFolder&quot;:&quot;release&quot;,&quot;summary&quot;:&quot;Creates a gridded lookup table from scattered data in n dimensions. Documentation is packaged and integrated into MATLAB\n&quot;,&quot;supportedPlatforms&quot;:[&quot;Windows&quot;,&quot;Linux&quot;,&quot;Mac&quot;,&quot;MatlabOnline&quot;],&quot;toolboxFolder&quot;:&quot;/&quot;,&quot;toolboxImgLabel&quot;:{&quot;content&quot;:{&quot;categoryID&quot;:&quot;Deployment_Category_d514a4aa-ce41-4e28-8c3a-7239e6f98bff&quot;,&quot;labelID&quot;:&quot;Deployment_ToolboxImageFile_d514a4aa-ce41-4e28-8c3a-7239e6f98bff&quot;},&quot;type&quot;:&quot;deployment.toolbox.model.ProjectLabel&quot;,&quot;uuid&quot;:&quot;da22894e-6acc-4866-9ba0-e36ac4c3f6ce&quot;},&quot;toolboxName&quot;:&quot;regularizeNd&quot;,&quot;toolboxVersion&quot;:&quot;3.0.4&quot;,&quot;uniqueId&quot;:&quot;52e7788b-f05d-40ed-91ea-761a516847ba&quot;},&quot;type&quot;:&quot;deployment.toolbox.model.ToolboxConfiguration&quot;,&quot;uuid&quot;:&quot;a878bc32-5b15-4955-9752-249ace910cbf&quot;},{&quot;content&quot;:{},&quot;type&quot;:&quot;deployment.toolbox.model.ProjectStateValidationIssueList&quot;,&quot;uuid&quot;:&quot;1254e266-c81b-4e55-9c72-0c900880c310&quot;}],&quot;packageUris&quot;:[&quot;http://schema.mathworks.com/mf0/deployment_toolbox_model/1.0.0&quot;],&quot;version&quot;:&quot;1.0&quot;}" displayName="build Toolbox" lastAccessed="1765725637135" taskID="4abbdd8d-33cf-48f5-8dc5-2aef40643b9a" type="Toolbox" uniqueId="d514a4aa-ce41-4e28-8c3a-7239e6f98bff"/>
+    </Files>
+    <Files Location="Root">
+        <File Location="doc">
+            <Info/>
+            <DIR_SIGNIFIER Location="1">
+                <Info/>
+            </DIR_SIGNIFIER>
+            <File Location="GettingStarted.mlx">
+                <Info>
+                    <Category UUID="FileClassCategory">
+                        <Label UUID="design"/>
+                    </Category>
+                    <Category UUID="Deployment_Category_d514a4aa-ce41-4e28-8c3a-7239e6f98bff">
+                        <Label UUID="Deployment_GettingStartedGuideFile_d514a4aa-ce41-4e28-8c3a-7239e6f98bff"/>
+                    </Category>
+                </Info>
+            </File>
+        </File>
+        <File Location="toolbox image.jpg">
+            <Info>
+                <Category UUID="Deployment_Category_d514a4aa-ce41-4e28-8c3a-7239e6f98bff">
+                    <Label UUID="Deployment_ToolboxImageFile_d514a4aa-ce41-4e28-8c3a-7239e6f98bff"/>
+                </Category>
+            </Info>
+        </File>
+    </Files>
+    <Info Location="ProjectData">
+        <Info Name="regularizeNd"/>
+    </Info>
+    <ProjectPath Location="Root">
+        <Reference Location="7eb99958-f7fc-4abd-afff-e7a5906c966d">
+            <Info Ref="" Type="Relative"/>
+        </Reference>
+    </ProjectPath>
+</project>

@@ -10,6 +10,21 @@ The basic idea is that a lookup table is fitted to the scattered data with a req
 
 On the MathWorks File Exchange, checkout the Examples tab: [regularizeNd at MathWorks File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/61436-regularizend)
 
-# Demo
+## Demo
 
 ![regularizeNd fit](Examples/html/START_HERE_example1_01.png)
+
+## Getting Started
+
+- General usage. Install from the [MathWorks File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/61436-regularizend).
+- Developing
+  - Take a look at the [Developer Documentation](.github/Developer_Documentation.md) for more details. 
+  - Clone. Run the post-clone-scripth.sh. 
+  - Use setupRegularizeNdProjectPath.m to setup and breakdown the project path.
+  - Run scripts/createPackage.m to create the toolbox package.
+- Documentation - The documentation can be found 
+  - Linked on the repo on the right.
+  - Directly at [regularizeNd Documentation](https://jasonhnicholson.com/regularizeNd/)
+  - Or packaged with the toolbox.
+- Examples are in the Example folder at the project root either from installing or cloning. Examples are packaged with the documentation but without the
+needed data. Running the Examples from the Example folder will have all the needed data.

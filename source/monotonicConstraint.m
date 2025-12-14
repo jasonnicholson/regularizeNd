@@ -1,5 +1,5 @@
 function [A,b] = monotonicConstraint(xGrid,dimension,dxMin)
-% monotonicConstraint generates matrices for a monotonic increasing constraint of A*x<=b
+% monotonicConstraint generates matrices for a monotonic increasing constraint of :math:`Ax\leq b` ::
 %
 %
 %   [A,b] = monotonicConstraint(xGrid)
@@ -7,44 +7,58 @@ function [A,b] = monotonicConstraint(xGrid,dimension,dxMin)
 %   [A,b] = monotonicConstraint(xGrid,dimension,dxMin)
 %
 %% Inputs
-% * xGrid - cell array of grid vectors
-% dimension - The monotonic constraint is formed across this dimension.
-%     default: 1
-% * dxMin - The minimum difference between different elements of x. x(i+l) >= x(i) + dxMin
-%     default: 0
+%   xGrid (cell array): cell array of grid vectors
+%
+%   dimension ((1,1), default=1): The monotonic constraint is formed across this dimension.
+%
+%   dxMin (default=0): The minimum difference between different elements of x. :math:`x(i+l) >= x(i) + \Delta x_{min}`
 %
 %% Outputs
-% * A - A matrix in A*x<=b
-% * b - b vector in A*x<=b 
+%   A: A matrix in :math:`Ax\leq b`
+%
+%   b: b vector in :math:`Ax\leq b`
 %
 %% Description
-% This function is mainly used in conjunction with regularizeNdMatrices to create monotonic increasing constraints.
-% Monotonicly decreasing constraints are just the negative of A, Aneg = -A and bneg = b. 
+%   This function is mainly used in conjunction with regularizeNdMatrices to create monotonic increasing constraints.
+%   Monotonically decreasing constraints are just the negative of A, Aneg = -A and bneg = b. 
 %
-% The main point of this function is to setup a monotonic increasing constraint in the Form A*x<=b that can be used
-% in lsqlin or similar. To formulate this we start with 
-%	x2      >=  xl + dxMin
-%   x2-xl	>=	dxMin
-%   xl-x2   <= -dxMin
+%   The main point of this function is to setup a monotonic increasing constraint in the form :math:`Ax\leq b` that can be used
+%   in lsqlin or similar. To formulate this we start with 
 %
-% Then generalize this to a matrix form: A*x<=b %
-% A = [1 -1	 0  0 ... 0;
-%      0  1 -1  0 ... 0;
-%	   0  0  1  -1... 0;
-%      ...
-%      0  0  0  0  1 -1];
+%   .. math::
+%      \begin{aligned}
+%      x_2 &\ge x_1 + \Delta x_{\min} \\
+%      x_2 - x_1 &\ge \Delta x_{\min} \\
+%      x_1 - x_2 &\le -\Delta x_{\min}
+%      \end{aligned}
 %
-% b = [-dxMin;
-%	   -dxMin;
-%      ...
-%	   -dxMin];
+%   Then generalize this to a matrix form: :math:`Ax\leq b`
 %
-% Then we need to generalize this to expanding across an n-dimensional grid at the m dimension. This will produce a
-% different structure in A. i.e. The 1 and -1 in a row mat not be adjacent to each other.
+%   .. math::
+%      A =
+%      \begin{bmatrix}
+%      1 & -1 & 0 & 0 & \dots & 0 \\
+%      0 & 1 & -1 & 0 & \dots & 0 \\
+%      0 & 0 & 1 & -1 & \dots & 0 \\
+%      \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+%      0 & 0 & 0 & 0 & 1 & -1
+%      \end{bmatrix}, \qquad
+%      b =
+%      \begin{bmatrix}
+%      -\Delta x_{\min} \\
+%      -\Delta x_{\min} \\
+%      \vdots \\
+%      -\Delta x_{\min}
+%      \end{bmatrix}.
 %
-%% Example 
+%   Then we need to generalize this to expanding across an n-dimensional grid at the m dimension. This will produce a
+%   different structure in A. i.e. The 1 and -1 in a row mat not be adjacent to each other.
+%
+%% Example
+%  ::
+%
 %   xGrid = {1:10};
-%	[A,b] = monotonicConstraint(xGrid)
+%   [A,b] = monotonicConstraint(xGrid)
 %   full(A)
 %   
 %   % 2d example 

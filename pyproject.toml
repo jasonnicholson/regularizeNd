@@ -1,0 +1,17 @@
+[project]
+name = "regularizeNd-docs"
+version = "3.0.4"
+description = "Documentation tooling (Sphinx, MATLAB domain, autobuild) for the regularizeNd project."
+requires-python = ">=3.12,<3.13"
+
+# Python dependencies used for documentation
+dependencies = [
+  "sphinx",
+  "sphinxcontrib-matlabdomain",
+  "sphinx-autobuild",
+  "sphinx-rtd-theme>=3.0.2",
+]
+
+[tool.uv]
+# Use uv with the existing .venv created via `uv venv`
+managed = true
