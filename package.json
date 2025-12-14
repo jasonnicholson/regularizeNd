@@ -1,5 +1,5 @@
 {
   "devDependencies": {
-    "git-conventional-commits": "^2.6.7"
+    "git-conventional-commits": "^2.8.0"
   }
 }
