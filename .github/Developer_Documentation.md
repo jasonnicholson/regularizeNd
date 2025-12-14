@@ -25,6 +25,7 @@ npm -v
 7. Run the `toolbox generation\createPackage.m` script. 
 8. Set the version in the `toolbox generation\regularizeNd.prj` in MATLAB. Use `toolbox generation\regularizeNd.prj` to create the toolbox package.
 9. Commit. The changelog, version, and `regularizeNd.prj` is a `chore` type commit. Tag the commit with the version number.
+10.Run `scripts/deploy_documentation.py` to update the documentation website.
 
 # Semantic versioning
 This repo adheres to [semantic versioning](https://semver.org/). 
