@@ -1,3 +1,12 @@
+## **3.0.4**&emsp;<sub><sup>2025-12-14 ([678908e...c972f78](https://github.com/jasonnicholson/regularizeNd/compare/678908e6f10fab9fece905f04924aabff2488951...c972f78f46be891e70348ac4edfed26f00a485de?diff=split))</sup></sub>
+
+### Documentation
+
+- setting up  sphinx ([153fe23](https://github.com/jasonnicholson/regularizeNd/commit/153fe23cbb5aa4f3741388f81212aeac77eb3246))
+- readme updates ([c972f78](https://github.com/jasonnicholson/regularizeNd/commit/c972f78f46be891e70348ac4edfed26f00a485de))
+
+<br>
+
 ## **3.0.3**&emsp;<sub><sup>2024-06-18 ([83bd288...83bd288](https://github.com/jasonnicholson/regularizeNd/compare/83bd28886f4727c45e5128e0a9b3d7609a191245...83bd28886f4727c45e5128e0a9b3d7609a191245?diff=split))</sup></sub>
 
 ### Documentation
