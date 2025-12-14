@@ -1,0 +1,571 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation &mdash; regularizeNd 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            regularizeNd
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Pages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">regularizeNd</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#lsqconstrainedalternative" id="id1">lsqConstrainedAlternative</a></p></li>
+<li><p><a class="reference internal" href="#monotonicconstraint" id="id2">monotonicConstraint</a></p></li>
+<li><p><a class="reference internal" href="#regularizend" id="id3">regularizeNd</a></p></li>
+<li><p><a class="reference internal" href="#regularizendmatrices" id="id4">regularizeNdMatrices</a></p></li>
+</ul>
+</nav>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Pages</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+</div>
+<section id="lsqconstrainedalternative">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">lsqConstrainedAlternative</a><a class="headerlink" href="#lsqconstrainedalternative" title="Link to this heading"></a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lsqConstrainedAlternative">
+<span class="sig-name descname"><span class="pre">lsqConstrainedAlternative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">C</span></em>, <em class="sig-param"><span class="pre">d</span></em>, <em class="sig-param"><span class="pre">AInequality</span></em>, <em class="sig-param"><span class="pre">bInequality</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqConstrainedAlternative" title="Link to this definition"></a></dt>
+<dd><p>lsqConstrainedAlternative solves the least squares inequality constraint problem by reformulation to minimal distance problem</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">lsqConstrainedAlternative</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">AInequality</span><span class="p">,</span><span class="n">bInequality</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl>
+<dt>Inputs</dt><dd><p>C: Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the
+expression <span class="math notranslate nohighlight">\(Cx - d\)</span>. C is M-by-N, where M is the number of equations, and N is the number of elements of x.</p>
+<p>d: Constant vector, specified as a vector of doubles. d represents the additive constant term in the expression <span class="math notranslate nohighlight">\(Cx -
+d\)</span>. d is M-by-1, where M is the number of equations.</p>
+<p>AInequality: Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear
+coefficients in the constraints <span class="math notranslate nohighlight">\(A_{Inequality}x \leq b_{Inequality}\)</span>. AInequality has size Mineq-by-N, where Mineq is the
+number of constraints and N is the number of elements of x. To save memory, pass AInequality as a sparse matrix.</p>
+<p>bInequality: Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the
+constant vector in the constraints <span class="math notranslate nohighlight">\(A_{Inequality}x \leq b_{Inequality}\)</span>. bInequality has length Mineq, where AInequality
+is Mineq-by-N.</p>
+</dd>
+<dt>Outputs</dt><dd><p>x: Solution, returned as a vector.</p>
+</dd>
+<dt>Description</dt><dd><p>Solves:</p>
+<p><span class="math notranslate nohighlight">\(\min\limits_{x} \frac{1}{2} \lVert Cx - d \rVert_2^2\)</span> subject to <span class="math notranslate nohighlight">\(Ax \leq b\)</span></p>
+<p>lsqConstrainedAlternative reformulates a linear optimization problem with inequality constraint to a minimal distance
+problem and uses lsqnonneg to solve the problem. Minimal distance problem looks like this:</p>
+<p><span class="math notranslate nohighlight">\(\min\limits_{x}  \lVert x  \lVert^2\)</span> subject to   <span class="math notranslate nohighlight">\(\bar{A}x \leq \bar{b}\)</span></p>
+<p>See the following link for discussion:
+<a class="reference external" href="https://www.mathworks.com/matlabcentral/answers/402953-reformulate-a-constrained-linear-least-square-problem?s_tid=prof_contriblnk">https://www.mathworks.com/matlabcentral/answers/402953-reformulate-a-constrained-linear-least-square-problem?s_tid=prof_contriblnk</a></p>
+<p>For more information see: Lawson, C. L., and R. J. Hanson. “Solving Least Squares Problems, Classics in Applied
+Mathematics, SIAM, 1995.”</p>
+</dd>
+<dt>Example</dt><dd><div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.9501</span><span class="w">    </span><span class="mf">0.7620</span><span class="w">    </span><span class="mf">0.6153</span><span class="w">    </span><span class="mf">0.4057</span>
+<span class="w">    </span><span class="mf">0.2311</span><span class="w">    </span><span class="mf">0.4564</span><span class="w">    </span><span class="mf">0.7919</span><span class="w">    </span><span class="mf">0.9354</span>
+<span class="w">    </span><span class="mf">0.6068</span><span class="w">    </span><span class="mf">0.0185</span><span class="w">    </span><span class="mf">0.9218</span><span class="w">    </span><span class="mf">0.9169</span>
+<span class="w">    </span><span class="mf">0.4859</span><span class="w">    </span><span class="mf">0.8214</span><span class="w">    </span><span class="mf">0.7382</span><span class="w">    </span><span class="mf">0.4102</span>
+<span class="w">    </span><span class="mf">0.8912</span><span class="w">    </span><span class="mf">0.4447</span><span class="w">    </span><span class="mf">0.1762</span><span class="w">    </span><span class="mf">0.8936</span><span class="p">];</span>
+<span class="n">d</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0578</span>
+<span class="w">    </span><span class="mf">0.3528</span>
+<span class="w">    </span><span class="mf">0.8131</span>
+<span class="w">    </span><span class="mf">0.0098</span>
+<span class="w">    </span><span class="mf">0.1388</span><span class="p">];</span>
+<span class="n">AInequality</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.2027</span><span class="w">    </span><span class="mf">0.2721</span><span class="w">    </span><span class="mf">0.7467</span><span class="w">    </span><span class="mf">0.4659</span>
+<span class="w">            </span><span class="mf">0.1987</span><span class="w">    </span><span class="mf">0.1988</span><span class="w">    </span><span class="mf">0.4450</span><span class="w">    </span><span class="mf">0.4186</span>
+<span class="w">            </span><span class="mf">0.6037</span><span class="w">    </span><span class="mf">0.0152</span><span class="w">    </span><span class="mf">0.9318</span><span class="w">    </span><span class="mf">0.8462</span><span class="p">];</span>
+<span class="n">bInequality</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.5251</span>
+<span class="w">            </span><span class="mf">0.2026</span>
+<span class="w">            </span><span class="mf">0.6721</span><span class="p">];</span>
+
+<span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">lsqConstrainedAlternative</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">AInequality</span><span class="p">,</span><span class="w"> </span><span class="n">bInequality</span><span class="p">)</span>
+<span class="c">% Compare with lsqlin(C, d, AInequality, bInequality)</span>
+
+<span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span>×<span class="mi">1</span>
+<span class="w">      </span><span class="mf">0.12986</span>
+<span class="w">     </span><span class="o">-</span><span class="mf">0.57569</span>
+<span class="w">      </span><span class="mf">0.4251</span>
+<span class="w">      </span><span class="mf">0.24384</span>
+</pre></div>
+</div>
+</dd>
+<dt>See Also</dt><dd><p>lsqlin, regularizeNdMatrices</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="monotonicconstraint">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">monotonicConstraint</a><a class="headerlink" href="#monotonicconstraint" title="Link to this heading"></a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="monotonicConstraint">
+<span class="sig-name descname"><span class="pre">monotonicConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">xGrid</span></em>, <em class="sig-param"><span class="pre">dimension</span></em>, <em class="sig-param"><span class="pre">dxMin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#monotonicConstraint" title="Link to this definition"></a></dt>
+<dd><p>monotonicConstraint generates matrices for a monotonic increasing constraint of <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">monotonicConstraint</span><span class="p">(</span><span class="n">xGrid</span><span class="p">)</span>
+<span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">monotonicConstraint</span><span class="p">(</span><span class="n">xGrid</span><span class="p">,</span><span class="n">dimension</span><span class="p">)</span>
+<span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">monotonicConstraint</span><span class="p">(</span><span class="n">xGrid</span><span class="p">,</span><span class="n">dimension</span><span class="p">,</span><span class="n">dxMin</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl>
+<dt>Inputs</dt><dd><p>xGrid (cell array): cell array of grid vectors</p>
+<p>dimension ((1,1), default=1): The monotonic constraint is formed across this dimension.</p>
+<p>dxMin (default=0): The minimum difference between different elements of x. <span class="math notranslate nohighlight">\(x(i+l) &gt;= x(i) + \Delta x_{min}\)</span></p>
+</dd>
+<dt>Outputs</dt><dd><p>A: A matrix in <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
+<p>b: b vector in <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
+</dd>
+<dt>Description</dt><dd><p>This function is mainly used in conjunction with regularizeNdMatrices to create monotonic increasing constraints.
+Monotonically decreasing constraints are just the negative of A, Aneg = -A and bneg = b.</p>
+<p>The main point of this function is to setup a monotonic increasing constraint in the form <span class="math notranslate nohighlight">\(Ax\leq b\)</span> that can be used
+in lsqlin or similar. To formulate this we start with</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+x_2 &amp;\ge x_1 + \Delta x_{\min} \\
+x_2 - x_1 &amp;\ge \Delta x_{\min} \\
+x_1 - x_2 &amp;\le -\Delta x_{\min}
+\end{aligned}\end{split}\]</div>
+<p>Then generalize this to a matrix form: <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}A =
+\begin{bmatrix}
+1 &amp; -1 &amp; 0 &amp; 0 &amp; \dots &amp; 0 \\
+0 &amp; 1 &amp; -1 &amp; 0 &amp; \dots &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; -1 &amp; \dots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; -1
+\end{bmatrix}, \qquad
+b =
+\begin{bmatrix}
+-\Delta x_{\min} \\
+-\Delta x_{\min} \\
+\vdots \\
+-\Delta x_{\min}
+\end{bmatrix}.\end{split}\]</div>
+<p>Then we need to generalize this to expanding across an n-dimensional grid at the m dimension. This will produce a
+different structure in A. i.e. The 1 and -1 in a row mat not be adjacent to each other.</p>
+</dd>
+<dt>Example</dt><dd><div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">xGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">:</span><span class="mi">10</span><span class="p">};</span>
+<span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">monotonicConstraint</span><span class="p">(</span><span class="n">xGrid</span><span class="p">)</span>
+<span class="nb">full</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="c">% 2d example</span>
+<span class="n">xGrid2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">};</span>
+<span class="n">dimension</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="n">bMax</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">1e-3</span><span class="p">;</span>
+<span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">monotonicConstraint</span><span class="p">(</span><span class="n">xGrid2</span><span class="p">,</span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">bMax</span><span class="p">)</span>
+<span class="nb">full</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+<span class="c">% monotonic decreasing</span>
+<span class="n">Aneg</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="o">-</span><span class="n">A</span><span class="p">;</span>
+<span class="n">bneg</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="nb">full</span><span class="p">(</span><span class="n">Aneg</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="regularizend">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">regularizeNd</a><a class="headerlink" href="#regularizend" title="Link to this heading"></a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="regularizeNd">
+<span class="sig-name descname"><span class="pre">regularizeNd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">xGrid</span></em>, <em class="sig-param"><span class="pre">smoothness</span></em>, <em class="sig-param"><span class="pre">interpMethod</span></em>, <em class="sig-param"><span class="pre">solver</span></em>, <em class="sig-param"><span class="pre">maxIterations</span></em>, <em class="sig-param"><span class="pre">solverTolerance</span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizeNd" title="Link to this definition"></a></dt>
+<dd><p>regularizeNd  Fits a nD lookup table with smoothness to scattered data.</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">)</span>
+<span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">)</span>
+<span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">,</span><span class="w"> </span><span class="n">interpMethod</span><span class="p">)</span>
+<span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">,</span><span class="w"> </span><span class="n">interpMethod</span><span class="p">,</span><span class="w"> </span><span class="n">solver</span><span class="p">)</span>
+<span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">,</span><span class="w"> </span><span class="n">interpMethod</span><span class="p">,</span><span class="w"> </span><span class="n">solver</span><span class="p">,</span><span class="w"> </span><span class="n">maxIterations</span><span class="p">)</span>
+<span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">,</span><span class="w"> </span><span class="n">interpMethod</span><span class="p">,</span><span class="w"> </span><span class="n">solver</span><span class="p">,</span><span class="w"> </span><span class="n">maxIterations</span><span class="p">,</span><span class="w"> </span><span class="n">solverTolerance</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl>
+<dt>Inputs:</dt><dd><p>x (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
+corresponds to a dimension.</p>
+<p>y (double, column vector): Contains the corresponds output values to x. y has the same number of rows as x.</p>
+<p>xGrid (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
+for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For
+instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.</p>
+<p>smoothness (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
+“smoothness” to “goodness of fit.” This must be a positive real number. If it is a vector, it must have same
+number of elements as columns in x.</p>
+<blockquote>
+<div><p>Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
+the overall problem which is the ratio of fidelity equations to smoothness equations.</p>
+<p>A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output hypersurface.
+This results in noticeable smoothing.  If your input data has little or no noise, use 0.01 to give smoothness 1%
+as much weight as goodness of fit.</p>
+<p>If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension.
+This allows the user to apply a different amount of smoothing in the each axis/dimension.</p>
+</div></blockquote>
+<p>interpMethod (string, default=”linear”): Denotes the interpolation scheme used to interpolate the data.</p>
+<blockquote>
+<div><p>Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
+methods, the interpolation method is not the dominant factor in the calculation time in regularizeNd. The dominant
+factor in calculation time is the size of the grid and the solver used. So in general, do not choose your
+interpolation method based on computational complexity. Choose your interpolation method because of accuracy and
+shape that you are looking to obtain.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“linear” - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid
+points. linear should be smoother than nearest
+for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a
+query point grows with 2^nDimensions. i.e. 2d needs 4 points, 3d needs 8 points, 4d needs 16 points per
+query point. In general, linear can use smaller smoothness values than cubic and still be well
+conditioned.</p></li>
+<li><p>“nearest” - Nearest neighbor interpolation. Nearest should be the least complex but least smooth.</p></li>
+<li><p>“cubic” - Uses Lagrange cubic interpolation. Cubic interpolation allows extrema to occur at other locations
+besides the grid points. Cubic should provide the most flexible relationship for a given xGrid. As the
+number of dimension grows, the number of grid points used to interpolate at a query point grows with
+4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic
+has good properties of accuracy and smoothness but is the most complex interpMethod to calculate.</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>solver (string, default=”normal”): The solver used for the resulting linear system. The default is most often the best choice.</p>
+<blockquote>
+<div><p>What solver should you use? The short answer is use “normal” as a first guess. “\” may be best ill-conditioned
+problems. If you receive rank deficiency warnings with “normal”, try the “\” solver. Otherwise, use the “normal”
+solver because it is usually faster than the “\” solver.</p>
+<p>The larger the numbers of grid points, the larger the solve time. Since the equations generated tends to be well
+conditioned, the “normal” solver is  a good choice. Beware using “normal” when a small smoothing parameter is
+used, since this will make the equations less well conditioned. The “normal” solver for large grids is 3x faster
+than the “\”.</p>
+<p>Use the “pcg”, “symmlq”, or “lsqr” solver when the “normal” and “\” fail. Out of memory errors with “normal” or
+“\” are reason to try the iterative solvers. These errors are rare however they happen. Start with the “pcg”
+solver. Then “symmlq”. Finally try “lsqr” solver. The “lsqr” solver is usually slow compared to the “pcg” and
+“symmlq” solver.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“\” - uses matlab’s backslash operator to solve the sparse system. This is most likely the sparse QR solver.</p></li>
+<li><p>“lsqr” - Uses the MATLAB lsqr solver. This solver is not recommended. Try “pcg” or “symmlq” first and use “lsqr”
+as a last resort. Experiments have shown that “pcg” and “symmlq” solvers are faster and just as accurate
+as “lsqr” for the matrices generated by regularizeNd. The same preconditioner as the “pcg” solver is
+used.</p></li>
+<li><p>“normal” - Constructs the normal equation and solves. <cite>x = (A’A)\(A’*y)</cite>. From testing, this seems to be a well
+conditioned and faster way to solve this type of equation system than backslash <cite>x = A\y</cite>. Testing shows
+that the normal equation is 3x faster than the “\” solver for this type of problem. <cite>A’*A</cite> preserves the
+sparsity and is symmetric positive definite. Often <cite>A’*A</cite> will have less nonzero elements than A. i.e.
+<cite>nnz(A’*A) &lt; nnz(A)</cite>.</p></li>
+<li><p>“pcg” - Calls the MATLAB pcg iterative solver that solves the normal equation, <cite>(A’A)*x = A’*y</cite>, for x. Use this
+solver first when “normal” and “\” fail. The “pcg” solver tries to generate the Incomplete Cholesky
+Factorization (ichol) as a preconditioner. If Incomplete Cholesky Factorization fails, then diagonal
+compensation is added. There may be a case where the preconditioner just cannot be calculated and thus no
+preconditioner is used.</p></li>
+<li><p>“symmlq” - Calls the MATLAB symmlq iterative solver that solves the normal equation, <cite>(A’A)*x = A’*y</cite>, for x. Use
+this solver if “pcg” has issues. “symmlq” uses the same preconditioner as “pcg”.</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>maxIterations (default=min(1e5,  nTotalGridPoints)): Only used if the solver is set to the iterative solvers, ‘lsqr’, ‘pcg’, or ‘symmlq’. Reducing this will
+speed up the solver at the cost of accuracy. Increasing it will increase accuracy at the cost of time.
+The default value is the smaller of 100,000 and the number of nodes in the grid.</p>
+<p>solverTolerance (default=1e-11*abs(max(y,[],”all”) - min(y,[],”all”))): Only used if the solver is set to the iterative solvers, ‘lsqr’, ‘pcg’, or ‘symmlq’. The
+solverTolerance is used with ‘lsqr’, ‘pcg’, or ‘symmlq’. Smaller increases accuracy and reduces speed.
+Larger decreases accuracy and increases speed.</p>
+</dd>
+<dt>Output:</dt><dd><p>yGrid (array): Contains the fitted surface or hypersurface corresponding to the grid points xGrid. yGrid is in the
+ndgrid format. In 2d, ndgrid format is the transpose of meshgrid format.</p>
+</dd>
+<dt>Description</dt><dd><p>regularizeNd answers the question what is the best possible lookup table that the scattered data input x and output y in
+the least squares sense with smoothing? regularizeNd is meant to calculate a smooth lookup table given n-D scattered data.
+regularizeNd supports extrapolation from a scattered data set as well.</p>
+<p>The calculated lookup table yGrid is meant to be used with griddedInterpolant class with the conservative memory form. Call
+griddedInterpolant like F = griddedInterpolant(xGrid, yGrid).</p>
+<p>Desirable properties of regularizeNd:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Calculates a relationship between the input x and the output y without definition of the functional form of x to y.</p></li>
+<li><p>Often the fit is superior to polynomial type fitting without the wiggles.</p></li>
+<li><p>Extrapolation is possible from a scattered data set.</p></li>
+<li><p>After creating the lookup table yGrid and using it with griddedInterpolant, as the query point moves away from the
+scattered data, the relationship between the input x and output y becomes more linear because of the smoothness
+equations and no nearby fidelity equations. The linear relationship is a good choice when the relationship between x
+and y is unknown in extrapolation.</p></li>
+<li><p>regularizeNd can handle 1D, 2D, nD input data to 1D output data. RegularizeData3D and gridfit can only handle 2D
+input and 1D out (total 3D).</p></li>
+<li><p>regularizeNd can handle setting the smoothness to 0 in any axis/dimension. This means no smoothing is applied in a
+particular axis/dimension and the data is just a least squares fit of a lookup table in that axis/dimension.</p></li>
+</ul>
+</div></blockquote>
+<p>For an introduction on how regularization works, start here:
+<a class="reference external" href="https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/">https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/</a></p>
+</dd>
+<dt>Acknowledgement</dt><dd><p>Special thanks to Peter Goldstein, author of RegularizeData3D, for his coaching and help through writing regularizeNd.</p>
+</dd>
+<dt>Version</dt><dd><ul class="simple">
+<li><p>2024-06-16. Version 3.+  The arguments block was implemented. This implies that all text strings are now case
+sensitive. Passing an empty argument doesn’t work.</p></li>
+</ul>
+</dd>
+<dt>Example</dt><dd><div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% setup some input points, output points, and noise</span>
+<span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">:</span><span class="mf">0.1</span><span class="p">:</span><span class="mf">4.5</span><span class="p">;</span>
+<span class="n">y</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">:</span><span class="mf">0.1</span><span class="p">:</span><span class="mf">5.5</span><span class="p">;</span>
+<span class="p">[</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">ndgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">);</span>
+<span class="n">z</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">tanh</span><span class="p">(</span><span class="n">xx</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">.*</span><span class="nb">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nb">pi</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">yy</span><span class="p">);</span>
+<span class="n">noise</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">xx</span><span class="p">))</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.*</span><span class="n">xx</span><span class="o">.*</span><span class="n">yy</span><span class="o">/</span><span class="mi">30</span><span class="p">;</span>
+<span class="n">zNoise</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">;</span>
+
+<span class="c">% setup the grid for lookup table</span>
+<span class="n">xGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">210</span><span class="p">);</span>
+<span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">6.6</span><span class="p">,</span><span class="mi">195</span><span class="p">);</span>
+<span class="n">gridPoints</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">yGrid</span><span class="p">};</span>
+
+<span class="c">% setup some difference in scale between the different dimensions/axes</span>
+<span class="n">xScale</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+<span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">xScale</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
+<span class="n">xx</span><span class="p">=</span><span class="n">xScale</span><span class="o">*</span><span class="n">xx</span><span class="p">;</span>
+<span class="n">xGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">xScale</span><span class="o">*</span><span class="n">xGrid</span><span class="p">;</span>
+<span class="n">gridPoints</span><span class="p">{</span><span class="mi">1</span><span class="p">}</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">xGrid</span><span class="p">;</span>
+
+<span class="c">% smoothness parameter. i.e. fit is weighted 1000 times greater than</span>
+<span class="c">% smoothness.</span>
+<span class="n">smoothness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.001</span><span class="p">;</span>
+
+<span class="c">% regularize</span>
+<span class="n">zGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNd</span><span class="p">([</span><span class="n">xx</span><span class="p">(:),</span><span class="w"> </span><span class="n">yy</span><span class="p">(:)],</span><span class="w"> </span><span class="n">zNoise</span><span class="p">(:),</span><span class="w"> </span><span class="n">gridPoints</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">);</span>
+<span class="c">% Note this s the same as</span>
+<span class="c">% zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, &#39;linear&#39;, &#39;normal&#39;);</span>
+
+<span class="c">% create gridedInterpolant function</span>
+<span class="n">F</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">griddedInterpolant</span><span class="p">(</span><span class="n">gridPoints</span><span class="p">,</span><span class="w"> </span><span class="n">zGrid</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;linear&#39;</span><span class="p">);</span>
+
+<span class="c">% plot and compare</span>
+<span class="nb">surf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="o">&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;FaceColor&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;g&#39;</span><span class="p">)</span>
+<span class="nb">hold</span><span class="w"> </span><span class="nb">all</span><span class="p">;</span>
+<span class="nb">surf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">zNoise</span><span class="o">&#39;</span><span class="p">,</span><span class="s">&#39;FaceColor&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;m&#39;</span><span class="p">)</span>
+<span class="nb">surf</span><span class="p">(</span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">yGrid</span><span class="p">,</span><span class="w"> </span><span class="n">zGrid</span><span class="o">&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;FaceColor&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="nb">xlabel</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+<span class="nb">ylabel</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">)</span>
+<span class="nb">zlabel</span><span class="p">(</span><span class="s">&#39;z&#39;</span><span class="p">)</span>
+<span class="nb">legend</span><span class="p">({</span><span class="s">&#39;Exact&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;Noisy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;regularizeNd&#39;</span><span class="p">},</span><span class="s">&#39;location&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;best&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="_images/example1.png" src="_images/example1.png" />
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="regularizendmatrices">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">regularizeNdMatrices</a><a class="headerlink" href="#regularizendmatrices" title="Link to this heading"></a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="regularizeNdMatrices">
+<span class="sig-name descname"><span class="pre">regularizeNdMatrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">xGrid</span></em>, <em class="sig-param"><span class="pre">smoothness</span></em>, <em class="sig-param"><span class="pre">interpMethod</span></em><span class="sig-paren">)</span><a class="headerlink" href="#regularizeNdMatrices" title="Link to this definition"></a></dt>
+<dd><p>Returns the needed matrices used in the regulareNd problem.</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Afidelity</span><span class="p">,</span><span class="w"> </span><span class="n">Lreg</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNdMatrices</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">)</span>
+<span class="p">[</span><span class="n">Afidelity</span><span class="p">,</span><span class="w"> </span><span class="n">Lreg</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNdMatrices</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">)</span>
+<span class="p">[</span><span class="n">Afidelity</span><span class="p">,</span><span class="w"> </span><span class="n">Lreg</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNdMatrices</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">,</span><span class="w"> </span><span class="n">interpMethod</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl>
+<dt>Inputs:</dt><dd><p>x (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
+corresponds to a dimension.</p>
+<p>xGrid (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
+for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For
+instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.</p>
+<p>smoothness (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
+“smoothness” to “goodness of fit.” This must be a positive real number. If it is a vector, it must have same
+number of elements as columns in x.</p>
+<blockquote>
+<div><p>Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
+the overall problem which is the ratio of fidelity equations to smoothness equations.</p>
+<p>A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output hypersurface.
+This results in noticeable smoothing.  If your input data has little or no noise, use 0.01 to give smoothness 1%
+as much weight as goodness of fit.</p>
+<p>If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension.
+This allows the user to apply a different amount of smoothing in the each axis/dimension.</p>
+</div></blockquote>
+<p>interpMethod (string, default=”linear”): Denotes the interpolation scheme used to interpolate the data.</p>
+<blockquote>
+<div><p>Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
+methods, the interpolation method is not the dominant factor in the calculation time in regularizeNd. The dominant
+factor in calculation time is the size of the grid and the solver used. So in general, do not choose your
+interpolation method based on computational complexity. Choose your interpolation method because of accuracy and
+shape that you are looking to obtain.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“linear” - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid
+points. linear should be smoother than nearest
+for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a
+query point grows with 2^nDimensions. i.e. 2d needs 4 points, 3d needs 8 points, 4d needs 16 points per
+query point. In general, linear can use smaller smoothness values than cubic and still be well
+conditioned.</p></li>
+<li><p>“nearest” - Nearest neighbor interpolation. Nearest should be the least complex but least smooth.</p></li>
+<li><p>“cubic” - Uses Lagrange cubic interpolation. Cubic interpolation allows extrema to occur at other locations
+besides the grid points. Cubic should provide the most flexible relationship for a given xGrid. As the
+number of dimension grows, the number of grid points used to interpolate at a query point grows with
+4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic
+has good properties of accuracy and smoothness but is the most complex interpMethod to calculate.</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</dd>
+<dt>Output</dt><dd><p>Afidelity (sparse matirx): Contains the fidelity equations. size(A,1) ==size(x,1) == size(y,1). The number of rows in A
+corresponds to the number of points in x,y. The number of columns corresponds to the number points in the
+grid.</p>
+<p>Lreg (Cell array): L{i} corresponds to the scaled 2nd derivative regularization of the ith dimension.</p>
+</dd>
+<dt>Description</dt><dd><p>regularizeNdMatrices is most often is used for adding contraints to what regularizeNd would produce. The matrices output
+from regularizeNdMatrices are used with constraint matrices in a linear least squares constrained optimization problem.
+For an example of how to do constrained optimization with regularizeNdMatrices, see “constraint_and_Mapping_Example”
+example.</p>
+<p>regularizeNdMatrices outputs the matrices used in regularizeNd. There are two parts: the fidelity part and the
+regularization part. The fidelity controls the accuracy of the fitted lookup table. The regularization part controls the
+smoothness of the lookup table.</p>
+<p>For an introduction on how regularization works, start here:
+<a class="reference external" href="https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/">https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/</a></p>
+</dd>
+<dt>Acknowledgement</dt><dd><p>Special thanks to Peter Goldstein, author of RegularizeData3D, for his
+coaching and help through writing regularizeNd.</p>
+</dd>
+<dt>Version</dt><dd><ul class="simple">
+<li><p>2024-06-16. Version 3.+  The arguments block was implemented. This implies that all text strings are now case
+sensitive. Passing an empty argument doesn’t work.</p></li>
+</ul>
+</dd>
+<dt>Example</dt><dd><div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% setup some input points, output points, and noise</span>
+<span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">:</span><span class="mf">0.1</span><span class="p">:</span><span class="mf">4.5</span><span class="p">;</span>
+<span class="n">y</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">:</span><span class="mf">0.1</span><span class="p">:</span><span class="mf">5.5</span><span class="p">;</span>
+<span class="p">[</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">ndgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">);</span>
+<span class="n">z</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">tanh</span><span class="p">(</span><span class="n">xx</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">.*</span><span class="nb">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nb">pi</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">yy</span><span class="p">);</span>
+<span class="n">noise</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nb">rand</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">xx</span><span class="p">))</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.*</span><span class="n">xx</span><span class="o">.*</span><span class="n">yy</span><span class="o">/</span><span class="mi">30</span><span class="p">;</span>
+<span class="n">zNoise</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">;</span>
+
+<span class="c">% setup the grid for lookup table</span>
+<span class="n">xGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">210</span><span class="p">);</span>
+<span class="n">yGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">6.6</span><span class="p">,</span><span class="mi">195</span><span class="p">);</span>
+<span class="n">gridPoints</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">yGrid</span><span class="p">};</span>
+
+<span class="c">% setup some difference in scale between the different dimensions/axes</span>
+<span class="n">xScale</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+<span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">xScale</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
+<span class="n">xx</span><span class="p">=</span><span class="n">xScale</span><span class="o">*</span><span class="n">xx</span><span class="p">;</span>
+<span class="n">xGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">xScale</span><span class="o">*</span><span class="n">xGrid</span><span class="p">;</span>
+<span class="n">gridPoints</span><span class="p">{</span><span class="mi">1</span><span class="p">}</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">xGrid</span><span class="p">;</span>
+
+<span class="c">% smoothness parameter. i.e. fit is weighted 1000 times greater than smoothness.</span>
+<span class="n">smoothness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.001</span><span class="p">;</span>
+
+<span class="c">% regularize</span>
+<span class="p">[</span><span class="n">Afidelity</span><span class="p">,</span><span class="w"> </span><span class="n">Lreg</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">regularizeNdMatrices</span><span class="p">([</span><span class="n">xx</span><span class="p">(:),</span><span class="w"> </span><span class="n">yy</span><span class="p">(:)],</span><span class="w"> </span><span class="n">gridPoints</span><span class="p">,</span><span class="w"> </span><span class="n">smoothness</span><span class="p">);</span>
+
+<span class="c">% assemble the linear least squares problem</span>
+<span class="n">A</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">vertcat</span><span class="p">(</span><span class="n">Afidelity</span><span class="p">,</span><span class="w"> </span><span class="n">Lreg</span><span class="p">{:});</span>
+<span class="n">b</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">vertcat</span><span class="p">(</span><span class="n">zNoise</span><span class="p">(:),</span><span class="w"> </span><span class="nb">zeros</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="nb">numel</span><span class="p">(</span><span class="n">zNoise</span><span class="p">),</span><span class="mi">1</span><span class="p">));</span>
+
+<span class="c">% solve the linear system</span>
+<span class="n">zGrid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">reshape</span><span class="p">(</span><span class="n">A</span><span class="o">\</span><span class="n">b</span><span class="p">,</span><span class="nb">cellfun</span><span class="p">(@</span><span class="nb">numel</span><span class="p">,</span><span class="w"> </span><span class="n">gridPoints</span><span class="p">));</span>
+
+<span class="c">% create girrdedInterpolant function</span>
+<span class="n">F</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">griddedInterpolant</span><span class="p">(</span><span class="n">gridPoints</span><span class="p">,</span><span class="w"> </span><span class="n">zGrid</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;linear&#39;</span><span class="p">);</span>
+
+<span class="c">% plot and compare</span>
+<span class="nb">surf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="o">&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;FaceColor&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;g&#39;</span><span class="p">)</span>
+<span class="nb">hold</span><span class="w"> </span><span class="nb">all</span><span class="p">;</span>
+<span class="nb">surf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">zNoise</span><span class="o">&#39;</span><span class="p">,</span><span class="s">&#39;FaceColor&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;m&#39;</span><span class="p">)</span>
+<span class="nb">surf</span><span class="p">(</span><span class="n">xGrid</span><span class="p">,</span><span class="w"> </span><span class="n">yGrid</span><span class="p">,</span><span class="w"> </span><span class="n">zGrid</span><span class="o">&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;FaceColor&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="nb">xlabel</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+<span class="nb">ylabel</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">)</span>
+<span class="nb">zlabel</span><span class="p">(</span><span class="s">&#39;z&#39;</span><span class="p">)</span>
+<span class="nb">legend</span><span class="p">({</span><span class="s">&#39;Exact&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;Noisy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;regularizeNd&#39;</span><span class="p">},</span><span class="s">&#39;location&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;best&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jason H. Nicholson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
