@@ -10,9 +10,9 @@ The basic idea is that a lookup table is fitted to the scattered data with a req
 
 On the MathWorks File Exchange, checkout the Examples tab: [regularizeNd at MathWorks File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/61436-regularizend)
 
-## Demo
+## Screenshot
 
-![regularizeNd fit](Examples/html/START_HERE_example1_01.png)
+![regularizeNd fit](img/START_HERE_example1_01.png)
 
 ## Getting Started
 
