@@ -3,3 +3,4 @@ test/coverage
 docs/_build
 *.mltbx
 build/
+scripts/__pycache__/
