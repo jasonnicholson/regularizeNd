@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# Copyright (c) 2016-2026 Jason Nicholson
+# Licensed under the MIT License
+# See LICENSE file in project root
+
 """Deploy Sphinx HTML documentation to the gh-pages branch.
 
 Steps:

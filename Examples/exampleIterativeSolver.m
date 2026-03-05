@@ -55,6 +55,9 @@ toc; %[output:31e5ee93]
 tic;
 [~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod, 'lsqr');
 toc; %[output:79763852]
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

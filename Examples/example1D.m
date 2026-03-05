@@ -41,6 +41,9 @@ plot(xGrid1{1}, yGrid1, 'DisplayName', 'Course Grid') %[output:5059ba60]
 plot(xGrid2{1}, yGrid2, 'DisplayName', 'Fine Grid') %[output:5059ba60]
 legend('show', 'location', 'best') %[output:5059ba60]
 title('1D Regularization Example') %[output:5059ba60]
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

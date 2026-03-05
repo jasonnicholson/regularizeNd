@@ -80,6 +80,9 @@ ylabel('y', 'FontSize', 12); %[output:15e1c1f7]
 zlabel('z', 'FontSize', 12); %[output:15e1c1f7]
 title(sprintf('Regularized Output Surface generated with linear Interpolation.\nOriginal, scattered input points in red')); %[output:15e1c1f7]
 axis([0, 4, 0, 4, 0, 1.1]); %[output:15e1c1f7]
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

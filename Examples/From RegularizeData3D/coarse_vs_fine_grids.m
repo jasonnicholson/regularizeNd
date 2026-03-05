@@ -81,6 +81,9 @@ zlabel('z', 'FontSize', 12); %[output:56795e02]
 title(sprintf('Regularized output surface with smoothness=%g (fine mesh)\n Original, scattered input points in red', smoothness)); %[output:56795e02]
 axis([0, 4, 0, 4, 0, 1.1]); %[output:56795e02]
 set(gcf, 'color', 'w')
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

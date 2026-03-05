@@ -17,3 +17,7 @@ run(runner, suite);
 
 REPORT_FOLDER = "coverage";
 generateHTMLReport(format.Result, REPORT_FOLDER);
+
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root

@@ -73,6 +73,9 @@ function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 
 % Author(s): Jason Nicholson
 % $Revision: 1.1 $  $Date: 2020/07/21 08:03:50 $
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 % Transform into minimal distance
 [Q,R] = qr(C,0);

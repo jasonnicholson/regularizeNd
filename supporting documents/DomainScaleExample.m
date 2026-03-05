@@ -155,3 +155,7 @@ set(get(gca,'XLabel'),'FontSize', 12)
 set(get(gca,'YLabel'),'FontSize', 12)
 set(get(gca, 'Title'), 'FontSize', 8)
 
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+

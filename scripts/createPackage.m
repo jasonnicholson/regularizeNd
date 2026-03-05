@@ -52,3 +52,7 @@ copyfile(fullfile(projectRoot, "Examples"), fullfile(BUILD_FOLDER_NAME, "Example
 % cannot automatically package the toolbox
 beep;
 fprintf("Open the package toolbox with the prj file. Fill out the form and create the toolbox.\n");
+
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root

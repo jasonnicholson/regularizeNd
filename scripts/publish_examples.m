@@ -1,3 +1,7 @@
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+%
 function publish_examples()
 % publish_examples Publish MATLAB example scripts as HTML for Sphinx.
 %
@@ -7,6 +11,9 @@ function publish_examples()
 % Usage:
 %   publish_examples
 
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 thisFile = mfilename('fullpath');
 repoRoot = fileparts(fileparts(thisFile));

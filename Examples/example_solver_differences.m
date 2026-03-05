@@ -38,6 +38,9 @@ toc; %[output:778abc0e]
 tic;
 zGrid2 = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness,'linear', '\');
 toc; %[output:80a52427]
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

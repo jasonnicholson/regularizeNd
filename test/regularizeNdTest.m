@@ -1,5 +1,10 @@
 classdef regularizeNdTest < matlab.unittest.TestCase
+%
 
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+%
   methods (TestClassSetup)
 
     % Shared setup for the entire test class

@@ -1,3 +1,7 @@
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+%
 %% Getting Started with regularizeNd
 %% Description
 % regularizeNd toolbox is a set of tools to create a gridded lookup table of 

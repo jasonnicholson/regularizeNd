@@ -1,6 +1,9 @@
 %[text] This examples in this folder were originally a part of gridfit. This examples have been adapted to use regularizeNd. If you are familar with gridfit, then this gives you a reference for comparison. Otherwise, these examples just give you more examples to understand regularizeNd.
 %[text] 
 %[text] The `html` folder contains published html files that are used in MATLAB documentation system to display the examples.
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

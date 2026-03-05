@@ -74,6 +74,11 @@ function [A,b] = monotonicConstraint(xGrid,dimension,dxMin)
 %   full(Aneg)
 %
 
+% Author(s): Jason Nicholson
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+
 narginchk(1,3);
 if nargin < 3
     dxMin =0;

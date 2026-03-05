@@ -2,6 +2,7 @@
 name = "regularizeNd-docs"
 version = "3.0.4"
 description = "Documentation tooling (Sphinx, MATLAB domain, autobuild) for the regularizeNd project."
+license = {text = "MIT"}
 requires-python = ">=3.12,<3.13"
 
 # Python dependencies used for documentation

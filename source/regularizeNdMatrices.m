@@ -128,6 +128,9 @@ function [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness, interpMe
 
 
   % Author(s): Jason Nicholson
+  % Copyright (c) 2016-2026 Jason Nicholson
+  % Licensed under the MIT License
+  % See LICENSE file in project root
 
   %% Input Checking and Default Values
   arguments

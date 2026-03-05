@@ -138,6 +138,9 @@ set(gca,'yscale','log') %[output:711bd613]
 grid on; %[output:711bd613]
 legend({'Scattered Data','Fitted Lookup Table from lsqConstrainedAlternative', 'Fitted Lookup Table from lsqlin'},'location','best') %[output:711bd613]
 %[text] 
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

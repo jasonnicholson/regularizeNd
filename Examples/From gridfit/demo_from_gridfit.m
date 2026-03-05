@@ -167,6 +167,9 @@ camlight right %[output:72623831]
 lighting phong %[output:72623831]
 title 'No need for tiles with regularizeNd' %[output:72623831]
 %[text] 
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

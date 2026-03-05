@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Copyright (c) 2016-2026 Jason Nicholson
+# Licensed under the MIT License
+# See LICENSE file in project root
+
 from __future__ import annotations
 
 import os

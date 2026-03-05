@@ -25,6 +25,9 @@ ylabel('Latitude') %[output:1026e269]
 zlabel('Depth in Feet') %[output:1026e269]
 grid on %[output:1026e269]
 legend({'Scattered Data', 'Regularized Surface'}, 'location', 'best'); %[output:1026e269]
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---

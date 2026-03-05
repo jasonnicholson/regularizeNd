@@ -119,6 +119,9 @@ residualsAbsolute = w1 - wFunction(x1,y1,z1,t1);
 figure; %[output:519d678d]
 histogram(residualsAbsolute, 'FaceColor', 'auto', 'EdgeColor', 'auto') %[output:519d678d]
 xlabel('Residual Size'); %[output:519d678d]
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
 
 %[appendix]{"version":"1.0"}
 %---
