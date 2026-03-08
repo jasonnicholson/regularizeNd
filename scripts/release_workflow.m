@@ -26,7 +26,7 @@ if dryRun
 end
 
 fprintf("[release] Determining next semantic version\n");
-nextVersionRaw = run_cmd_capture("npx git-conventional-commits version", projectRoot, "release", false);
+nextVersionRaw = run_cmd_capture("pnpm exec git-conventional-commits version", projectRoot, "release", false);
 nextVersion = parse_semver(nextVersionRaw);
 fprintf("[release] Next version: %s\n", nextVersion);
 
@@ -35,7 +35,7 @@ update_conf_py_version(fullfile(projectRoot, "docs", "conf.py"), nextVersion, fa
 update_pyproject_version(fullfile(projectRoot, "pyproject.toml"), nextVersion, false);
 
 fprintf("[release] Generating CHANGELOG.md\n");
-run_cmd("npx git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release", false);
+run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release", false);
 
 fprintf("[release] Running createPackage\n");
 if ~dryRun
@@ -184,7 +184,7 @@ cleanup_temp_file(notesFile);
 end
 
 function notesFile = build_release_notes(repoRoot, newVersion)
-cmd = 'npx git-conventional-commits changelog';
+cmd = 'pnpm exec git-conventional-commits changelog';
 
 notes = run_cmd_capture(cmd, repoRoot, "release", false);
 notes = string(notes);
