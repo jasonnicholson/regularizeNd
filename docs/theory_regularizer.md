@@ -1,41 +1,38 @@
 # Given:
 
-``` math
-{\frac{\partial^{2}f}{\partial x^{2}} = 0
-}{\frac{\partial^{2}f}{\partial y^{2}} = 0\ }
-```
-
-# Find:
-
-General solution of the partial differential equation system in 2d.
+$$
+\frac{\partial^{2}f}{\partial x^{2}} = 0
+\\
+\frac{\partial^{2}f}{\partial y^{2}} = 0
+$$
 
 # Solution:
 
 By inspection, the solution is the bilinear function with
-$`a,b,c\ and\ d`$ as constants.
+$a,b,c\ \text{and}\ d$ as constants.
 
-``` math
+$$
 f(x,y) = c + ax + by + dxy
-```
+$$
 
-We compute the 2<sup>nd</sup> derivatives of $`f(x,y)`$ to check that it
+We compute the 2nd derivatives of $f(x,y)$ to check that it
 really is a solution to the PDE system.
 
-``` math
+$$
 \frac{\partial f}{\partial x} = a + dy
-```
+$$
 
-``` math
+$$
 \frac{\partial^{2}f}{\partial x^{2}} = 0 + 0 = 0
-```
+$$
 
-``` math
+$$
 \frac{\partial f}{\partial y} = b + dx
-```
+$$
 
-``` math
+$$
 \frac{\partial^{2}f}{\partial y^{2}} = 0 + 0 = 0
-```
+$$
 
 # Conclusions:
 

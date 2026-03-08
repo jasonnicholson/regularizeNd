@@ -30,7 +30,7 @@ if dryRun
 end
 
 ensure_gh_pages_worktree(repoRoot, buildHtmlDir, ghPagesBranch, false);
-build_docs_html(repoRoot, docsDir, skipExamplesPublish, false);
+build_docs_html(repoRoot, docsDir, buildHtmlDir, skipExamplesPublish, false);
 
 commitHash = strtrim(run_cmd_capture("git rev-parse HEAD", repoRoot, "deploy", false));
 fprintf("[deploy_documentation] Current repo commit hash: %s\n", commitHash);
@@ -69,7 +69,7 @@ end
 run_cmd(sprintf('git worktree add "%s" %s', buildHtmlDir, ghPagesBranch), repoRoot, "deploy", false, dryRun);
 end
 
-function build_docs_html(repoRoot, docsDir, skipExamplesPublish, dryRun)
+function build_docs_html(repoRoot, docsDir, buildHtmlDir, skipExamplesPublish, dryRun)
 if ~skipExamplesPublish
     publishExamplesScript = fullfile(repoRoot, "scripts", "publish_examples.m");
     if isfile(publishExamplesScript)
