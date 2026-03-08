@@ -1,3 +1,16 @@
+## **3.0.5**&emsp;<sub><sup>2026-03-08 ([64add5b...63d618b](https://github.com/jasonnicholson/regularizeNd/compare/64add5bffb0a52467e01216f6521645cd78decec...63d618b6b519bc17d95cd39e54afd84f150bf8aa?diff=split))</sup></sub>
+
+### Documentation
+
+- Moving the developer documentation to the Sphinx site\. ([edfc1c5](https://github.com/jasonnicholson/regularizeNd/commit/edfc1c526b26fe0c4e2eac698a29cd1dc9c9a1e7))
+- Fixing documentation rendering issue with Theory of the Regularizer page\. ([919ea0c](https://github.com/jasonnicholson/regularizeNd/commit/919ea0c1d7231385a455308f2d21ecb428162980))
+
+### Bug Fixes
+
+- Documentation was not properly built before toolbox creation\. ([64a7cda](https://github.com/jasonnicholson/regularizeNd/commit/64a7cda53954c740247bfd1ef1145d1820b94b77))
+
+<br>
+
 ## **3.0.5**&emsp;<sub><sup>2026-03-08 ([64add5b...64a7cda](https://github.com/jasonnicholson/regularizeNd/compare/64add5bffb0a52467e01216f6521645cd78decec...64a7cda53954c740247bfd1ef1145d1820b94b77?diff=split))</sup></sub>
 
 ### Documentation
