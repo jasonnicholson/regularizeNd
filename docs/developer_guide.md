@@ -2,24 +2,76 @@
 
 ## Prerequisites
 
-Install [nodejs](https://nodejs.org/en). `npm` comes with `nodejs` and is the package manager needed to install a development tool called `git-conventional-commits` in the repo on your computer. I use `NVM` to manage `nodejs`. I do the following to install NVM and then nodejs:
+Install Node.js using [fnm](https://github.com/Schniz/fnm) (Fast Node Manager).
 
 ```bash
-# Use the package manager to get NVM
-# For Windows:
-winget install --id CoreyButler.NVMforWindows
+# Install fnm (Windows)
+winget install --id Schniz.fnm
 
-# For macOS/Linux:
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+# Install fnm (macOS)
+brew install fnm
 
-# Installs the Long Term Service version of nodejs
-nvm install lts
+# Install fnm (Linux)
+curl -fsSL https://fnm.vercel.app/install | bash
 
-# Sets the version of nodejs to use
-nvm use lts
+# Initialize fnm for your shell (example for bash)
+eval "$(fnm env --use-on-cd)"
 
-# Check that npm is available and what version
+# Install and use the latest LTS Node.js
+fnm install --lts
+fnm use --lts
+
+# Verify Node and npm
+node -v
 npm -v
+```
+
+Enable Corepack to manage package managers like pnpm. Note: as of Node.js 25, Corepack is no longer bundled, so install it separately if needed.
+
+```bash
+# Install Corepack when it is not bundled with Node.js
+npm install -g corepack
+```
+
+Then enable Corepack and activate pnpm:
+
+```bash
+# Enable Corepack shims
+corepack enable
+
+# Ensure pnpm is available via Corepack
+corepack install
+
+# Verify pnpm
+pnpm -v
+```
+
+Use pnpm to install dependencies:
+
+```bash
+# Install dependencies and update the lockfile if needed
+pnpm i
+
+# Install dependencies without modifying pnpm-lock.yaml
+pnpm i --frozen-lockfile
+```
+
+- `pnpm i` resolves and installs dependencies; it can update `pnpm-lock.yaml` if versions change.
+- `pnpm i --frozen-lockfile` enforces the existing lockfile and fails if it is out of date.
+
+Install and use `uv` for Python dependencies and tooling (docs builds, Sphinx, etc.):
+
+```bash
+# Install uv (recommended)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create a virtual environment and sync dependencies
+uv venv
+uv sync
+
+# Run commands inside the uv-managed environment
+uv run python -V
+uv run sphinx-build --version
 ```
 
 ## Development Workflow
