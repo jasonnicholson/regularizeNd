@@ -37,6 +37,9 @@ update_pyproject_version(fullfile(projectRoot, "pyproject.toml"), nextVersion, f
 fprintf("[release_workflow] Generating CHANGELOG.md\n");
 run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release_workflow", false);
 
+fprintf("[release_workflow] Deploying documentation\n");
+deploy_documentation("DryRun", dryRun);
+
 fprintf("[release_workflow] Running createPackage\n");
 createPackage("ToolboxVersion", nextVersion);
 
@@ -44,10 +47,9 @@ fprintf("[release_workflow] Committing and tagging release\n");
 commit_and_tag_release(projectRoot, nextVersion, dryRun);
 
 fprintf("[release_workflow] Creating GitHub release\n");
-create_github_release(projectRoot, nextVersion, dryRun);
+artifactPath = get_toolbox_artifact_path(projectRoot);
+create_github_release(projectRoot, nextVersion, artifactPath, dryRun);
 
-fprintf("[release_workflow] Deploying documentation\n");
-deploy_documentation("DryRun", dryRun);
 end
 
 function run_cmd(cmd, cwd, prefix, dryRun)
@@ -167,15 +169,28 @@ tagName = sprintf("v%s", newVersion);
 run_cmd(sprintf("git tag %s", tagName), repoRoot, "release_workflow", dryRun);
 end
 
-function create_github_release(repoRoot, newVersion, dryRun)
+function create_github_release(repoRoot, newVersion, artifactPath, dryRun)
 tagName = sprintf("v%s", newVersion);
 title = sprintf("v%s", newVersion);
 notesFile = build_release_notes(repoRoot, newVersion);
 
 cmd = sprintf('gh release create %s --title "%s" --notes-file "%s"', tagName, title, notesFile);
+if strlength(artifactPath) > 0
+    cmd = sprintf('%s "%s"', cmd, artifactPath);
+else
+    fprintf("[release_workflow] Toolbox artifact not found; creating release without attachment.\n");
+end
 run_cmd(cmd, repoRoot, "release_workflow", dryRun);
 
 cleanup_temp_file(notesFile);
+end
+
+function artifactPath = get_toolbox_artifact_path(projectRoot)
+artifactPath = "";
+candidate = fullfile(projectRoot, "build", "release", "regularizeNd-toolbox.mltbx");
+if isfile(candidate)
+    artifactPath = string(candidate);
+end
 end
 
 function notesFile = build_release_notes(repoRoot, newVersion)
