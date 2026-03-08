@@ -1,3 +1,8 @@
+## **3.0.7**&emsp;<sub><sup>2026-03-08 ([070a7f6...070a7f6](https://github.com/jasonnicholson/regularizeNd/compare/070a7f680be6ff940b84c9c49d066e434dcdcc90...070a7f680be6ff940b84c9c49d066e434dcdcc90?diff=split))</sup></sub>
+
+*no relevant changes*
+<br>
+
 ## **3.0.6**&emsp;<sub><sup>2026-03-08 ([2502c85...a3f4770](https://github.com/jasonnicholson/regularizeNd/compare/2502c859c0b7e58e82b153dc5211f91dfb0cbc2f...a3f47700edd5c4177a5fc3e8dd3b6a04c9b7ac97?diff=split))</sup></sub>
 
 ### Bug Fixes
