@@ -23,6 +23,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinxcontrib.matlab',
     'myst_parser',
+    'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc'
@@ -38,6 +39,10 @@ source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown'
 }
+
+myst_enable_extensions = [
+    'dollarmath'
+]
 
 
 

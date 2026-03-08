@@ -1,12 +1,13 @@
-# Given:
+# Theory of the Regularizer
 
+## Given
 $$
 \frac{\partial^{2}f}{\partial x^{2}} = 0
 \\
 \frac{\partial^{2}f}{\partial y^{2}} = 0
 $$
 
-# Solution:
+## Solution
 
 By inspection, the solution is the bilinear function with
 $a,b,c\ \text{and}\ d$ as constants.
@@ -34,11 +35,11 @@ $$
 \frac{\partial^{2}f}{\partial y^{2}} = 0 + 0 = 0
 $$
 
-# Conclusions:
+## Conclusions
 
 The solution to the regularizing function is the bilinear function in
 2d.
 
-# Future Work:
+## Future Work
 
 Prove a form of this for n-D dimensions.

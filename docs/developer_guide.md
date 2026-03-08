@@ -77,10 +77,11 @@ uv run sphinx-build --version
 ## Development Workflow
 
 1. Clone the repo.
-2. Run `npm i` or `npm ci`. In the `prepare` script, the git hooks are configured. This sets up git-conventional-commits to lint the commit messages. Without this, commit messages are not checked.
-3. Develop.
-4. Commit using conventional commits.
-5. Run `matlab -batch "release_workflow()"` for a dry run, or `matlab -batch "release_workflow('DryRun',false)"` to execute. This runs the release workflow end-to-end (see below) and uses the same dryRun state for `deploy_documentation`.
+2. Run `pnpm i` or `pnpm i --frozen-lockfile`. In the `prepare` script, the git hooks are configured. This sets up git-conventional-commits to lint the commit messages. Without this, commit messages are not checked.
+3. Run `setupRegularizeNdProjectPath.m` to set up the MATLAB path for this project. When you are done, run it again to clean up and remove the project paths.
+4. Develop.
+5. Commit using conventional commits.
+6. Run `matlab -batch "release_workflow()"` for a dry run, or `matlab -batch "release_workflow('DryRun',false)"` to execute. This runs the release workflow end-to-end (see below) and uses the same dryRun state for `deploy_documentation`.
 
 To run a live-reloading docs server during documentation development, use the Sphinx autobuild target from the docs folder:
 
@@ -253,7 +254,7 @@ chore: Excluding invalid commits in git-conventional-commits.yaml
 
 ## Further Reading
 
-- See [git-conventional-commits.yaml](../git-conventional-commits.yaml) for the configuration of the conventional commits. The tooling used to check and manage conventional commits is [git-conventional-commits](https://github.com/qoomon/git-conventional-commits).
+- See https://github.com/jasonnicholson/regularizeNd/blob/main/git-conventional-commits.yaml for the configuration of the conventional commits. The tooling used to check and manage conventional commits is [git-conventional-commits](https://github.com/qoomon/git-conventional-commits).
 - [More Info on Conventional Commit Messages](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
 - [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard
 - [Semantic Versioning](https://semver.org/) standard
