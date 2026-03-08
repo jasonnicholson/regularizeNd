@@ -22,6 +22,7 @@ import sys
 extensions = [
     'sphinx.ext.autodoc',
     'sphinxcontrib.matlab',
+    'myst_parser',
     'sphinx_rtd_theme',
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc'
@@ -32,6 +33,11 @@ matlab_src_dir = os.path.abspath(os.path.join('..', 'source'))
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown'
+}
 
 
 

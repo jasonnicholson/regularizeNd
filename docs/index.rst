@@ -10,8 +10,8 @@ Documentation
    :caption: Pages
 
    examples
-   developer_guide.md
-   changelog.md
+   developer_guide
+   changelog
 
 .. currentmodule:: .
 

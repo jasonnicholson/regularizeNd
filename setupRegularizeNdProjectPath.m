@@ -9,12 +9,14 @@ function setupRegularizeNdProjectPath(setuPath)
   % See LICENSE file in project root
 
   basePath = fileparts(mfilename("fullpath"));
-  FOLDERS = ["source"]; %#ok<NBRAK2>
-  folderFullPath = fullfile(basePath, FOLDERS);
+  FOLDERS = ["source";
+    "scripts";
+    "test"];
+  folderFullPath = convertStringsToChars(fullfile(basePath, FOLDERS));
 
   if setuPath
-    addpath(folderFullPath);
+    addpath(folderFullPath{:});
   else
-    rmpath(folderFullPath);
+    rmpath(folderFullPath{:});
   end
 end

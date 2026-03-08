@@ -1,6 +1,22 @@
-clc; clear; close all;
+function createPackage(options)
+% createPackage Build toolbox artifacts and package with ToolboxOptions.
+%
+% Usage:
+%   createPackage
+%   createPackage("ToolboxVersion", "3.0.4")
+
+arguments
+    options.ToolboxVersion (1,1) string = ""
+    options.PackageToolbox (1,1) logical = true
+    options.DryRun (1,1) logical = false
+end
 
 projectRoot = fileparts(fileparts(mfilename("fullpath")));
+
+if options.DryRun
+    fprintf("[package] DRY RUN enabled: build and package steps are skipped.\n");
+    return;
+end
 
 %% Setup directory
 % build folder is always on level up in the folder structure
@@ -31,7 +47,7 @@ end
 copyfile(fullfile(sphinxDocFolder, "_build", "html"), documentationFolder);
 
 % copy the changelog
-copyfile(fullfile(projectRoot, "CHANGELOG.md"),BUILD_FOLDER_NAME);
+copyfile(fullfile(projectRoot, "CHANGELOG.md"), BUILD_FOLDER_NAME);
 
 % build the documentation search database
 % use try-catch to make sure path is restored
@@ -49,9 +65,17 @@ copyfile(fullfile(projectRoot, "Examples"), fullfile(BUILD_FOLDER_NAME, "Example
 
 %% Package Toolbox
 
-% cannot automatically package the toolbox
-beep;
-fprintf("Open the package toolbox with the prj file. Fill out the form and create the toolbox.\n");
+if options.PackageToolbox
+    projectFile = fullfile(BUILD_FOLDER_NAME, "regularizeNd.prj");
+    opts = matlab.addons.toolbox.ToolboxOptions(projectFile);
+    if strlength(options.ToolboxVersion) > 0
+        opts.ToolboxVersion = options.ToolboxVersion;
+    end
+    matlab.addons.toolbox.packageToolbox(opts);
+    fprintf("[package] Toolbox packaged using %s\n", projectFile);
+else
+    fprintf("[package] Packaging skipped by request.\n");
+end
 
 % Copyright (c) 2016-2026 Jason Nicholson
 % Licensed under the MIT License

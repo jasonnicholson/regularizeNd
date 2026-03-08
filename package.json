@@ -1,6 +1,30 @@
 {
+  "name": "regularizend",
+  "version": "3.0.5",
+  "description": "[![View regularizeNd on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/61436-regularizend)",
+  "keywords": [],
+  "homepage": "https://github.com/jasonnicholson/regularizeNd#readme",
+  "bugs": {
+    "url": "https://github.com/jasonnicholson/regularizeNd/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonnicholson/regularizeNd.git"
+  },
   "license": "MIT",
+  "author": "Jason H. Nicholson",
+  "type": "module",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "git config core.hooksPath .githooks"
+  },
   "devDependencies": {
     "git-conventional-commits": "^2.8.0"
-  }
+  },
+  "packageManager": "pnpm@10.31.0"
 }

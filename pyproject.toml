@@ -1,6 +1,6 @@
 [project]
 name = "regularizeNd-docs"
-version = "3.0.4"
+version = "3.0.5"
 description = "Documentation tooling (Sphinx, MATLAB domain, autobuild) for the regularizeNd project."
 license = {text = "MIT"}
 requires-python = ">=3.12,<3.13"
@@ -11,6 +11,7 @@ dependencies = [
   "sphinxcontrib-matlabdomain",
   "sphinx-autobuild",
   "sphinx-rtd-theme>=3.0.2",
+  "myst-parser",
 ]
 
 [tool.uv]
