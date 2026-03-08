@@ -171,7 +171,7 @@ run_cmd(sprintf("git tag %s", tagName), repoRoot, "release_workflow", dryRun);
 if ~dryRun
     fprintf("[release_workflow] Pushing commits and tags\n");
     run_cmd("git push", repoRoot, "release_workflow", false);
-    run_cmd("git push --tags", repoRoot, "release_workflow", false);
+    run_cmd(sprintf("git push origin refs/tags/%s", tagName), repoRoot, "release_workflow", false);
 end
 end
 
