@@ -40,7 +40,8 @@ livehtml: maybe-examples
 	@$(SPHINXAUTOBUILD) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) --port 8002 --open-browser --watch ../source $(O)
 
 examples:
-	@$(PYTHON) ../scripts/publish_examples.py
+	@$(PYTHON) -c "import sys; sys.exit(0)"
+	@matlab -batch "addpath(fullfile(pwd,'..','scripts')); publish_examples"
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).

@@ -1,33 +1,14 @@
 * text=auto
-
-*.fig binary
-*.mat binary
-*.mdl binary diff merge=mlAutoMerge
-*.mdlp binary
-*.mex* binary
-*.mlapp binary
-*.mldatx binary merge=mlAutoMerge
-*.mlproj binary
-*.mlx binary
-*.p binary
-*.plprj binary
-*.sbproj binary
-*.sfx binary
-*.sldd binary
-*.slreqx binary merge=mlAutoMerge
-*.slmx binary merge=mlAutoMerge
-*.sltx binary
-*.slxc binary
-*.slx binary merge=mlAutoMerge
-*.slxp binary
-
+docs/make.bat text eol=crlf
+package.json text eol=lf
+pnpm-lock.yaml text eol=lf
 ## MATLAB Project metadata files use LF line endings
 /resources/project/**/*.xml text eol=lf
-
-## Other common binary file types
-*.docx binary
-*.exe binary
-*.jpg binary
-*.pdf binary
-*.png binary
-*.xlsx binary
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.mat filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.fig filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.xlsx filter=lfs diff=lfs merge=lfs -text
+*.xlsm filter=lfs diff=lfs merge=lfs -text
+*.docx filter=lfs diff=lfs merge=lfs -text

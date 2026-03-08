@@ -1,7 +1,3 @@
-% Copyright (c) 2016-2026 Jason Nicholson
-% Licensed under the MIT License
-% See LICENSE file in project root
-%
 function deploy_documentation(options)
 % deploy_documentation Deploy Sphinx HTML docs to the gh-pages branch.
 %
@@ -10,6 +6,11 @@ function deploy_documentation(options)
 %   deploy_documentation("DryRun", true)
 %   deploy_documentation("DryRun", false)
 %   deploy_documentation("SkipExamplesPublish", true)
+
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+%
 
 arguments
     options.SkipExamplesPublish (1,1) logical = false
@@ -95,19 +96,14 @@ if isfolder(venvBin)
         setenv("SPHINXBUILD", sphinxBuild);
     end
 
-    sphinxAutobuild = fullfile(venvBin, "sphinx-autobuild");
-    if isfile(sphinxAutobuild)
-        setenv("SPHINXAUTOBUILD", sphinxAutobuild);
-    end
-
     pythonExe = fullfile(venvBin, "python");
     if isfile(pythonExe)
         setenv("PYTHON", pythonExe);
     end
 end
 
-fprintf("[deploy_documentation] Building Sphinx HTML docs (make html)\n");
-run_cmd("make html", docsDir, "deploy", false, dryRun);
+fprintf("[deploy_documentation] Building Sphinx HTML docs (uv run sphinx-build)\n");
+run_cmd(sprintf('uv run sphinx-build -b html "%s" "%s"', docsDir, buildHtmlDir), docsDir, "deploy", false, dryRun);
 end
 
 function commit_and_push(buildHtmlDir, ghPagesBranch, commitHash, skipPush)

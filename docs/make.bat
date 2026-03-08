@@ -65,7 +65,7 @@ goto end
 	exit /b 0
 
 :examples
-	%PYTHON% ..\scripts\publish_examples.py
+	matlab -batch "addpath(fullfile(pwd,'..','scripts')); publish_examples"
 	if errorlevel 1 exit /b %errorlevel%
 	goto end
 

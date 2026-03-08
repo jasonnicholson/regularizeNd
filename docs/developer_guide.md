@@ -29,6 +29,13 @@ npm -v
 3. Develop.
 4. Commit using conventional commits.
 5. Run `matlab -batch "release_workflow()"` for a dry run, or `matlab -batch "release_workflow('DryRun',false)"` to execute. This runs the release workflow end-to-end (see below) and uses the same dryRun state for `deploy_documentation`.
+
+To run a live-reloading docs server during documentation development, use the Sphinx autobuild target from the docs folder:
+
+```bash
+cd docs
+make livehtml
+```
   
 
 ## Release Workflow
@@ -40,9 +47,10 @@ npm -v
 3. Generates `CHANGELOG.md`.
 4. Builds the toolbox artifacts and packages the toolbox using `createPackage`.
 5. Commits the version/changelog changes as `chore(release): vX.Y.Z` and tags `vX.Y.Z` (skipped in dry run).
-6. Runs `deploy_documentation` with the same DryRun setting; when DryRun is true, it does everything except push.
+6. Creates a GitHub release with notes generated from conventional commits since the previous tag (skipped in dry run).
+7. Runs `deploy_documentation` with the same DryRun setting; when DryRun is true, it does everything except push.
 
-Dry run behavior: version/changelog updates and changelog generation still run, but git commits/tags are not created and documentation pushes are skipped.
+Dry run behavior: version/changelog updates and changelog generation still run, but git commits/tags, GitHub releases, and documentation pushes are skipped.
 
 ## Semantic Versioning
 

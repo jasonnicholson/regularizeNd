@@ -19,6 +19,8 @@ dryRun = options.DryRun;
 
 projectRoot = fileparts(fileparts(mfilename("fullpath")));
 
+assert_clean_changelog(projectRoot);
+
 if dryRun
     fprintf("[release] DRY RUN enabled: version/changelog updates run; packaging is skipped; docs deploy runs without push.\n");
 end
@@ -46,6 +48,9 @@ end
 fprintf("[release] Committing and tagging release\n");
 commit_and_tag_release(projectRoot, nextVersion, dryRun);
 
+fprintf("[release] Creating GitHub release\n");
+create_github_release(projectRoot, nextVersion, dryRun);
+
 fprintf("[release] Deploying documentation\n");
 deploy_documentation("DryRun", dryRun);
 end
@@ -69,11 +74,17 @@ if dryRun
     out = "3.0.0";
     return;
 end
-
 fullCmd = sprintf('cd "%s" && %s', cwd, cmd);
 [status, out] = system(fullCmd);
 if status ~= 0
     error("[%s] Command failed with status %d: %s", prefix, status, cmd);
+end
+end
+
+function assert_clean_changelog(repoRoot)
+statusOutput = strtrim(run_cmd_capture("git status --porcelain CHANGELOG.md", repoRoot, "release", false));
+if strlength(statusOutput) > 0
+    error("CHANGELOG.md has local modifications. Commit or discard them before running release_workflow.");
 end
 end
 
@@ -159,6 +170,39 @@ run_cmd(sprintf('git commit -m "%s"', message), repoRoot, "release", dryRun);
 
 tagName = sprintf("v%s", newVersion);
 run_cmd(sprintf("git tag %s", tagName), repoRoot, "release", dryRun);
+end
+
+function create_github_release(repoRoot, newVersion, dryRun)
+tagName = sprintf("v%s", newVersion);
+title = sprintf("v%s", newVersion);
+notesFile = build_release_notes(repoRoot, newVersion);
+
+cmd = sprintf('gh release create %s --title "%s" --notes-file "%s"', tagName, title, notesFile);
+run_cmd(cmd, repoRoot, "release", dryRun);
+
+cleanup_temp_file(notesFile);
+end
+
+function notesFile = build_release_notes(repoRoot, newVersion)
+cmd = 'npx git-conventional-commits changelog';
+
+notes = run_cmd_capture(cmd, repoRoot, "release", false);
+notes = string(notes);
+if strlength(strtrim(notes)) == 0
+    notes = sprintf("# v%s\n\nNo changes.\n", newVersion);
+end
+
+notesFile = tempname + ".md";
+write_text_file(notesFile, notes);
+end
+
+function cleanup_temp_file(filePath)
+if isfile(filePath)
+    try
+        delete(filePath);
+    catch
+    end
+end
 end
 
 function write_text_file(filePath, textContent)
