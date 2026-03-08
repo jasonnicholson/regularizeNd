@@ -22,7 +22,7 @@ projectRoot = fileparts(fileparts(mfilename("fullpath")));
 assert_clean_changelog(projectRoot);
 
 if dryRun
-    fprintf("[release_workflow] DRY RUN enabled: version/changelog updates run; packaging is skipped; docs deploy runs without push.\n");
+    fprintf("[release_workflow] DRY RUN enabled: version/changelog updates run; packaging runs; git release actions are printed; docs deploy runs without push.\n");
 end
 
 fprintf("[release_workflow] Determining next semantic version\n");
@@ -38,12 +38,7 @@ fprintf("[release_workflow] Generating CHANGELOG.md\n");
 run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release_workflow", false);
 
 fprintf("[release_workflow] Running createPackage\n");
-if ~dryRun
-    scriptsDir = fullfile(projectRoot, "scripts");
-    addpath(scriptsDir);
-    cleanupObj = onCleanup(@() rmpath(scriptsDir));
-    createPackage("ToolboxVersion", nextVersion);
-end
+createPackage("ToolboxVersion", nextVersion);
 
 fprintf("[release_workflow] Committing and tagging release\n");
 commit_and_tag_release(projectRoot, nextVersion, dryRun);

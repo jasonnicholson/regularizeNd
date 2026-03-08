@@ -78,10 +78,12 @@ uv run sphinx-build --version
 
 1. Clone the repo.
 2. Run `pnpm i` or `pnpm i --frozen-lockfile`. In the `prepare` script, the git hooks are configured. This sets up git-conventional-commits to lint the commit messages. Without this, commit messages are not checked.
-3. Run `setupRegularizeNdProjectPath.m` to set up the MATLAB path for this project. When you are done, run it again to clean up and remove the project paths.
+3. Run `setupRegularizeNdProjectPath.m` to set up the MATLAB path for this project before running any MATLAB scripts. When you are done, run it again to clean up and remove the project paths.
 4. Develop.
 5. Commit using conventional commits.
 6. Run `matlab -batch "release_workflow()"` for a dry run, or `matlab -batch "release_workflow('DryRun',false)"` to execute. This runs the release workflow end-to-end (see below) and uses the same dryRun state for `deploy_documentation`.
+
+Note: other scripts assume the MATLAB path has already been set. The only script that adjusts the path internally is `createPackage`, which adds the build folder briefly for `builddocsearchdb` and removes it immediately.
 
 To run a live-reloading docs server during documentation development, use the Sphinx autobuild target from the docs folder:
 

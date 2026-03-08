@@ -5,6 +5,10 @@ function createPackage(options)
 %   createPackage
 %   createPackage("ToolboxVersion", "3.0.4")
 
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+
 arguments
     options.ToolboxVersion (1,1) string = ""
     options.PackageToolbox (1,1) logical = true
@@ -77,6 +81,4 @@ else
     fprintf("[package] Packaging skipped by request.\n");
 end
 
-% Copyright (c) 2016-2026 Jason Nicholson
-% Licensed under the MIT License
-% See LICENSE file in project root
+end
