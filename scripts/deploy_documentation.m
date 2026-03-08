@@ -55,6 +55,7 @@ if strlength(branch) > 0
 end
 
 fprintf("[deploy_documentation] No valid git worktree found at %s, recreating as orphan %s worktree.\n", buildHtmlDir, ghPagesBranch);
+cleanup_stale_worktree(repoRoot, buildHtmlDir, dryRun);
 clear_directory_contents(buildHtmlDir);
 
 showRefCmd = sprintf('git show-ref --verify --quiet refs/heads/%s', ghPagesBranch);
@@ -67,6 +68,13 @@ if status ~= 0
 end
 
 run_cmd(sprintf('git worktree add "%s" %s', buildHtmlDir, ghPagesBranch), repoRoot, "deploy_documentation", false, dryRun);
+end
+
+function cleanup_stale_worktree(repoRoot, buildHtmlDir, dryRun)
+fprintf("[deploy_documentation] Cleaning up stale worktree registrations (if any)\n");
+run_cmd("git worktree repair", repoRoot, "deploy_documentation", true, dryRun);
+run_cmd(sprintf('git worktree remove --force "%s"', buildHtmlDir), repoRoot, "deploy_documentation", true, dryRun);
+run_cmd("git worktree prune", repoRoot, "deploy_documentation", true, dryRun);
 end
 
 function build_docs_html(repoRoot, docsDir, buildHtmlDir, skipExamplesPublish, dryRun)
