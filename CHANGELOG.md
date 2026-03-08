@@ -1,3 +1,11 @@
+## **3.0.6**&emsp;<sub><sup>2026-03-08 ([2502c85...a3f4770](https://github.com/jasonnicholson/regularizeNd/compare/2502c859c0b7e58e82b153dc5211f91dfb0cbc2f...a3f47700edd5c4177a5fc3e8dd3b6a04c9b7ac97?diff=split))</sup></sub>
+
+### Bug Fixes
+
+- Adding a small change so I can deploy to the next version\. ([a3f4770](https://github.com/jasonnicholson/regularizeNd/commit/a3f47700edd5c4177a5fc3e8dd3b6a04c9b7ac97))
+
+<br>
+
 ## **3.0.5**&emsp;<sub><sup>2026-03-08 ([64add5b...9e11a8d](https://github.com/jasonnicholson/regularizeNd/compare/64add5bffb0a52467e01216f6521645cd78decec...9e11a8d6e30057766b329dd6606faccb7a20dbec?diff=split))</sup></sub>
 
 ### Documentation
