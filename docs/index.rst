@@ -13,6 +13,7 @@ Documentation
    developer_guide
    theory_regularizer
    changelog
+   
 
 .. currentmodule:: .
 
