@@ -22,22 +22,22 @@ projectRoot = fileparts(fileparts(mfilename("fullpath")));
 assert_clean_changelog(projectRoot);
 
 if dryRun
-    fprintf("[release] DRY RUN enabled: version/changelog updates run; packaging is skipped; docs deploy runs without push.\n");
+    fprintf("[release_workflow] DRY RUN enabled: version/changelog updates run; packaging is skipped; docs deploy runs without push.\n");
 end
 
-fprintf("[release] Determining next semantic version\n");
-nextVersionRaw = run_cmd_capture("pnpm exec git-conventional-commits version", projectRoot, "release", false);
+fprintf("[release_workflow] Determining next semantic version\n");
+nextVersionRaw = run_cmd_capture("pnpm exec git-conventional-commits version", projectRoot, "release_workflow", false);
 nextVersion = parse_semver(nextVersionRaw);
-fprintf("[release] Next version: %s\n", nextVersion);
+fprintf("[release_workflow] Next version: %s\n", nextVersion);
 
 update_package_json_version(fullfile(projectRoot, "package.json"), nextVersion, false);
 update_conf_py_version(fullfile(projectRoot, "docs", "conf.py"), nextVersion, false);
 update_pyproject_version(fullfile(projectRoot, "pyproject.toml"), nextVersion, false);
 
-fprintf("[release] Generating CHANGELOG.md\n");
-run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release", false);
+fprintf("[release_workflow] Generating CHANGELOG.md\n");
+run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release_workflow", false);
 
-fprintf("[release] Running createPackage\n");
+fprintf("[release_workflow] Running createPackage\n");
 if ~dryRun
     scriptsDir = fullfile(projectRoot, "scripts");
     addpath(scriptsDir);
@@ -45,13 +45,13 @@ if ~dryRun
     createPackage("ToolboxVersion", nextVersion);
 end
 
-fprintf("[release] Committing and tagging release\n");
+fprintf("[release_workflow] Committing and tagging release\n");
 commit_and_tag_release(projectRoot, nextVersion, dryRun);
 
-fprintf("[release] Creating GitHub release\n");
+fprintf("[release_workflow] Creating GitHub release\n");
 create_github_release(projectRoot, nextVersion, dryRun);
 
-fprintf("[release] Deploying documentation\n");
+fprintf("[release_workflow] Deploying documentation\n");
 deploy_documentation("DryRun", dryRun);
 end
 
@@ -82,7 +82,7 @@ end
 end
 
 function assert_clean_changelog(repoRoot)
-statusOutput = strtrim(run_cmd_capture("git status --porcelain CHANGELOG.md", repoRoot, "release", false));
+statusOutput = strtrim(run_cmd_capture("git status --porcelain CHANGELOG.md", repoRoot, "release_workflow", false));
 if strlength(statusOutput) > 0
     error("CHANGELOG.md has local modifications. Commit or discard them before running release_workflow.");
 end
@@ -105,17 +105,17 @@ replacement = sprintf('"version": "%s"', newVersion);
 updated = regexprep(content, pattern, replacement, 'once');
 
 if strcmp(content, updated)
-    fprintf("[release] package.json already at version %s\n", newVersion);
+    fprintf("[release_workflow] package.json already at version %s\n", newVersion);
     return;
 end
 
 if dryRun
-    fprintf("[release] DRY RUN: would set package.json version to %s\n", newVersion);
+    fprintf("[release_workflow] DRY RUN: would set package.json version to %s\n", newVersion);
     return;
 end
 
 write_text_file(filePath, updated);
-fprintf("[release] Updated package.json version to %s\n", newVersion);
+fprintf("[release_workflow] Updated package.json version to %s\n", newVersion);
 end
 
 function update_conf_py_version(filePath, newVersion, dryRun)
@@ -124,17 +124,17 @@ updated = regexprep(content, "^version\\s*=\\s*'.*'$", sprintf("version = '%s'",
 updated = regexprep(updated, "^release\\s*=\\s*'.*'$", sprintf("release = '%s'", newVersion), 'lineanchors', 'once');
 
 if strcmp(content, updated)
-    fprintf("[release] docs/conf.py already at version %s\n", newVersion);
+    fprintf("[release_workflow] docs/conf.py already at version %s\n", newVersion);
     return;
 end
 
 if dryRun
-    fprintf("[release] DRY RUN: would set docs/conf.py version and release to %s\n", newVersion);
+    fprintf("[release_workflow] DRY RUN: would set docs/conf.py version and release to %s\n", newVersion);
     return;
 end
 
 write_text_file(filePath, updated);
-fprintf("[release] Updated docs/conf.py version and release to %s\n", newVersion);
+fprintf("[release_workflow] Updated docs/conf.py version and release to %s\n", newVersion);
 end
 
 function update_pyproject_version(filePath, newVersion, dryRun)
@@ -144,32 +144,32 @@ replacement = sprintf('version = "%s"', newVersion);
 updated = regexprep(content, pattern, replacement, 'lineanchors', 'once');
 
 if strcmp(content, updated)
-    fprintf("[release] pyproject.toml already at version %s\n", newVersion);
+    fprintf("[release_workflow] pyproject.toml already at version %s\n", newVersion);
     return;
 end
 
 if dryRun
-    fprintf("[release] DRY RUN: would set pyproject.toml version to %s\n", newVersion);
+    fprintf("[release_workflow] DRY RUN: would set pyproject.toml version to %s\n", newVersion);
     return;
 end
 
 write_text_file(filePath, updated);
-fprintf("[release] Updated pyproject.toml version to %s\n", newVersion);
+fprintf("[release_workflow] Updated pyproject.toml version to %s\n", newVersion);
 end
 
 function commit_and_tag_release(repoRoot, newVersion, dryRun)
-run_cmd("git add package.json docs/conf.py pyproject.toml CHANGELOG.md", repoRoot, "release", dryRun);
-statusOutput = strtrim(run_cmd_capture("git status --porcelain", repoRoot, "release", false));
+run_cmd("git add package.json docs/conf.py pyproject.toml CHANGELOG.md", repoRoot, "release_workflow", dryRun);
+statusOutput = strtrim(run_cmd_capture("git status --porcelain", repoRoot, "release_workflow", false));
 if strlength(statusOutput) == 0
-    fprintf("[release] No changes to commit; skipping commit and tag.\n");
+    fprintf("[release_workflow] No changes to commit; skipping commit and tag.\n");
     return;
 end
 
 message = sprintf("chore(release): v%s", newVersion);
-run_cmd(sprintf('git commit -m "%s"', message), repoRoot, "release", dryRun);
+run_cmd(sprintf('git commit -m "%s"', message), repoRoot, "release_workflow", dryRun);
 
 tagName = sprintf("v%s", newVersion);
-run_cmd(sprintf("git tag %s", tagName), repoRoot, "release", dryRun);
+run_cmd(sprintf("git tag %s", tagName), repoRoot, "release_workflow", dryRun);
 end
 
 function create_github_release(repoRoot, newVersion, dryRun)
@@ -178,7 +178,7 @@ title = sprintf("v%s", newVersion);
 notesFile = build_release_notes(repoRoot, newVersion);
 
 cmd = sprintf('gh release create %s --title "%s" --notes-file "%s"', tagName, title, notesFile);
-run_cmd(cmd, repoRoot, "release", dryRun);
+run_cmd(cmd, repoRoot, "release_workflow", dryRun);
 
 cleanup_temp_file(notesFile);
 end
@@ -186,7 +186,7 @@ end
 function notesFile = build_release_notes(repoRoot, newVersion)
 cmd = 'pnpm exec git-conventional-commits changelog';
 
-notes = run_cmd_capture(cmd, repoRoot, "release", false);
+notes = run_cmd_capture(cmd, repoRoot, "release_workflow", false);
 notes = string(notes);
 if strlength(strtrim(notes)) == 0
     notes = sprintf("# v%s\n\nNo changes.\n", newVersion);

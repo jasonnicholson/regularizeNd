@@ -32,7 +32,7 @@ end
 ensure_gh_pages_worktree(repoRoot, buildHtmlDir, ghPagesBranch, false);
 build_docs_html(repoRoot, docsDir, buildHtmlDir, skipExamplesPublish, false);
 
-commitHash = strtrim(run_cmd_capture("git rev-parse HEAD", repoRoot, "deploy", false));
+commitHash = strtrim(run_cmd_capture("git rev-parse HEAD", repoRoot, "deploy_documentation", false));
 fprintf("[deploy_documentation] Current repo commit hash: %s\n", commitHash);
 
 commit_and_push(buildHtmlDir, ghPagesBranch, commitHash, dryRun);
@@ -58,15 +58,15 @@ fprintf("[deploy_documentation] No valid git worktree found at %s, recreating as
 clear_directory_contents(buildHtmlDir);
 
 showRefCmd = sprintf('git show-ref --verify --quiet refs/heads/%s', ghPagesBranch);
-status = run_cmd(showRefCmd, repoRoot, "deploy", true, dryRun);
+status = run_cmd(showRefCmd, repoRoot, "deploy_documentation", true, dryRun);
 if status ~= 0
     fprintf("[deploy_documentation] Creating local branch %s (empty root commit).\n", ghPagesBranch);
-    emptyTree = strtrim(run_cmd_capture('git hash-object -t tree /dev/null', repoRoot, "deploy", dryRun));
-    commit = strtrim(run_cmd_capture(sprintf('git commit-tree %s -m "Initialize gh-pages"', emptyTree), repoRoot, "deploy", dryRun));
-    run_cmd(sprintf('git update-ref refs/heads/%s %s', ghPagesBranch, commit), repoRoot, "deploy", false, dryRun);
+    emptyTree = strtrim(run_cmd_capture('git hash-object -t tree /dev/null', repoRoot, "deploy_documentation", dryRun));
+    commit = strtrim(run_cmd_capture(sprintf('git commit-tree %s -m "Initialize gh-pages"', emptyTree), repoRoot, "deploy_documentation", dryRun));
+    run_cmd(sprintf('git update-ref refs/heads/%s %s', ghPagesBranch, commit), repoRoot, "deploy_documentation", false, dryRun);
 end
 
-run_cmd(sprintf('git worktree add "%s" %s', buildHtmlDir, ghPagesBranch), repoRoot, "deploy", false, dryRun);
+run_cmd(sprintf('git worktree add "%s" %s', buildHtmlDir, ghPagesBranch), repoRoot, "deploy_documentation", false, dryRun);
 end
 
 function build_docs_html(repoRoot, docsDir, buildHtmlDir, skipExamplesPublish, dryRun)
@@ -103,7 +103,7 @@ if isfolder(venvBin)
 end
 
 fprintf("[deploy_documentation] Building Sphinx HTML docs (uv run sphinx-build)\n");
-run_cmd(sprintf('uv run sphinx-build -b html "%s" "%s"', docsDir, buildHtmlDir), docsDir, "deploy", false, dryRun);
+run_cmd(sprintf('uv run sphinx-build -b html "%s" "%s"', docsDir, buildHtmlDir), docsDir, "deploy_documentation", false, dryRun);
 end
 
 function commit_and_push(buildHtmlDir, ghPagesBranch, commitHash, skipPush)
@@ -115,19 +115,19 @@ if ~isfile(nojekyllPath)
     write_text_file(nojekyllPath, "# Disable Jekyll for Sphinx docs\n");
 end
 
-run_cmd("git add --all", buildHtmlDir, "deploy", false, false);
-statusOutput = strtrim(run_cmd_capture("git status --porcelain", buildHtmlDir, "deploy", false));
+run_cmd("git add --all", buildHtmlDir, "deploy_documentation", false, false);
+statusOutput = strtrim(run_cmd_capture("git status --porcelain", buildHtmlDir, "deploy_documentation", false));
 if strlength(statusOutput) == 0
     fprintf("[deploy_documentation] No changes to commit in gh-pages; skipping commit and push.\n");
     return;
 end
 
 message = sprintf("chore: deploy to gh-pages, %s", commitHash);
-tree = strtrim(run_cmd_capture("git write-tree", buildHtmlDir, "deploy", false));
-newCommit = strtrim(run_cmd_capture(sprintf('git commit-tree %s -m "%s"', tree, message), buildHtmlDir, "deploy", false));
+tree = strtrim(run_cmd_capture("git write-tree", buildHtmlDir, "deploy_documentation", false));
+newCommit = strtrim(run_cmd_capture(sprintf('git commit-tree %s -m "%s"', tree, message), buildHtmlDir, "deploy_documentation", false));
 
-run_cmd(sprintf('git update-ref refs/heads/%s %s', ghPagesBranch, newCommit), buildHtmlDir, "deploy", false, false);
-run_cmd(sprintf('git reset --hard %s', newCommit), buildHtmlDir, "deploy", false, false);
+run_cmd(sprintf('git update-ref refs/heads/%s %s', ghPagesBranch, newCommit), buildHtmlDir, "deploy_documentation", false, false);
+run_cmd(sprintf('git reset --hard %s', newCommit), buildHtmlDir, "deploy_documentation", false, false);
 
 if skipPush
     fprintf("[deploy_documentation] Dry run enabled: skipping push.\n");
@@ -135,7 +135,7 @@ if skipPush
 end
 
 fprintf("[deploy_documentation] Pushing gh-pages to origin (force)\n");
-run_cmd(sprintf('git push --force origin %s', ghPagesBranch), buildHtmlDir, "deploy", false, false);
+run_cmd(sprintf('git push --force origin %s', ghPagesBranch), buildHtmlDir, "deploy_documentation", false, false);
 end
 
 function branch = get_worktree_branch(pathToWorktree)
@@ -146,7 +146,7 @@ if ~exist(gitDir, "dir") && ~exist(gitDir, "file")
 end
 
 try
-    out = strtrim(run_cmd_capture("git rev-parse --abbrev-ref HEAD", pathToWorktree, "deploy", false));
+    out = strtrim(run_cmd_capture("git rev-parse --abbrev-ref HEAD", pathToWorktree, "deploy_documentation", false));
     if out ~= "HEAD"
         branch = string(out);
     end
