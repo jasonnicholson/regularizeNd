@@ -162,16 +162,22 @@ if strlength(statusOutput) == 0
     return;
 end
 
-message = sprintf("chore(release): v%s", newVersion);
+message = sprintf("chore(release): %s", newVersion);
 run_cmd(sprintf('git commit -m "%s"', message), repoRoot, "release_workflow", dryRun);
 
-tagName = sprintf("v%s", newVersion);
+tagName = sprintf("%s", newVersion);
 run_cmd(sprintf("git tag %s", tagName), repoRoot, "release_workflow", dryRun);
+
+if ~dryRun
+    fprintf("[release_workflow] Pushing commits and tags\n");
+    run_cmd("git push", repoRoot, "release_workflow", false);
+    run_cmd("git push --tags", repoRoot, "release_workflow", false);
+end
 end
 
 function create_github_release(repoRoot, newVersion, artifactPath, dryRun)
-tagName = sprintf("v%s", newVersion);
-title = sprintf("v%s", newVersion);
+tagName = sprintf("%s", newVersion);
+title = sprintf("%s", newVersion);
 notesFile = build_release_notes(repoRoot, newVersion);
 
 cmd = sprintf('gh release create %s --title "%s" --notes-file "%s"', tagName, title, notesFile);
@@ -199,7 +205,7 @@ cmd = 'pnpm exec git-conventional-commits changelog';
 notes = run_cmd_capture(cmd, repoRoot, "release_workflow", false);
 notes = string(notes);
 if strlength(strtrim(notes)) == 0
-    notes = sprintf("# v%s\n\nNo changes.\n", newVersion);
+    notes = sprintf("# %s\n\nNo changes.\n", newVersion);
 end
 
 notesFile = tempname + ".md";
