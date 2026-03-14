@@ -22,7 +22,7 @@ projectRoot = fileparts(fileparts(mfilename("fullpath")));
 assert_clean_changelog(projectRoot);
 
 if dryRun
-    fprintf("[release_workflow] DRY RUN enabled: version/changelog updates run; packaging runs; git release actions are printed; docs deploy runs without push.\n");
+    fprintf("[release_workflow] DRY RUN enabled: version/changelog/file updates are skipped; packaging runs; git release actions are printed; docs deploy runs without push.\n");
 end
 
 fprintf("[release_workflow] Determining next semantic version\n");
@@ -30,9 +30,9 @@ nextVersionRaw = run_cmd_capture("pnpm exec git-conventional-commits version", p
 nextVersion = parse_semver(nextVersionRaw);
 fprintf("[release_workflow] Next version: %s\n", nextVersion);
 
-update_package_json_version(fullfile(projectRoot, "package.json"), nextVersion, false);
-update_conf_py_version(fullfile(projectRoot, "docs", "conf.py"), nextVersion, false);
-update_pyproject_version(fullfile(projectRoot, "pyproject.toml"), nextVersion, false);
+update_package_json_version(fullfile(projectRoot, "package.json"), nextVersion, dryRun);
+update_conf_py_version(fullfile(projectRoot, "docs", "conf.py"), nextVersion, dryRun);
+update_pyproject_version(fullfile(projectRoot, "pyproject.toml"), nextVersion, dryRun);
 
 fprintf("[release_workflow] Generating CHANGELOG.md\n");
 run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release_workflow", false);
