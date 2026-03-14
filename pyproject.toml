@@ -1,6 +1,6 @@
 [project]
 name = "regularizeNd-docs"
-version = "3.0.7"
+version = "3.0.8"
 description = "Documentation tooling (Sphinx, MATLAB domain, autobuild) for the regularizeNd project."
 license = {text = "MIT"}
 requires-python = ">=3.12,<3.13"

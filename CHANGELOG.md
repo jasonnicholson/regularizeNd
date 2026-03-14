@@ -1,3 +1,13 @@
+## **3.0.8**&emsp;<sub><sup>2026-03-13 ([4ea4425...c0fa1b4](https://github.com/jasonnicholson/regularizeNd/compare/4ea4425241f07e79567032b8d7f94eca37a87408...c0fa1b4d5d549130f6c80044365caac9ff4bdbc8?diff=split))</sup></sub>
+
+### Bug Fixes
+
+- Forgot to commit uv lock file\. ([4ea4425](https://github.com/jasonnicholson/regularizeNd/commit/4ea4425241f07e79567032b8d7f94eca37a87408))
+- Updating base project files\. ([c01d007](https://github.com/jasonnicholson/regularizeNd/commit/c01d00784a05ebdb4eefaaa21bd8c5eaa890dc74))
+- Working on updating project files\. ([37d6698](https://github.com/jasonnicholson/regularizeNd/commit/37d6698c5e88f86462efb85e6cdbb35e0a179893))
+
+<br>
+
 ## **3.0.7**&emsp;<sub><sup>2026-03-08 ([070a7f6...070a7f6](https://github.com/jasonnicholson/regularizeNd/compare/070a7f680be6ff940b84c9c49d066e434dcdcc90...070a7f680be6ff940b84c9c49d066e434dcdcc90?diff=split))</sup></sub>
 
 *no relevant changes*
