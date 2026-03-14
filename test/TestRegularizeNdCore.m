@@ -64,6 +64,18 @@ classdef TestRegularizeNdCore < matlab.unittest.TestCase
       testCase.verifyEqual(b, -0.25 * ones(5,1));
     end
 
+    function monotonicConstraintDefaultsMatchExplicitInputs(testCase)
+      % Covers nargin defaults in monotonicConstraint (lines 84-86):
+      % dxMin defaults to 0 and dimension defaults to 1.
+      xGrid = {1:6};
+
+      [Adefault, bdefault] = monotonicConstraint(xGrid);
+      [Aexplicit, bexplicit] = monotonicConstraint(xGrid, 1, 0);
+
+      testCase.verifyEqual(full(Adefault), full(Aexplicit));
+      testCase.verifyEqual(bdefault, bexplicit);
+    end
+
     function constrainedAlternativeReturnsFeasibleResult(testCase)
       C = [0.95, 0.76, 0.61, 0.40;
            0.23, 0.45, 0.79, 0.93;
@@ -152,6 +164,95 @@ classdef TestRegularizeNdCore < matlab.unittest.TestCase
       testCase.verifySize(yGrid, [numel(xGrid{1}), 1]);
       testCase.verifyTrue(all(isfinite(yGrid), "all"));
     end
+
+    function injectedExitFlagsProduceExpectedWarnings(testCase)
+      % Uses deterministic internal hooks to cover solverExitFlag warning
+      % branches 2, 3, and 4 without depending on numeric solver internals.
+      [x, y, xGrid] = localData1D();
+
+      flags = [2, 3, 4];
+      expectedIds = [ ...
+        "regularizeNd:iterativePreconditionerIllConditioned", ...
+        "regularizeNd:iterativeStagnated", ...
+        "regularizeNd:iterativeScalarBreakdown" ...
+      ];
+
+      for iFlag = 1:numel(flags)
+        hooks = struct();
+        hooks.iterativeSolverFn = @(solver, A, yData, nSmooth, tol, maxIter, calcFn) ...
+          localMockIterativeSolverWithFlag(A, flags(iFlag)); %#ok<NASGU>
+        internal.setRegularizeNdHooks(hooks);
+        cleanupObj = onCleanup(@() internal.clearRegularizeNdHooks()); %#ok<NASGU>
+
+        lastwarn("");
+        yGrid = regularizeNd(x, y, xGrid, 1e-3, "linear", "pcg", 10, 1e-8);
+        [warnMsg, warnId] = lastwarn();
+
+        testCase.verifySize(yGrid, [numel(xGrid{1}), 1]);
+        testCase.verifyTrue(all(isfinite(yGrid), "all"));
+        testCase.verifyNotEmpty(warnMsg);
+        testCase.verifyEqual(string(warnId), expectedIds(iFlag));
+
+        clear cleanupObj;
+      end
+    end
+
+    function injectedPreconditionerHookIsUsedByDefaultIterativePath(testCase)
+      % Proves dependency injection for preconditioner is active by returning
+      % an invalid preconditioner label and verifying the expected guard error.
+      [x, y, xGrid] = localData1D();
+
+      hooks = struct();
+      hooks.calculatePreconditionerFn = @(AA) deal([], 'invalidPreconditioner'); %#ok<NASGU>
+      internal.setRegularizeNdHooks(hooks);
+      cleanupObj = onCleanup(@() internal.clearRegularizeNdHooks()); %#ok<NASGU>
+
+      didError = false;
+      try
+        regularizeNd(x, y, xGrid, 1e-3, "linear", "lsqr", 10, 1e-8);
+      catch ME
+        didError = true;
+        testCase.verifyTrue(contains(ME.message, "preconditioner switch statement"));
+      end
+      testCase.verifyTrue(didError);
+
+      clear cleanupObj;
+    end
+
+    function injectedNonePreconditionerCoversNoneBranch(testCase)
+      % Forces the default iterative solver path to use preconditioner='none'
+      % deterministically, covering that branch in regularizeNd.
+      [x, y, xGrid] = localData1D();
+
+      hooks = struct();
+      hooks.calculatePreconditionerFn = @(AA) deal([], 'none'); %#ok<NASGU>
+      internal.setRegularizeNdHooks(hooks);
+      cleanupObj = onCleanup(@() internal.clearRegularizeNdHooks()); %#ok<NASGU>
+
+      yGrid = regularizeNd(x, y, xGrid, 1e-3, "linear", "lsqr", 20, 1e-8);
+
+      testCase.verifySize(yGrid, [numel(xGrid{1}), 1]);
+      testCase.verifyTrue(all(isfinite(yGrid), "all"));
+
+      clear cleanupObj;
+    end
+
+    function injectedNonePreconditionerCoversPcgNoneBranch(testCase)
+      % Deterministically covers the pcg/symmlq preconditioner='none' branch.
+      [x, y, xGrid] = localData1D();
+
+      hooks = struct();
+      hooks.calculatePreconditionerFn = @(AA) deal([], 'none'); %#ok<NASGU>
+      internal.setRegularizeNdHooks(hooks);
+      cleanupObj = onCleanup(@() internal.clearRegularizeNdHooks()); %#ok<NASGU>
+
+      yGrid = regularizeNd(x, y, xGrid, 1e-3, "linear", "pcg", 30, 1e-8);
+
+      testCase.verifySize(yGrid, [numel(xGrid{1}), 1]);
+      testCase.verifyTrue(all(isfinite(yGrid), "all"));
+
+      clear cleanupObj;
+    end
   end
 end
 
@@ -197,4 +298,9 @@ function [x, y, xGrid] = localData3D()
     linspace(0.1, 1.9, 6), ...
     linspace(0.0, 2.0, 6)
   };
+end
+
+function [yGrid, solverExitFlag] = localMockIterativeSolverWithFlag(A, forcedFlag)
+  yGrid = zeros(size(A,2), 1);
+  solverExitFlag = forcedFlag;
 end

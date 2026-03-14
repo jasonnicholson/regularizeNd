@@ -204,6 +204,23 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   % helper function used mostly for when variables are renamed
   getname = @(x) inputname(1);
 
+  % Internal hooks are optional and used only for deterministic unit testing.
+  hooks = internal.getRegularizeNdHooks();
+  calculatePreconditionerFn = @internal.calculatePreconditioner;
+  iterativeSolverFn = [];
+  handleIterativeSolverExitFlagFn = @internal.handleIterativeSolverExitFlag;
+  if isstruct(hooks)
+    if isfield(hooks, 'calculatePreconditionerFn') && ~isempty(hooks.calculatePreconditionerFn)
+      calculatePreconditionerFn = hooks.calculatePreconditionerFn;
+    end
+    if isfield(hooks, 'iterativeSolverFn') && ~isempty(hooks.iterativeSolverFn)
+      iterativeSolverFn = hooks.iterativeSolverFn;
+    end
+    if isfield(hooks, 'handleIterativeSolverExitFlagFn') && ~isempty(hooks.handleIterativeSolverExitFlagFn)
+      handleIterativeSolverExitFlagFn = hooks.handleIterativeSolverExitFlagFn;
+    end
+  end
+
     % Check y rows matches the number in x
   nScatteredPoints = size(x,1);
   assert( nScatteredPoints == size(y, 1), "regularizeNd:numberOfPointsMismatch" , ...
@@ -228,61 +245,22 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
     case 'normal'
       yGrid = (A'*A)\(A'*[y;sparse(nTotalSmoothnessEquations,1)]);
     case {'lsqr', 'pcg', 'symmlq'}
-      switch solver
-        case {'pcg', 'symmlq'}
-          % setup needed normal equation matrices
-          AA = A'*A;
-          d = A'*[y;sparse(nTotalSmoothnessEquations,1)];
+      if isempty(iterativeSolverFn)
+        [yGrid, solverExitFlag] = solveIterativeDefault(solver, A, y, nTotalSmoothnessEquations, ...
+          solverTolerance, maxIterations, calculatePreconditionerFn, getname);
+      else
+        [yGrid, solverExitFlag] = iterativeSolverFn(solver, A, y, nTotalSmoothnessEquations, ...
+          solverTolerance, maxIterations, calculatePreconditionerFn);
+      end
 
-          % clean up
-          clear(getname(A), getname(y));
-
-          % calculate preconditioner if possible
-          [M, preconditioner] = calculatePreconditioner(AA);
-
-          % Call pcg or symmlq differently depending on the preconditioner
-          switch preconditioner
-            case 'none'
-              [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations);
-            case 'ichol'
-              [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations, M, M');
-            otherwise
-              error('Code should never reach this. Something is wrong with the preconditioner switch statement. Fix it.');
-          end % end pcg, symmlq preconditioner switch statement
-
-        case 'lsqr'
-          % calculate preconditioner if possible
-          [M, preconditioner] = calculatePreconditioner(A'*A);
-
-          % Call lsqr differently depending on the preconditioner
-          switch preconditioner
-            case 'none'
-              [yGrid, solverExitFlag] = lsqr(A,[y;sparse(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations);
-            case 'ichol'
-              [yGrid, solverExitFlag] = lsqr(A,[y;sparse(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations, M');
-            otherwise
-              error('Code should never reach this. Something is wrong with the preconditioner switch statement. Fix it.');
-          end % end lsqr preconditioner switch statement
-
-        otherwise
-          error('Code should never reach this. Something is wrong with iterative solver switch statement.');
-      end % end iterative solver switch block
-
-      % Check the iterative solver flag
-      switch solverExitFlag
-        case 0
-          % Do nothing. This is good.
-        case 1
-          warning('%s iterated %d times but did not converge.', solver, maxIterations);
-        case 2
-          warning('The %s preconditioner was ill-conditioned.', solver);
-        case 3
-          warning('%s stagnated. (Two consecutive iterates were the same.)', solver);
-        case 4
-          warning('During %s solving, one of the scalar quantities calculated during pcg became too small or too large to continue computing.', solver);
-        otherwise
-          error('Code should never reach this. Something is wrong with iterative flag switch block.');
-      end % iterative solver flag switch block
+      [warningMessage, warningId] = handleIterativeSolverExitFlagFn(solverExitFlag, solver, maxIterations);
+      if ~isempty(warningMessage)
+        if ~isempty(warningId)
+          warning(warningId, '%s', warningMessage);
+        else
+          warning('%s', warningMessage);
+        end
+      end
 
     otherwise
       error('Code should never reach this line. If it does, there is a bug.');
@@ -301,77 +279,39 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
 end % end regularizeNd function
 
 %%
-function [M, preconditioner] = calculatePreconditioner(AA)
-  % Calculate the incomplete Cholesky decomposition where M*M'~AA. Use diagonal compensation if the incomplete Cholesky
-  % decomposition does not exist for AA so that M*M'~AA + alpha*diag(diag(AA)). This algorithm should be robust at always
-  % producing a preconditioner.
+function [yGrid, solverExitFlag] = solveIterativeDefault(solver, A, y, nTotalSmoothnessEquations, ...
+    solverTolerance, maxIterations, calculatePreconditionerFn, getname)
+  switch solver
+    case {'pcg', 'symmlq'}
+      AA = A'*A;
+      d = A'*[y;sparse(nTotalSmoothnessEquations,1)];
 
-  % set preconditioner to none starting out
-  preconditioner = 'none';
-  M = [];
+      clear(getname(A), getname(y));
 
-  % Try to calculate the ichol preconditioner
-  try
-    M = ichol(AA);
-    preconditioner = 'ichol';
-  catch
-    % initial calculations for diagonal compensation
-    diagonalCompensation0 = full(max(sum(abs(AA),2)./diag(AA)));
+      [M, preconditioner] = calculatePreconditionerFn(AA);
 
-    % check that the diagonal compensation is not nan or inf
-    if ~isfinite(diagonalCompensation0)
-      % Not possible to calculate diagonal compensation. Don't compute preconditioner.
-    else
-      % find the bounds of a good diagonal compensation separated by a factor of 10
-      diagonalCompensationNew = diagonalCompensation0;
-      diagonalCompensationFailure = [];
-      diagonalCompensationSuccess = [];
-      MAX_PRECONDITIONER_BOUNDS_RECALCULATIONS = 20;
-      for iDiagonalCompensation=1:MAX_PRECONDITIONER_BOUNDS_RECALCULATIONS
-        % Try to calculate ichol with diagonal compensation. If ichol is successful, divide the diagonal compensation by 10
-        % and try again. If there is a failure, multiply 10 and try again.
-        try
-          M = ichol(AA, struct('diagcomp', diagonalCompensationNew));
-          diagonalCompensationSuccess = diagonalCompensationNew;
-          diagonalCompensationNew = diagonalCompensationNew/10;
-        catch
-          diagonalCompensationFailure = diagonalCompensationNew;
-          diagonalCompensationNew = diagonalCompensationNew*10;
-        end
+      switch preconditioner
+        case 'none'
+          [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations);
+        case 'ichol'
+          [yGrid, solverExitFlag] = feval(solver, AA, d, solverTolerance, maxIterations, M, M');
+        otherwise
+          error('Code should never reach this. Something is wrong with the preconditioner switch statement. Fix it.');
+      end
 
-        % Check whether we have diagonalCompensationFailure and diagonalCompensationSuccess. Quit the loop if we have both.
-        if ~isempty(diagonalCompensationFailure) && ~isempty(diagonalCompensationSuccess)
-          break;
-        end
-      end % end for loop for diagonal compensation separated by a factor 10
+    case 'lsqr'
+      [M, preconditioner] = calculatePreconditionerFn(A'*A);
 
-      % Make sure we have a diagonalCompensationFailure and diagonalCompensationSuccess. Only proceed if we have both.
-      if ~isempty(diagonalCompensationFailure) && ~isempty(diagonalCompensationSuccess)
-        % Use a binary search to better find a better diagonal compensation
-        MAX_PRECONDITIONER_BINARY_RECALCULATIONS = 3;
-        for iDiagonalCompensation=1:MAX_PRECONDITIONER_BINARY_RECALCULATIONS
-          diagonalCompensationNew = (diagonalCompensationFailure + diagonalCompensationSuccess)/2;
-          try
-            M = ichol(AA, struct('diagcomp', diagonalCompensationNew));
-            diagonalCompensationSuccess = diagonalCompensationNew;
-          catch
-            diagonalCompensationFailure = diagonalCompensationNew;
-          end
+      switch preconditioner
+        case 'none'
+          [yGrid, solverExitFlag] = lsqr(A,[y;sparse(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations);
+        case 'ichol'
+          [yGrid, solverExitFlag] = lsqr(A,[y;sparse(nTotalSmoothnessEquations,1)], solverTolerance, maxIterations, M');
+        otherwise
+          error('Code should never reach this. Something is wrong with the preconditioner switch statement. Fix it.');
+      end
 
-          % break the loop
-          % diagonalCompensationFailure and diagonalCompensationSuccess are close together.
-          if diagonalCompensationFailure + 1000*eps(diagonalCompensationFailure) > diagonalCompensationSuccess
-            break;
-          end
-        end % end binary search for loop
-
-        % Make sure we have a preconditioner
-        if ~isempty(M)
-          preconditioner = 'ichol';
-        else
-          % Do nothing. No preconditioner.
-        end % end check for preconditioner
-      end % end check for diagonal compensation bounds
-    end % end initial compensation guess
-  end % end ichol try-catch block
-end % end calculatePreconditioner
+    otherwise
+      error('Code should never reach this. Something is wrong with iterative solver switch statement.');
+  end
+end
