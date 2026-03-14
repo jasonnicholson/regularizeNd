@@ -1,0 +1,16 @@
+name = "RegularizeNd"
+uuid = "a8b4d231-5678-4b00-9f0d-a1b2c3d4e5f6"
+version = "3.0.8"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+
+[compat]
+julia = "1.6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

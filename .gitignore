@@ -3,3 +3,5 @@ test/coverage
 docs/_build
 *.mltbx
 build/
+ports/python/__pycache__/regularize_nd.cpython-312.pyc
+ports/python/tests/__pycache__/test_regularize_nd.cpython-312-pytest-9.0.2.pyc
