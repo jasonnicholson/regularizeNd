@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Guide &mdash; regularizeNd 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Theory of the Regularizer" href="theory_regularizer.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            regularizeNd
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Pages</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-workflow">Development Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#release-workflow">Release Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#semantic-versioning">Semantic Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conventional-commits">Conventional Commits</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#commit-types">Commit Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breaking-changes-modifier">Breaking Changes Modifier: <strong>!</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scopes">Scopes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subject">Subject</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#body">Body</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#footer">Footer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-commit-messages">Example Commit Messages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further Reading</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="theory_regularizer.html">Theory of the Regularizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">regularizeNd</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Developer Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/developer_guide.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="developer-guide">
+<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Link to this heading"></a></h1>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<p>Install Node.js using <a class="reference external" href="https://github.com/Schniz/fnm">fnm</a> (Fast Node Manager).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install fnm (Windows)</span>
+winget<span class="w"> </span>install<span class="w"> </span>--id<span class="w"> </span>Schniz.fnm
+
+<span class="c1"># Install fnm (macOS)</span>
+brew<span class="w"> </span>install<span class="w"> </span>fnm
+
+<span class="c1"># Install fnm (Linux)</span>
+curl<span class="w"> </span>-fsSL<span class="w"> </span>https://fnm.vercel.app/install<span class="w"> </span><span class="p">|</span><span class="w"> </span>bash
+
+<span class="c1"># Initialize fnm for your shell (example for bash)</span>
+<span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>fnm<span class="w"> </span>env<span class="w"> </span>--use-on-cd<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Install and use the latest LTS Node.js</span>
+fnm<span class="w"> </span>install<span class="w"> </span>--lts
+fnm<span class="w"> </span>use<span class="w"> </span>--lts
+
+<span class="c1"># Verify Node and npm</span>
+node<span class="w"> </span>-v
+npm<span class="w"> </span>-v
+</pre></div>
+</div>
+<p>Enable Corepack to manage package managers like pnpm. Note: as of Node.js 25, Corepack is no longer bundled, so install it separately if needed.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Corepack when it is not bundled with Node.js</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>corepack
+</pre></div>
+</div>
+<p>Then enable Corepack and activate pnpm:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable Corepack shims</span>
+corepack<span class="w"> </span><span class="nb">enable</span>
+
+<span class="c1"># Ensure pnpm is available via Corepack</span>
+corepack<span class="w"> </span>install
+
+<span class="c1"># Verify pnpm</span>
+pnpm<span class="w"> </span>-v
+</pre></div>
+</div>
+<p>Use pnpm to install dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install dependencies and update the lockfile if needed</span>
+pnpm<span class="w"> </span>i
+
+<span class="c1"># Install dependencies without modifying pnpm-lock.yaml</span>
+pnpm<span class="w"> </span>i<span class="w"> </span>--frozen-lockfile
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pnpm</span> <span class="pre">i</span></code> resolves and installs dependencies; it can update <code class="docutils literal notranslate"><span class="pre">pnpm-lock.yaml</span></code> if versions change.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pnpm</span> <span class="pre">i</span> <span class="pre">--frozen-lockfile</span></code> enforces the existing lockfile and fails if it is out of date.</p></li>
+</ul>
+<p>Install and use <code class="docutils literal notranslate"><span class="pre">uv</span></code> for Python dependencies and tooling (docs builds, Sphinx, etc.):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install uv (recommended)</span>
+curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+
+<span class="c1"># Create a virtual environment and sync dependencies</span>
+uv<span class="w"> </span>venv
+uv<span class="w"> </span>sync
+
+<span class="c1"># Run commands inside the uv-managed environment</span>
+uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-V
+uv<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>--version
+</pre></div>
+</div>
+</section>
+<section id="development-workflow">
+<h2>Development Workflow<a class="headerlink" href="#development-workflow" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Clone the repo.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">pnpm</span> <span class="pre">i</span></code> or <code class="docutils literal notranslate"><span class="pre">pnpm</span> <span class="pre">i</span> <span class="pre">--frozen-lockfile</span></code>. In the <code class="docutils literal notranslate"><span class="pre">prepare</span></code> script, the git hooks are configured. This sets up git-conventional-commits to lint the commit messages. Without this, commit messages are not checked.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">setupRegularizeNdProjectPath.m</span></code> to set up the MATLAB path for this project before running any MATLAB scripts. When you are done, run it again to clean up and remove the project paths.</p></li>
+<li><p>Develop.</p></li>
+<li><p>Commit using conventional commits.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">matlab</span> <span class="pre">-batch</span> <span class="pre">&quot;release_workflow()&quot;</span></code> for a dry run, or <code class="docutils literal notranslate"><span class="pre">matlab</span> <span class="pre">-batch</span> <span class="pre">&quot;release_workflow('DryRun',false)&quot;</span></code> to execute. This runs the release workflow end-to-end (see below) and uses the same dryRun state for <code class="docutils literal notranslate"><span class="pre">deploy_documentation</span></code>.</p></li>
+</ol>
+<p>Note: other scripts assume the MATLAB path has already been set. The only script that adjusts the path internally is <code class="docutils literal notranslate"><span class="pre">createPackage</span></code>, which adds the build folder briefly for <code class="docutils literal notranslate"><span class="pre">builddocsearchdb</span></code> and removes it immediately.</p>
+<p>To run a live-reloading docs server during documentation development, use the Sphinx autobuild target from the docs folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
+make<span class="w"> </span>livehtml
+</pre></div>
+</div>
+</section>
+<section id="release-workflow">
+<h2>Release Workflow<a class="headerlink" href="#release-workflow" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">release_workflow</span></code> performs the following steps:</p>
+<ol class="arabic simple">
+<li><p>Determines the next semantic version using <code class="docutils literal notranslate"><span class="pre">git-conventional-commits</span></code>.</p></li>
+<li><p>Updates <code class="docutils literal notranslate"><span class="pre">package.json</span></code>, <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, and <code class="docutils literal notranslate"><span class="pre">docs/conf.py</span></code> with the next version.</p></li>
+<li><p>Generates <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code>.</p></li>
+<li><p>Builds the toolbox artifacts and packages the toolbox using <code class="docutils literal notranslate"><span class="pre">createPackage</span></code>.</p></li>
+<li><p>Commits the version/changelog changes as <code class="docutils literal notranslate"><span class="pre">chore(release):</span> <span class="pre">vX.Y.Z</span></code> and tags <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> (skipped in dry run).</p></li>
+<li><p>Creates a GitHub release with notes generated from conventional commits since the previous tag (skipped in dry run).</p></li>
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">deploy_documentation</span></code> with the same DryRun setting; when DryRun is true, it does everything except push.</p></li>
+</ol>
+<p>Dry run behavior: version/changelog updates and changelog generation still run, but git commits/tags, GitHub releases, and documentation pushes are skipped.</p>
+</section>
+<section id="semantic-versioning">
+<h2>Semantic Versioning<a class="headerlink" href="#semantic-versioning" title="Link to this heading"></a></h2>
+<p>This repo adheres to <a class="reference external" href="https://semver.org/">Semantic Versioning</a>.</p>
+<p>Given a version number MAJOR.MINOR.PATCH, increment the:</p>
+<ul class="simple">
+<li><p><strong>MAJOR</strong> version when you make incompatible API changes (BREAKING CHANGES). Any type of commit.</p></li>
+<li><p><strong>MINOR</strong> version when you add functionality in a backwards compatible manner (<code class="docutils literal notranslate"><span class="pre">feat</span></code> type commit).</p></li>
+<li><p><strong>PATCH</strong> version when you make backwards compatible bug fixes (<code class="docutils literal notranslate"><span class="pre">fix</span></code>/<code class="docutils literal notranslate"><span class="pre">perf</span></code>/<code class="docutils literal notranslate"><span class="pre">docs</span></code>/<code class="docutils literal notranslate"><span class="pre">chore</span></code> type commit).</p></li>
+</ul>
+</section>
+<section id="conventional-commits">
+<h2>Conventional Commits<a class="headerlink" href="#conventional-commits" title="Link to this heading"></a></h2>
+<p>The commit format used is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;type&gt;: &lt;subject&gt;
+
+&lt;optional body&gt;
+
+&lt;optional footer&gt;
+</pre></div>
+</div>
+<section id="commit-types">
+<h3>Commit Types<a class="headerlink" href="#commit-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>API relevant changes</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">feat</span></code> - Commits that add a new feature. MINOR version bump.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fix</span></code> - Commits that fix a bug. PATCH version bump.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">perf</span></code> - Commits that improve performance. PATCH version bump.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code> - Commits that update internal or external documentation. PATCH version bump.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chore</span></code> - Miscellaneous commits e.g. modifying <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code>, <code class="docutils literal notranslate"><span class="pre">tests</span></code>, refactoring, etc. This is the catch all type if one of the other types doesn’t fit. Note that this type will not show up in the Changelog. PATCH version bump.</p></li>
+</ul>
+</section>
+<section id="breaking-changes-modifier">
+<h3>Breaking Changes Modifier: <strong>!</strong><a class="headerlink" href="#breaking-changes-modifier" title="Link to this heading"></a></h3>
+<p>If you add an exclamation mark to any of the commit types, it signifies BREAKING CHANGES which increments the MAJOR version:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fix!:</span> <span class="pre">fixed</span> <span class="pre">a</span> <span class="pre">bug</span> <span class="pre">that</span> <span class="pre">changed</span> <span class="pre">user</span> <span class="pre">output</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">feat!:</span> <span class="pre">Changed</span> <span class="pre">a</span> <span class="pre">feature</span> <span class="pre">that</span> <span class="pre">changes</span> <span class="pre">the</span> <span class="pre">user</span> <span class="pre">input</span></code></p></li>
+</ul>
+<p>Recommendations when using the <code class="docutils literal notranslate"><span class="pre">!</span></code> modifier:</p>
+<ul class="simple">
+<li><p>Use the exclamation mark when making BREAKING CHANGES even if you have a footer describing the breaking change. The exclamation mark makes it easy to recognize that <code class="docutils literal notranslate"><span class="pre">type!:</span> <span class="pre">subject</span> <span class="pre">here</span></code> is a BREAKING CHANGE.</p></li>
+<li><p>If BREAKING CHANGES can be described by the subject, you may use only the exclamation mark to signify the BREAKING CHANGES, skipping the footer. Due diligence to communicate the BREAKING CHANGES well is recommended, so use the footer if needed.</p></li>
+</ul>
+</section>
+<section id="scopes">
+<h3>Scopes<a class="headerlink" href="#scopes" title="Link to this heading"></a></h3>
+<p>The commit scope is not used in this repo.</p>
+</section>
+<section id="subject">
+<h3>Subject<a class="headerlink" href="#subject" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">subject</span></code> contains a succinct description of the change:</p>
+<ul class="simple">
+<li><p>Is a <strong>mandatory</strong> part of the format</p></li>
+<li><p>Don’t capitalize the first letter</p></li>
+<li><p>No dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>) at the end</p></li>
+</ul>
+</section>
+<section id="body">
+<h3>Body<a class="headerlink" href="#body" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">body</span></code> shall include the motivation for the change and contrast this with previous behavior:</p>
+<ul class="simple">
+<li><p>Is an <strong>optional</strong> part of the format</p></li>
+<li><p>This is the place to mention issue identifiers and their relations</p></li>
+</ul>
+</section>
+<section id="footer">
+<h3>Footer<a class="headerlink" href="#footer" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>If defining <strong>Breaking Changes</strong> in the footer, it shall start with the word <code class="docutils literal notranslate"><span class="pre">BREAKING</span> <span class="pre">CHANGES:</span></code> followed by space or two newlines. The rest of the commit message is then used to describe the breaking change. Note that BREAKING CHANGES can be used with any type and increments the MAJOR version.</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">!</span></code> mark should be used with the commit type in the commit subject but may be left out. <code class="docutils literal notranslate"><span class="pre">git-conventional-commits</span></code> does not enforce use of the exclamation point.</p></li>
+</ul>
+</li>
+<li><p><strong>Reference Issues</strong> that this commit refers to.</p></li>
+<li><p>Is an <strong>optional</strong> part of the format.</p></li>
+<li><p>Optionally reference an issue by its id.</p></li>
+</ul>
+</section>
+<section id="example-commit-messages">
+<h3>Example Commit Messages<a class="headerlink" href="#example-commit-messages" title="Link to this heading"></a></h3>
+<p><strong>fix</strong> - Increments the PATCH (1.0.0 → 1.0.1)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>fix: fixed a small bug related to when an exception is thrown
+</pre></div>
+</div>
+<p><strong>feat</strong> - Increments the MINOR (1.0.0 → 1.1.0)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>feat: Added monotonicConstraint.m function
+
+monotonicConstraint.m adds new functionality that works well with regularizeNdMatrices.
+</pre></div>
+</div>
+<p><strong>fix with BREAKING CHANGES</strong> - Increments MAJOR (1.0.0 → 2.0.0)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>fix!: iterative solver now works
+
+pcg and lsqr iterative solvers were not working. pcg is the main iterative solver. lsqr is just a backup in my opinion.
+
+BREAKING CHANGE: Output to the user is now correct.
+</pre></div>
+</div>
+<p><strong>feat with BREAKING CHANGES</strong> - Using only the exclamation mark. Increments MAJOR (1.0.0 → 2.0.0)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>feat!: change of iterative solver
+</pre></div>
+</div>
+<p><strong>feat with BREAKING CHANGES and footer</strong> - Increments MAJOR (1.0.0 → 2.0.0)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>feat!: change of iterative solver
+
+I was able to find a couple of acceptable iterative solvers. pcg and lsqr. pcg is the main iterative solver. lsqr is just a backup in my opinion.
+
+BREAKING CHANGES: removed fmincon solver
+</pre></div>
+</div>
+<p><strong>perf</strong> - Increments the PATCH (1.0.0 → 1.0.1)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>perf: improved performance of pcg iterative solver
+</pre></div>
+</div>
+<p><strong>docs</strong> - Increments the PATCH (1.0.0 → 1.0.1)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>docs: improved the internal and external documentation of regularizeNd
+
+The comments in regularizeNd.m were updated to better communicate the algorithm.
+
+The regularizeNdDoc.m file was updated to better communicate how to use regularizeNd.m.
+</pre></div>
+</div>
+<p><strong>chore</strong> - Does not show up in the changelog. Increments the PATCH (1.0.0 → 1.0.1)</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>chore: Updated the git configuration and git-conventional-commits.yaml
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>chore: updated .gitignore with ignore files used in the build
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>chore: updated the .gitattributes for a couple binary files
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>chore: Excluding invalid commits in git-conventional-commits.yaml
+</pre></div>
+</div>
+</section>
+</section>
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>See https://github.com/jasonnicholson/regularizeNd/blob/main/git-conventional-commits.yaml for the configuration of the conventional commits. The tooling used to check and manage conventional commits is <a class="reference external" href="https://github.com/qoomon/git-conventional-commits">git-conventional-commits</a>.</p></li>
+<li><p><a class="reference external" href="https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13">More Info on Conventional Commit Messages</a></p></li>
+<li><p><a class="reference external" href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a> standard</p></li>
+<li><p><a class="reference external" href="https://semver.org/">Semantic Versioning</a> standard</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="theory_regularizer.html" class="btn btn-neutral float-right" title="Theory of the Regularizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jason H. Nicholson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

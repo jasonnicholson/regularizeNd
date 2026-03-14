@@ -1,0 +1,33 @@
+---
+convention:
+  commitTypes:
+  - feat
+  - fix
+  - perf
+  - docs
+  - chore
+  commitScopes: []
+  releaseTagGlobPattern: "[0-9]*.[0-9]*.[0-9]*"
+changelog:
+  commitTypes:
+  - feat
+  - fix
+  - perf
+  - docs
+  includeInvalidCommits: false
+  commitIgnoreRegexPattern: 
+  headlines:
+    feat: Features
+    fix: Bug Fixes
+    perf: Performance improvements
+    docs: Documentation
+    breakingChange: BREAKING CHANGES
+
+  ## GitHub
+  commitUrl: https://github.com/jasonnicholson/regularizeNd/commit/%commit%
+  commitRangeUrl: https://github.com/jasonnicholson/regularizeNd/compare/%from%...%to%?diff=split
+
+  ## GitHub Issues
+  issueRegexPattern: "#[0-9]+"
+  issueUrl: https://github.com/jasonnicholson/regularizeNd/issues/%issue%
+
