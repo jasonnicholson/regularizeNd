@@ -155,7 +155,7 @@ fprintf("[release_workflow] Updated pyproject.toml version to %s\n", newVersion)
 end
 
 function commit_and_tag_release(repoRoot, newVersion, dryRun)
-run_cmd("git add package.json docs/conf.py pyproject.toml CHANGELOG.md", repoRoot, "release_workflow", dryRun);
+run_cmd("git add package.json docs/conf.py pyproject.toml CHANGELOG.md uv.lock", repoRoot, "release_workflow", dryRun);
 statusOutput = strtrim(run_cmd_capture("git status --porcelain", repoRoot, "release_workflow", false));
 if strlength(statusOutput) == 0
     fprintf("[release_workflow] No changes to commit; skipping commit and tag.\n");
