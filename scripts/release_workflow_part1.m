@@ -1,11 +1,14 @@
-function release_workflow(options)
-% release_workflow Automates release workflow steps in MATLAB.
+function release_workflow_part1(options)
+% release_workflow_part1 Automates the first part of the release workflow.
+%
+% Run this first. After it completes, follow the printed instructions to
+% manually package the toolbox in MATLAB, then run release_workflow_part2.
 %
 % Usage:
-%   release_workflow
-%   release_workflow("DryRun", true)
-%   release_workflow("DryRun", false)
-%   matlab -batch "release_workflow('DryRun',true)"
+%   release_workflow_part1
+%   release_workflow_part1("DryRun", true)
+%   release_workflow_part1("DryRun", false)
+%   matlab -batch "release_workflow_part1('DryRun',true)"
 
 % Copyright (c) 2016-2026 Jason Nicholson
 % Licensed under the MIT License
@@ -22,33 +25,37 @@ projectRoot = fileparts(fileparts(mfilename("fullpath")));
 assert_clean_changelog(projectRoot);
 
 if dryRun
-    fprintf("[release_workflow] DRY RUN enabled: version/changelog/file updates are skipped; packaging runs; git release actions are printed; docs deploy runs without push.\n");
+    fprintf("[release_workflow_part1] DRY RUN enabled: version/changelog/file updates are skipped; git release actions are skipped; docs deploy runs without push.\n");
 end
 
-fprintf("[release_workflow] Determining next semantic version\n");
-nextVersionRaw = run_cmd_capture("pnpm exec git-conventional-commits version", projectRoot, "release_workflow", false);
+fprintf("[release_workflow_part1] Determining next semantic version\n");
+nextVersionRaw = run_cmd_capture("pnpm exec git-conventional-commits version", projectRoot, "release_workflow_part1", false);
 nextVersion = parse_semver(nextVersionRaw);
-fprintf("[release_workflow] Next version: %s\n", nextVersion);
+fprintf("[release_workflow_part1] Next version: %s\n", nextVersion);
 
 update_package_json_version(fullfile(projectRoot, "package.json"), nextVersion, dryRun);
 update_conf_py_version(fullfile(projectRoot, "docs", "conf.py"), nextVersion, dryRun);
 update_pyproject_version(fullfile(projectRoot, "pyproject.toml"), nextVersion, dryRun);
 
-fprintf("[release_workflow] Generating CHANGELOG.md\n");
-run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release_workflow", false);
+fprintf("[release_workflow_part1] Generating CHANGELOG.md\n");
+run_cmd("pnpm exec git-conventional-commits changelog --file CHANGELOG.md", projectRoot, "release_workflow_part1", false);
 
-fprintf("[release_workflow] Deploying documentation\n");
+fprintf("[release_workflow_part1] Deploying documentation\n");
 deploy_documentation("DryRun", dryRun);
 
-fprintf("[release_workflow] Running createPackage\n");
-createPackage("ToolboxVersion", nextVersion);
+fprintf("[release_workflow_part1] Setting up build directory\n");
+createPackage("ToolboxVersion", nextVersion, "PackageToolbox", false);
 
-fprintf("[release_workflow] Committing and tagging release\n");
-commit_and_tag_release(projectRoot, nextVersion, dryRun);
-
-fprintf("[release_workflow] Creating GitHub release\n");
-artifactPath = get_toolbox_artifact_path(projectRoot);
-create_github_release(projectRoot, nextVersion, artifactPath, dryRun);
+fprintf("\n");
+fprintf("[release_workflow_part1] Part 1 complete. Before running release_workflow_part2, do the following manually:\n");
+fprintf("\n");
+fprintf("  1. Open the build\\regularizeNd.prj.\n");
+fprintf('  2. Click "Package Toolbox".\n');
+fprintf("  3. Set the version.\n");
+fprintf("  4. Make the Getting Started file is correctly configured.\n");
+fprintf("\n");
+fprintf("Then run: release_workflow_part2('DryRun', %s)\n", mat2str(dryRun));
+fprintf("\n");
 
 end
 
@@ -152,73 +159,6 @@ end
 
 write_text_file(filePath, updated);
 fprintf("[release_workflow] Updated pyproject.toml version to %s\n", newVersion);
-end
-
-function commit_and_tag_release(repoRoot, newVersion, dryRun)
-run_cmd("git add package.json docs/conf.py pyproject.toml CHANGELOG.md uv.lock", repoRoot, "release_workflow", dryRun);
-statusOutput = strtrim(run_cmd_capture("git status --porcelain", repoRoot, "release_workflow", false));
-if strlength(statusOutput) == 0
-    fprintf("[release_workflow] No changes to commit; skipping commit and tag.\n");
-    return;
-end
-
-message = sprintf("chore(release): %s", newVersion);
-run_cmd(sprintf('git commit -m "%s"', message), repoRoot, "release_workflow", dryRun);
-
-tagName = sprintf("%s", newVersion);
-run_cmd(sprintf("git tag %s", tagName), repoRoot, "release_workflow", dryRun);
-
-if ~dryRun
-    fprintf("[release_workflow] Pushing commits and tags\n");
-    run_cmd("git push", repoRoot, "release_workflow", false);
-    run_cmd(sprintf("git push origin refs/tags/%s", tagName), repoRoot, "release_workflow", false);
-end
-end
-
-function create_github_release(repoRoot, newVersion, artifactPath, dryRun)
-tagName = sprintf("%s", newVersion);
-title = sprintf("%s", newVersion);
-notesFile = build_release_notes(repoRoot, newVersion);
-
-cmd = sprintf('gh release create %s --title "%s" --notes-file "%s"', tagName, title, notesFile);
-if strlength(artifactPath) > 0
-    cmd = sprintf('%s "%s"', cmd, artifactPath);
-else
-    fprintf("[release_workflow] Toolbox artifact not found; creating release without attachment.\n");
-end
-run_cmd(cmd, repoRoot, "release_workflow", dryRun);
-
-cleanup_temp_file(notesFile);
-end
-
-function artifactPath = get_toolbox_artifact_path(projectRoot)
-artifactPath = "";
-candidate = fullfile(projectRoot, "build", "release", "regularizeNd-toolbox.mltbx");
-if isfile(candidate)
-    artifactPath = string(candidate);
-end
-end
-
-function notesFile = build_release_notes(repoRoot, newVersion)
-cmd = 'pnpm exec git-conventional-commits changelog';
-
-notes = run_cmd_capture(cmd, repoRoot, "release_workflow", false);
-notes = string(notes);
-if strlength(strtrim(notes)) == 0
-    notes = sprintf("# %s\n\nNo changes.\n", newVersion);
-end
-
-notesFile = tempname + ".md";
-write_text_file(notesFile, notes);
-end
-
-function cleanup_temp_file(filePath)
-if isfile(filePath)
-    try
-        delete(filePath);
-    catch
-    end
-end
 end
 
 function write_text_file(filePath, textContent)
