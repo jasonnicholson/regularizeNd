@@ -81,7 +81,13 @@ uv run sphinx-build --version
 3. Run `setupRegularizeNdProjectPath.m` to set up the MATLAB path for this project before running any MATLAB scripts. When you are done, run it again to clean up and remove the project paths.
 4. Develop.
 5. Commit using conventional commits.
-6. Run `matlab -batch "release_workflow()"` for a dry run, or `matlab -batch "release_workflow('DryRun',false)"` to execute. This runs the release workflow end-to-end (see below) and uses the same dryRun state for `deploy_documentation`.
+6. Run `matlab -batch "release_workflow_part1()"` for a dry run, or `matlab -batch "release_workflow_part1('DryRun',false)"` to execute part 1.
+7. After part 1 completes, manually package the toolbox:
+  - Open the `build\regularizeNd.prj`.
+  - Click "Package Toolbox".
+  - Set the version.
+  - Make the Getting Started file is correctly configured.
+8. Run `matlab -batch "release_workflow_part2()"` for a dry run, or `matlab -batch "release_workflow_part2('DryRun',false)"` to execute part 2.
 
 Note: other scripts assume the MATLAB path has already been set. The only script that adjusts the path internally is `createPackage`, which adds the build folder briefly for `builddocsearchdb` and removes it immediately.
 
@@ -95,17 +101,24 @@ make livehtml
 
 ## Release Workflow
 
-`release_workflow` performs the following steps:
+`release_workflow_part1` performs the following steps:
 
 1. Determines the next semantic version using `git-conventional-commits`.
 2. Updates `package.json`, `pyproject.toml`, and `docs/conf.py` with the next version.
 3. Generates `CHANGELOG.md`.
-4. Builds the toolbox artifacts and packages the toolbox using `createPackage`.
-5. Commits the version/changelog changes as `chore(release): vX.Y.Z` and tags `vX.Y.Z` (skipped in dry run).
-6. Creates a GitHub release with notes generated from conventional commits since the previous tag (skipped in dry run).
-7. Runs `deploy_documentation` with the same DryRun setting; when DryRun is true, it does everything except push.
+4. Runs `deploy_documentation` with the same DryRun setting; when DryRun is true, it does everything except push.
+5. Sets up the `build` directory and toolbox project files using `createPackage(..., "PackageToolbox", false)`.
+6. Stops and prints the manual packaging instructions.
 
-Dry run behavior: version/changelog updates and changelog generation still run, but git commits/tags, GitHub releases, and documentation pushes are skipped.
+After manually packaging the toolbox, `release_workflow_part2` performs:
+
+1. Commits the version/changelog changes as `chore(release): vX.Y.Z` and tags `vX.Y.Z` (skipped in dry run).
+2. Creates a GitHub release with notes generated from conventional commits since the previous tag (skipped in dry run).
+
+Dry run behavior:
+
+- In part 1, version/changelog/file updates are skipped, and documentation deploy runs without push.
+- In part 2, git commits/tags/push and GitHub release creation are skipped.
 
 ## Semantic Versioning
 
