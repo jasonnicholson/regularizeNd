@@ -244,13 +244,6 @@
                     </Category>
                 </Info>
             </File>
-            <File Location="seamount.mat">
-                <Info>
-                    <Category UUID="FileClassCategory">
-                        <Label UUID="design"/>
-                    </Category>
-                </Info>
-            </File>
         </File>
         <File Location="toolbox.ignore">
             <Info/>
