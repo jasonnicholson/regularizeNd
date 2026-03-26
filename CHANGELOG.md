@@ -1,3 +1,22 @@
+## **3.1.0**&emsp;<sub><sup>2026-03-25 ([1a54a13...6589604](https://github.com/jasonnicholson/regularizeNd/compare/1a54a13f7eba5a87ea3d9d3d05cae7c424eda56d...658960485cd4fb87b61270f3e20e7345f0cb76f8?diff=split))</sup></sub>
+
+### Documentation
+
+- Developer guide was out of date with the part1 and part2 workflow\. ([1a54a13](https://github.com/jasonnicholson/regularizeNd/commit/1a54a13f7eba5a87ea3d9d3d05cae7c424eda56d))
+- Fleshed out the theory of the regularizer\. ([801d893](https://github.com/jasonnicholson/regularizeNd/commit/801d893eaae2c0948eaab25cdb566c0114612e06))
+- Added proper inspiration statement to Readme\. ([da8691b](https://github.com/jasonnicholson/regularizeNd/commit/da8691beb8ddbdccb3d0efefe4600b5da5b5684a))
+- Updating Readme and toolbox\_image\. ([82d6e31](https://github.com/jasonnicholson/regularizeNd/commit/82d6e31013c879fb46156621d2f122c8f047cf8b))
+- Renaming the examples to match to better track the coming tutorial series\. ([c8d9adb](https://github.com/jasonnicholson/regularizeNd/commit/c8d9adb39708d7a94bda4ba285675e1b1c288068))
+- Reordering examples\. More to come\.\.\.\. ([6589604](https://github.com/jasonnicholson/regularizeNd/commit/658960485cd4fb87b61270f3e20e7345f0cb76f8))
+
+### Features
+
+- Adding Python, Julia, and VBA port of regularizeNd\. Adding better testing\. ([0340802](https://github.com/jasonnicholson/regularizeNd/commit/03408024e4009353f68e0daa214511638f0e2a74))
+- Reorganizing m\-files so better test coverage is possible\. ([98bf3ad](https://github.com/jasonnicholson/regularizeNd/commit/98bf3adde0a475435ad40d747b37dfc14a9cdea6))
+- Using a Loihi volcano data set as the first example\. ([35e6f6c](https://github.com/jasonnicholson/regularizeNd/commit/35e6f6c04012f08edeac85a38d1ba36d3bc7877f))
+
+<br>
+
 ## **3.0.8**&emsp;<sub><sup>2026-03-13 ([4ea4425...c0fa1b4](https://github.com/jasonnicholson/regularizeNd/compare/4ea4425241f07e79567032b8d7f94eca37a87408...c0fa1b4d5d549130f6c80044365caac9ff4bdbc8?diff=split))</sup></sub>
 
 ### Bug Fixes
