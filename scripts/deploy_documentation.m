@@ -111,8 +111,8 @@ if isfolder(venvBin)
     end
 end
 
-fprintf("%s Building Sphinx HTML docs (uv run sphinx-build)\n", prefix);
-run_cmd(sprintf('uv run sphinx-build -b html "%s" "%s"', docsDir, buildHtmlDir), docsDir, prefix, false);
+fprintf("%s Building Sphinx HTML docs (uv run --group docs python -m sphinx)\n", prefix);
+run_cmd(sprintf('uv run --group docs python -m sphinx -b html "%s" "%s"', docsDir, buildHtmlDir), docsDir, prefix, false);
 end
 
 function commit_and_push(buildHtmlDir, ghPagesBranch, commitHash, skipPush, prefix)
