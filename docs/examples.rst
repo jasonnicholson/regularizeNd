@@ -12,10 +12,10 @@ To (re)generate the published examples:
 Published examples
 ------------------
 
-- `START_HERE_example1 <_static/examples/START_HERE_example1.html>`_
-- `example1D <_static/examples/example1D.html>`_
+- `a01_START_HERE_example1 <_static/examples/a01_START_HERE_example.html>`_
+- `a02_example1D <_static/examples/a02_example1D.html>`_
+- `a03_example_solver_differences <_static/examples/a03_example_solver_differences.html>`_
 - `example_scattered_data_near_convex_hull <_static/examples/example_scattered_data_near_convex_hull.html>`_
-- `example_solver_differences <_static/examples/example_solver_differences.html>`_
 - `example_4D_input <_static/examples/example_4D_input.html>`_
 - `constraint_and_Mapping_Example <_static/examples/constraint_and_Mapping_Example.html>`_
 - `exampleIterativeSolver <_static/examples/exampleIterativeSolver.html>`_

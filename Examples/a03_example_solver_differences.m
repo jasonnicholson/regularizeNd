@@ -30,7 +30,7 @@ smoothness = 0.001;
 tic;
 zGrid1 = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness);
 toc; %[output:778abc0e]
-% Note this s the same as 
+% Note the above command is the same as 
 % zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, 'linear');
 % zGrid = regularizeNd([xx(:), yy(:)], zNoise(:), gridPoints, smoothness, 'linear', 'normal');
 %%
@@ -48,8 +48,8 @@ toc; %[output:80a52427]
 %   data: {"layout":"onright","rightPanelPercent":40}
 %---
 %[output:778abc0e]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 11.916050 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 7.420369 seconds.\n","truncated":false}}
 %---
 %[output:80a52427]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 37.869379 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 19.911707 seconds.\n","truncated":false}}
 %---
