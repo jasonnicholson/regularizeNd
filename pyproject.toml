@@ -12,6 +12,12 @@ dependencies = [
 ]
 
 [dependency-groups]
+dev = [
+    "earthaccess>=0.16.0",
+    "h5py>=3.16.0",
+    "keyring>=25.7.0",
+    "secretstorage>=3.5.0",
+]
 docs = [
   "sphinx",
   "sphinxcontrib-matlabdomain",
