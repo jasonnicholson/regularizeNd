@@ -6,6 +6,7 @@ convention:
   - perf
   - docs
   - chore
+  - refactor
   commitScopes: []
   releaseTagGlobPattern: "[0-9]*.[0-9]*.[0-9]*"
 changelog:
@@ -14,6 +15,7 @@ changelog:
   - fix
   - perf
   - docs
+  - refactor
   includeInvalidCommits: false
   commitIgnoreRegexPattern: 
   headlines:
