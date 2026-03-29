@@ -8,7 +8,7 @@ clc; clear; close all;
 %[text] **Update 2020-July-16**
 %[text] In 2020b this example runs without error. Maximum memory request was higher than the 32GB on my computer but it did not stop the solvers. The 'normal' solver is 10x faster than the '\\' solver. The iterative 'pcg' and 'symmlq' solvers have the advantage because they are more than 12x faster than the 'normal'. The 'lsqr' is still the last resort if the 'pcg' or 'symmlq' fail. 
 %[text] 
-load('Iterative Solver Data.mat');
+load('a07_iterative_solver_data.mat');
 %%
 %[text] ## Try the Direct Solvers
 %[text] Try the 'normal' solver. This will throw an error as of MATLAB 2016b x64. In future versions of MATLAB, this error may or may not be an error.
