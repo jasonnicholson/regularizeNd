@@ -3,7 +3,7 @@
 clc; clear; close all;
 %[text] This example uses the `etopo_loihi` sample data packaged with regularizeNd. Data extracted from:
 %[text] NOAA National Centers for Environmental Information. 2022: ETOPO 2022 15 Arc-Second Global Relief Model. NOAA National Centers for Environmental Information. DOI: [https://doi.org/10.25921/fd45-gt74](file:vscode-//vscode-app/usr/share/code/resources/app/out/vs/code/electron-browser/workbench/workbench.html). Accessed March 14, 2026.
-data = load('etopo_loihi.mat');
+data = load('a01_etopo_loihi.mat');
 x = double(data.x); x2 = x(data.mask);
 y = double(data.y); y2 = y(data.mask);
 z = double(data.z); z2 = z(data.mask);

@@ -6,7 +6,7 @@
 %[text] ## Load and Clean the Data
 %[text] For what we are going to do, we need to discard $y\\le 0${"editStyle":"visual"}.
 clc; clear; close all;
-load('Data for Constraint and Mapping Example.mat','x','y');
+load('a06_constraints_and_mapping.mat','x','y');
 index = y<=0;
 x(index)=[];
 y(index)=[];

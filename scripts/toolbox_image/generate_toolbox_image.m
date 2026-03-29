@@ -6,9 +6,8 @@
 clc; clear; close all;
 
 %% Paths
-repoRoot   = fileparts(fileparts(mfilename('fullpath')));
-addpath(fullfile(repoRoot, 'source'));
-dataFile   = fullfile(repoRoot, 'data', 'external', 'atl08_hawaii', 'hawaii_atl08_points.mat');
+repoRoot   = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+dataFile   = 'hawaii_atl08_points.mat';
 outputFile = fullfile(repoRoot, 'build_base', 'toolbox_image.png');
 assert(isfile(dataFile), 'Missing: %s\nRun scripts/download_atl08_hawaii.py first.', dataFile);
 
@@ -23,8 +22,10 @@ lonLim  = [min(lon), max(lon)];
 latLim  = [min(lat), max(lat)];
 
 % % Crop to the central mountain core (removes flat coastal plains)
-lonLimView  = [-156.05, -155.20];
-latLimView  = [ 19.35,   20.25];
+% lonLimView  = [-156.05, -155.20];
+% latLimView  = [ 19.35,   20.25];
+lonLimView = [-156.05, -154.11];
+latLimView = [18.579, 20.438];
 
 %% Regularize onto a grid
 gridRes   = 480;   % nodes per axis
