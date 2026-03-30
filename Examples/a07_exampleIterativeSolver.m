@@ -36,6 +36,8 @@ clc; clear; close all;
 %[text] 
 %[text] ## **Load Data**
 load('a07_iterative_solver_data.mat');
+inputs = double(inputs);
+output = double(output);
 %%
 %[text] ## Try the Direct Solvers
 %[text] Try the 'normal' solver. I don't recommend this. Skip it.
