@@ -53,9 +53,12 @@ zGrid2 = zFunction(xGrid2Expanded{1}, xGrid2Expanded{2});
 
 %% Figure
 bgColor = [0.04, 0.05, 0.10];
-fig = figure('Color', bgColor, 'Position', [50, 50, 1500, 1050], 'InvertHardcopy', 'off');
+WIDTH = 1080;
+HEIGHT = 810;
+fig = figure('Color', bgColor, 'Position', [50, 50, WIDTH, HEIGHT], 'InvertHardcopy', 'off');
 ax  = axes('Parent', fig, 'Color', bgColor, 'FontSize', 13, 'FontName', 'Helvetica');
-ax.Position = [0.04, 0.07, 0.84, 0.87];
+ax.PositionConstraint = 'outerposition';
+ax.Position = [0.20116,0.12794,0.63234,0.72654];
 
 %% Regularized surface
 hSurf = surf(ax, xGrid2{:}, zGrid2', 'FaceColor', 'interp', ...
@@ -113,7 +116,7 @@ cb.Label.FontSize = 12;
 %% Title / branding
 title(ax, '3D bathymetry view', ...
       'Color', [1, 1, 1], 'FontSize', 28, 'FontWeight', 'bold', 'FontName', 'Helvetica');
-subtitle(ax, 'regularizeNd example style (coarse preview)', ...
+subtitle(ax, 'regularizeNd example fit', ...
          'Color', [0.78, 0.84, 0.96], 'FontSize', 13);
 
 %% Export
@@ -141,7 +144,7 @@ if previewMode
     fprintf('Preview exported to %s (%0.1f KB, Q=%d)\n', previewFile, fileInfo.bytes / 1024, quality);
 else
     fprintf('Exporting to %s\n', outputFile);
-    exportgraphics(fig, outputFile, 'Resolution', 260, 'BackgroundColor', bgColor);
+    exportgraphics(fig, outputFile, 'BackgroundColor', bgColor,'Width', WIDTH,'Height', HEIGHT);
     fprintf('Done.\n');
 end
 
