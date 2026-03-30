@@ -1,6 +1,6 @@
 [project]
 name = "regularizeNd"
-version = "3.1.0"
+version = "3.2.0"
 description = "Python port and documentation tooling for the regularizeNd project."
 license = {text = "MIT"}
 requires-python = ">=3.14"

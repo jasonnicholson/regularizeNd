@@ -1,3 +1,27 @@
+## **3.2.0**&emsp;<sub><sup>2026-03-29 ([69e9c9c...e6ecd1a](https://github.com/jasonnicholson/regularizeNd/compare/69e9c9c2df82a2bc850b098dad170e0c6ebf53ed...e6ecd1ac0fc28844b342f13de569604cb6887b0c?diff=split))</sup></sub>
+
+### Documentation
+
+- Moved video to YouTube, deleted fig file, and other updates for Examples/a06\_constraint\_and\_mapping\_example\.m\. ([ac59e53](https://github.com/jasonnicholson/regularizeNd/commit/ac59e532d30389ec75f2f8f376903b230b6c4c4e))
+- Fixed the math\. Other minor documentation updates\. ([9f89ad4](https://github.com/jasonnicholson/regularizeNd/commit/9f89ad4cfb9e85e97fbf4b97857ce3c4b839a889))
+- Added better iterative solver explanation\. ([da54caf](https://github.com/jasonnicholson/regularizeNd/commit/da54caf5b54328797d50230bb4eb756d58492ba0))
+- Updated example names in documentation\. ([e6ecd1a](https://github.com/jasonnicholson/regularizeNd/commit/e6ecd1ac0fc28844b342f13de569604cb6887b0c))
+
+### Features
+
+- Updating the toolbox\_image\.png to use NASA scan data and then convert this to a regular grid\. ([19fc29d](https://github.com/jasonnicholson/regularizeNd/commit/19fc29d3f3d0bf72f1590e7b82dab78b778ca4d6))
+- Updated toolbox image and first example to resolve Loihi seamount\. ([9914fe3](https://github.com/jasonnicholson/regularizeNd/commit/9914fe3288df3db5308d0780489d04ff06fc2142))
+
+### refactor
+
+- Renaming the 4th example\. ([2e9f498](https://github.com/jasonnicholson/regularizeNd/commit/2e9f4989adac9216d21282ef7f04cf087927818c))
+- Renaming examples\. ([ac60cf8](https://github.com/jasonnicholson/regularizeNd/commit/ac60cf8a38b5aaa694c3302184baeae628e47f23))
+- Organizing example data\. ([7896b4d](https://github.com/jasonnicholson/regularizeNd/commit/7896b4db68df8f111f89a231195247e631be8f2d))
+- Renaming the a07 data file\. ([10ba4a5](https://github.com/jasonnicholson/regularizeNd/commit/10ba4a57bc25b7c2bbf66607e80455a57cca0b45))
+- Now that I know pathology of iterative example is not precision related, reduce data to single make sense\. ([01e1d2f](https://github.com/jasonnicholson/regularizeNd/commit/01e1d2f6d906394967a0fcc4abf39b98a4a697b7))
+
+<br>
+
 ## **3.1.0**&emsp;<sub><sup>2026-03-25 ([1a54a13...6589604](https://github.com/jasonnicholson/regularizeNd/compare/1a54a13f7eba5a87ea3d9d3d05cae7c424eda56d...658960485cd4fb87b61270f3e20e7345f0cb76f8?diff=split))</sup></sub>
 
 ### Documentation
