@@ -33,7 +33,7 @@ zi2 = F2(xi,yi);
 
 figure; %[output:076019c7]
 mesh(xi,yi,zi) %[output:076019c7]
-hold all %[output:076019c7]
+hold on %[output:076019c7]
 surf(xi,yi, zi2) %[output:076019c7]
 xlabel('X','fontweight','b'), ylabel('Y','fontweight','b')  %[output:076019c7]
 zlabel('Value - V','fontweight','b') %[output:076019c7]

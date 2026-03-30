@@ -48,7 +48,7 @@ figure('color', 'w', 'position', figurePositionAndSize) %[output:15e1c1f7]
 subplot1 = subplot(1, 2, 1); %[output:15e1c1f7]
 view(subplot1,[-74.5, 14]); %[output:15e1c1f7]
 grid(subplot1, 'on'); %[output:15e1c1f7]
-hold(subplot1, 'all'); %[output:15e1c1f7]
+hold(subplot1, 'on'); %[output:15e1c1f7]
 
 % Note that surf uses the meshgrid format for plotting surfaces using
 % vectors for x and y. regularizeNd outputs in the ndgrid format. In 2d,
@@ -67,7 +67,7 @@ axis([0, 4, 0, 4, 0, 1.1]); %[output:15e1c1f7]
 subplot2 = subplot(1, 2, 2); %[output:15e1c1f7]
 view(subplot2,[-74.5, 14]); %[output:15e1c1f7]
 grid(subplot2, 'on'); %[output:15e1c1f7]
-hold(subplot2, 'all'); %[output:15e1c1f7]
+hold(subplot2, 'on'); %[output:15e1c1f7]
 
 % Note that surf uses the meshgrid format for plotting surfaces using
 % vectors for x and y. regularizeNd outputs in the ndgrid format. In 2d,

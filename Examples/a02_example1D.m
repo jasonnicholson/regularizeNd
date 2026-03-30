@@ -35,7 +35,7 @@ plot(x,y,'rx', 'MarkerSize', 20, 'DisplayName', 'Test Points') %[output:5059ba60
 xlabel('x') %[output:5059ba60]
 ylabel('y') %[output:5059ba60]
 grid on; %[output:5059ba60]
-hold all; %[output:5059ba60]
+hold on; %[output:5059ba60]
 %[text] plot the lookup table
 plot(xGrid1{1}, yGrid1, 'DisplayName', 'Course Grid') %[output:5059ba60]
 plot(xGrid2{1}, yGrid2, 'DisplayName', 'Fine Grid') %[output:5059ba60]
