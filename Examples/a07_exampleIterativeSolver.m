@@ -34,13 +34,17 @@ clc; clear; close all;
 %[text] 
 %[text] **Because of the large stride in higher dimensions, the best method to solve higher dimensional problems is iterative methods.**
 %[text] 
+%[text] ## Computer Used for run below
+%[text] - Intel Core Ultra 7 265K 3.9 GHz 20-Core Processor
+%[text] - 192GB of ram \
+%[text] While running this script, MATLAB used a maximum of 105 threads. Maximum ram was around 77GB for the`\\` which is a sparse QR factorization.
 %[text] ## **Load Data**
 load('a07_iterative_solver_data.mat');
 inputs = double(inputs);
 output = double(output);
 %%
 %[text] ## Try the Direct Solvers
-%[text] Try the 'normal' solver. I don't recommend this. Skip it.
+%[text] Try the 'normal' solver. I don't recommend this. Skip it. It takes around 34GB of memory to run this.
 smoothness = [0.001 0.01 0.01 0.001 0.01];
 interpMethod = "linear";
 
@@ -57,7 +61,7 @@ catch exception
        'MATLAB threw the following error:\n%s\n%s\n\n'], exception.identifier, exception.message);
 end %[output:group:270971a5]
 %%
-%[text] Try the '\\' solver. I don't recommend this either. Skip it.
+%[text] Try the '\\' solver. I don't recommend this either. Skip it. It takes around 78GB fo memory to run this.
 try %[output:group:5a4bdef0]
     tic;
     [~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod,'\');
@@ -97,20 +101,20 @@ toc; %[output:79763852]
 %   data: {"dataType":"text","outputData":{"text":"No error thrown. Mathworks fixed this bug.\n","truncated":false}}
 %---
 %[output:0409e3cd]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 930.022098 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 120.318136 seconds.\n","truncated":false}}
 %---
 %[output:07ad6f10]
 %   data: {"dataType":"text","outputData":{"text":"No error thrown. Mathworks fixed this bug.\n","truncated":false}}
 %---
 %[output:531f0d3f]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 8266.395394 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 1489.062612 seconds.\n","truncated":false}}
 %---
 %[output:3c791c80]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 53.382053 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 43.406837 seconds.\n","truncated":false}}
 %---
 %[output:31e5ee93]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 52.895435 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 45.461208 seconds.\n","truncated":false}}
 %---
 %[output:79763852]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 377.954214 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 126.942613 seconds.\n","truncated":false}}
 %---
