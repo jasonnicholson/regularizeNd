@@ -64,8 +64,31 @@ Public Function RegularizeNd( _
     Dim rhs As Variant
     Dim nSmooth As Long
     Dim yGrid As Variant
+    Dim xReordered As Variant
+    Dim xGridReordered As Variant
+    Dim smoothNorm() As Double
+    Dim smoothReordered() As Double
+    Dim strideOrder() As Long
+    Dim nDimensions As Long
+    Dim nGridOriginal() As Long
+    Dim nGridReordered() As Long
+    Dim d As Long
 
-    mats = RegularizeNdMatrices(x, xGrid, smoothness, interpMethod)
+    nDimensions = UBound(x, 2)
+    ReDim nGridOriginal(1 To nDimensions)
+    For d = 1 To nDimensions
+        nGridOriginal(d) = UBound(xGrid(d)) - LBound(xGrid(d)) + 1
+    Next d
+
+    strideOrder = StrideOrderFromNGrid(nGridOriginal)
+    nGridReordered = PermuteLongVector(nGridOriginal, strideOrder)
+
+    xReordered = ReorderMatrixColumns(x, strideOrder)
+    xGridReordered = ReorderGrid(xGrid, strideOrder)
+    smoothNorm = NormalizeSmoothness(smoothness, nDimensions)
+    smoothReordered = ReorderSmoothVector(smoothNorm, strideOrder)
+
+    mats = RegularizeNdMatrices(xReordered, xGridReordered, smoothReordered, interpMethod)
     Afidelity = mats(0)
     Set Lreg = mats(1)
 
@@ -85,6 +108,10 @@ Public Function RegularizeNd( _
         Case Else
             Err.Raise vbObjectError + 1002, "RegularizeNd", "Only '\\' and 'normal' are implemented in VBA port"
     End Select
+
+    If nDimensions > 1 Then
+        yGrid = UndoStrideVector(yGrid, nGridOriginal, strideOrder)
+    End If
 
     RegularizeNd = ReshapeNdGrid(yGrid, xGrid)
 End Function
@@ -529,6 +556,133 @@ End Function
 Private Function ReshapeNdGrid(ByVal y As Variant, ByVal xGrid As Variant) As Variant
     ' Returns the vector in this VBA port. In MATLAB this would reshape to ndgrid dimensions.
     ReshapeNdGrid = y
+End Function
+
+Private Function ReorderMatrixColumns(ByVal X As Variant, ByVal order() As Long) As Variant
+    Dim nRows As Long, nCols As Long
+    nRows = UBound(X, 1)
+    nCols = UBound(X, 2)
+
+    Dim out() As Double
+    ReDim out(1 To nRows, 1 To nCols)
+
+    Dim r As Long, d As Long
+    For r = 1 To nRows
+        For d = 1 To nCols
+            out(r, d) = X(r, order(d))
+        Next d
+    Next r
+
+    ReorderMatrixColumns = out
+End Function
+
+Private Function ReorderGrid(ByVal xGrid As Variant, ByVal order() As Long) As Variant
+    Dim nDims As Long
+    nDims = UBound(order)
+
+    Dim out() As Variant
+    ReDim out(1 To nDims)
+
+    Dim d As Long
+    For d = 1 To nDims
+        out(d) = xGrid(order(d))
+    Next d
+
+    ReorderGrid = out
+End Function
+
+Private Function ReorderSmoothVector(ByVal smooth() As Double, ByVal order() As Long) As Double()
+    Dim nDims As Long
+    nDims = UBound(order)
+
+    Dim out() As Double
+    ReDim out(1 To nDims)
+
+    Dim d As Long
+    For d = 1 To nDims
+        out(d) = smooth(order(d))
+    Next d
+
+    ReorderSmoothVector = out
+End Function
+
+Private Function StrideOrderFromNGrid(ByVal nGrid() As Long) As Long()
+    Dim nDims As Long
+    nDims = UBound(nGrid)
+
+    Dim order() As Long
+    ReDim order(1 To nDims)
+
+    Dim i As Long, j As Long, tmp As Long
+    For i = 1 To nDims
+        order(i) = i
+    Next i
+
+    For i = 1 To nDims - 1
+        For j = i + 1 To nDims
+            If nGrid(order(j)) < nGrid(order(i)) Then
+                tmp = order(i)
+                order(i) = order(j)
+                order(j) = tmp
+            End If
+        Next j
+    Next i
+
+    StrideOrderFromNGrid = order
+End Function
+
+Private Function PermuteLongVector(ByVal v() As Long, ByVal order() As Long) As Long()
+    Dim n As Long
+    n = UBound(order)
+
+    Dim out() As Long
+    ReDim out(1 To n)
+
+    Dim i As Long
+    For i = 1 To n
+        out(i) = v(order(i))
+    Next i
+
+    PermuteLongVector = out
+End Function
+
+Private Function UndoStrideVector(ByVal yReordered As Variant, ByVal nGridOriginal() As Long, ByVal strideOrder() As Long) As Variant
+    Dim nDims As Long
+    nDims = UBound(nGridOriginal)
+
+    Dim nGridReordered() As Long
+    nGridReordered = PermuteLongVector(nGridOriginal, strideOrder)
+
+    Dim combos As Variant
+    combos = IndexCombinations(nGridOriginal)
+
+    Dim nTotal As Long
+    nTotal = UBound(combos, 1)
+
+    Dim out() As Double
+    ReDim out(1 To nTotal)
+
+    Dim subsOrig() As Long, subsNew() As Long
+    ReDim subsOrig(1 To nDims)
+    ReDim subsNew(1 To nDims)
+
+    Dim r As Long, d As Long
+    Dim oldIdx As Long, newIdx As Long
+    For r = 1 To nTotal
+        For d = 1 To nDims
+            subsOrig(d) = combos(r, d)
+        Next d
+
+        For d = 1 To nDims
+            subsNew(d) = subsOrig(strideOrder(d))
+        Next d
+
+        oldIdx = SubscriptToIndex(subsOrig, nGridOriginal)
+        newIdx = SubscriptToIndex(subsNew, nGridReordered)
+        out(oldIdx) = yReordered(newIdx)
+    Next r
+
+    UndoStrideVector = out
 End Function
 
 Private Function FindCellIndex(ByVal value As Double, ByVal grid As Variant) As Long

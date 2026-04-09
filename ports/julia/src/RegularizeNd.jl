@@ -61,12 +61,32 @@ function regularize_nd(x::AbstractMatrix{<:Real}, y::AbstractVector{<:Real}, x_g
     yv = Float64.(collect(y))
     size(X, 1) == length(yv) || throw(ArgumentError("x and y row counts must match"))
 
-    n_total_grid_points = prod(length.(x_grid))
+    n_dims = size(X, 2)
+    length(x_grid) == n_dims || throw(ArgumentError("dimension mismatch"))
+
+    smooth_vec = if smoothness isa Real
+        fill(Float64(smoothness), n_dims)
+    else
+        s = Float64.(collect(smoothness))
+        length(s) == n_dims || throw(ArgumentError("smoothness shape mismatch"))
+        s
+    end
+
+    n_grid = length.(x_grid)
+    stride_order = sortperm(n_grid)
+    inv_stride_order = invperm(stride_order)
+
+    X = X[:, stride_order]
+    x_grid_reordered = x_grid[stride_order]
+    smooth_reordered = smooth_vec[stride_order]
+    n_grid_reordered = n_grid[stride_order]
+
+    n_total_grid_points = prod(n_grid_reordered)
     maxiter = isnothing(max_iterations) ? min(100000, n_total_grid_points) : max_iterations
     y_span = maximum(yv) - minimum(yv)
     tol = isnothing(solver_tolerance) ? 1e-11 * abs(y_span > 0 ? y_span : 1.0) : solver_tolerance
 
-    A, L = regularize_nd_matrices(X, x_grid; smoothness=smoothness, interp_method=interp_method)
+    A, L = regularize_nd_matrices(X, x_grid_reordered; smoothness=smooth_reordered, interp_method=interp_method)
     Lnz = [Li for Li in L if size(Li, 1) > 0]
     M = isempty(Lnz) ? A : vcat(A, Lnz...)
 
@@ -91,9 +111,9 @@ function regularize_nd(x::AbstractMatrix{<:Real}, y::AbstractVector{<:Real}, x_g
         end
     end
 
-    n_dims = size(X, 2)
     if n_dims > 1
-        return reshape(yvec, Tuple(length.(x_grid)))
+        y_grid_reordered = reshape(yvec, Tuple(n_grid_reordered))
+        return permutedims(y_grid_reordered, inv_stride_order)
     end
     return yvec
 end

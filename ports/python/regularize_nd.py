@@ -74,14 +74,36 @@ def regularize_nd(
     if solver not in SUPPORTED_SOLVER:
         raise ValueError("unsupported solver")
 
-    n_total_grid_points = int(np.prod([len(g) for g in x_grid]))
+    n_dims = x.shape[1]
+    if len(x_grid) != n_dims:
+        raise ValueError("dimension mismatch")
+
+    # Normalize smoothness in regularize_nd so it can be reordered together
+    # with x/x_grid during stride minimization.
+    if np.isscalar(smoothness):
+        smooth_vec = np.full(n_dims, float(smoothness), dtype=float)
+    else:
+        smooth_vec = np.asarray(smoothness, dtype=float).reshape(-1)
+        if smooth_vec.size != n_dims:
+            raise ValueError("smoothness shape mismatch")
+
+    n_grid = np.array([len(g) for g in x_grid], dtype=int)
+    stride_order = np.argsort(n_grid, kind="stable")
+    inverse_stride_order = np.argsort(stride_order)
+
+    x_reordered = x[:, stride_order]
+    x_grid_reordered = [x_grid[i] for i in stride_order]
+    smooth_reordered = smooth_vec[stride_order]
+    n_grid_reordered = n_grid[stride_order]
+
+    n_total_grid_points = int(np.prod(n_grid_reordered))
     if max_iterations is None:
         max_iterations = int(min(1e5, n_total_grid_points))
     if solver_tolerance is None:
         y_span = float(np.max(y) - np.min(y))
         solver_tolerance = 1e-11 * abs(y_span if y_span > 0 else 1.0)
 
-    afidelity, lreg = regularize_nd_matrices(x, x_grid, smoothness, interp_method)
+    afidelity, lreg = regularize_nd_matrices(x_reordered, x_grid_reordered, smooth_reordered, interp_method)
     lreg_nonempty = [li for li in lreg if li.shape[0] > 0]
     a = sparse.vstack([afidelity, *lreg_nonempty], format="csr") if lreg_nonempty else afidelity
 
@@ -107,9 +129,9 @@ def regularize_nd(
         y_vec, _ = spla.minres(ata, aty, rtol=solver_tolerance, maxiter=max_iterations)
 
     y_vec = np.asarray(y_vec).reshape(-1)
-    n_grid = [len(g) for g in x_grid]
-    if x.shape[1] > 1:
-        return np.reshape(y_vec, n_grid, order="F")
+    if n_dims > 1:
+        y_grid_reordered = np.reshape(y_vec, tuple(n_grid_reordered.tolist()), order="F")
+        return np.transpose(y_grid_reordered, axes=tuple(inverse_stride_order.tolist()))
     return y_vec
 
 

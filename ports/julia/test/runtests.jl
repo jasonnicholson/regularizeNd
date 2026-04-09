@@ -31,6 +31,14 @@ function data_1d()
     return X, y, xgrid
 end
 
+function invperm_for_stride(order)
+    inv = similar(order)
+    for (i, v) in enumerate(order)
+        inv[v] = i
+    end
+    return inv
+end
+
 @testset "RegularizeNd Julia Port" begin
     X, y, xgrid = data_2d()
 
@@ -55,4 +63,17 @@ end
     @test all(sum(abs.(A) .> 0, dims=2) .== 2)
     @test Vector(A[1,1:2]) == [1.0, -1.0]
     @test b == fill(-0.25, 5)
+
+    smooth = [1e-3, 2e-3]
+    yg = regularize_nd(X, y, xgrid; smoothness=smooth, interp_method="linear", solver="normal")
+
+    stride_order = sortperm(length.(xgrid))
+    inv_stride_order = invperm_for_stride(stride_order)
+    Xr = X[:, stride_order]
+    xgridr = xgrid[stride_order]
+    smoothr = smooth[stride_order]
+
+    ygr = regularize_nd(Xr, y, xgridr; smoothness=smoothr, interp_method="linear", solver="normal")
+    yg_back = permutedims(ygr, inv_stride_order)
+    @test maximum(abs.(yg .- yg_back)) < 1e-10
 end

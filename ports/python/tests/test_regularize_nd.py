@@ -81,3 +81,22 @@ def test_monotonic_constraint_structure():
     assert np.all((a != 0).sum(axis=1).A.ravel() == 2)
     assert np.allclose(a.toarray()[0, :2], [1.0, -1.0])
     assert np.allclose(b, -0.25)
+
+
+def test_stride_order_equivalence():
+    x, y, x_grid = _data_2d()
+    smooth = np.array([1e-3, 2e-3], dtype=float)
+
+    y_grid = regularize_nd(x, y, x_grid, smooth, "linear", "normal")
+
+    stride_order = np.argsort(np.array([len(g) for g in x_grid]), kind="stable")
+    inverse_stride_order = np.argsort(stride_order)
+
+    x_reordered = x[:, stride_order]
+    x_grid_reordered = [x_grid[i] for i in stride_order]
+    smooth_reordered = smooth[stride_order]
+
+    y_grid_reordered = regularize_nd(x_reordered, y, x_grid_reordered, smooth_reordered, "linear", "normal")
+    y_grid_back = np.transpose(y_grid_reordered, axes=tuple(inverse_stride_order.tolist()))
+
+    assert np.allclose(y_grid, y_grid_back, atol=1e-10)
