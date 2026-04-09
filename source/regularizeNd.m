@@ -204,6 +204,23 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   % helper function used mostly for when variables are renamed
   getname = @(x) inputname(1);
 
+  % calculate the number of dimensions in the scattered input
+  nDimensions = size(x,2);
+
+  % check for the matching dimensionality before any stride reordering
+  assert(nDimensions == numel(xGrid), ...
+    "regularizeNd:dimensionMismatch", ...
+    "Dimensionality mismatch. The number of columns in %s does not match the number of cells in %s.", getname(x), getname(xGrid));
+
+  % validate smoothness dimensionality and normalize scalar input to a vector
+  if isscalar(smoothness)
+    smoothness = smoothness.*ones(1, nDimensions);
+  else
+    assert(numel(smoothness) == nDimensions, ...
+      "regularizeNd:smoothnessDimensionMismatch", ...
+      "The number of elements in %s must match the number of columns in %s", getname(smoothness), getname(x));
+  end
+
   % Internal hooks are optional and used only for deterministic unit testing.
   hooks = internal.getRegularizeNdHooks();
   calculatePreconditionerFn = @internal.calculatePreconditioner;
@@ -221,10 +238,19 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
     end
   end
 
-    % Check y rows matches the number in x
+  % Check y rows matches the number in x
   nScatteredPoints = size(x,1);
   assert( nScatteredPoints == size(y, 1), "regularizeNd:numberOfPointsMismatch" , ...
     "%s must have same number of rows as %s",getname(x), getname(y));
+
+  %% Minimize the stride
+  % Minizing the matrix stride will help reduce the bandwidth coming from the 2nd derivative regularizer.
+  % The strategy is to be smallest dimensions first and largest dimensions last.
+  nGrid = cellfun(@numel, xGrid);
+  [nGridNew,strideOrder] = sort(nGrid);
+  x = x(:,strideOrder);
+  xGrid = xGrid(strideOrder);
+  smoothness = smoothness(strideOrder);
 
   %% Assemble and Solve the Overall Equation System
   [Afidelity, Lreg] = regularizeNdMatrices(x, xGrid, smoothness, interpMethod);
@@ -270,10 +296,9 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   yGrid = full(yGrid);
 
   % reshape if needed
-  nDimensions = size(x,2);
   if nDimensions > 1
-    nGrid = cellfun(@numel, xGrid);
-    yGrid = reshape(yGrid, nGrid);
+    yGrid = reshape(yGrid, nGridNew);
+    yGrid = ipermute(yGrid, strideOrder);
   end
 
 end % end regularizeNd function
