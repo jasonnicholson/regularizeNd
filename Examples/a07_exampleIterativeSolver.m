@@ -37,14 +37,16 @@ clc; clear; close all;
 %[text] ## Computer Used for run below
 %[text] - Intel Core Ultra 7 265K 3.9 GHz 20-Core Processor
 %[text] - 192GB of ram \
-%[text] While running this script, MATLAB used a maximum of 105 threads. Maximum ram was around 77GB for the`\\` which is a sparse QR factorization.
+%[text] While running this script, MATLAB used a maximum of 105 threads. Maximum ram was around 66GB for the`\` which is a sparse QR factorization.
+%[text] ## Stride Optimization 2026-Apr-10
+%[text] After updating this example, I realized optimizing the stride of the grid was easy. Just sort the dimension by size, solve, and then undo the permutation of dimensions. This equates to about a 33% speed up with the '`normal'` solver, 13% for '`\'`, 17% for 'pcg'/'symmlq', and 15% for 'lsqr'. Memory requirements for the direct sovlers was reduced by 20-30%.
 %[text] ## **Load Data**
 load('a07_iterative_solver_data.mat');
 inputs = double(inputs);
 output = double(output);
 %%
 %[text] ## Try the Direct Solvers
-%[text] Try the 'normal' solver. I don't recommend this. Skip it. It takes around 34GB of memory to run this.
+%[text] Try the 'normal' solver. I don't recommend this. Skip it. It takes around 27.2GB of memory to run this.
 smoothness = [0.001 0.01 0.01 0.001 0.01];
 interpMethod = "linear";
 
@@ -61,7 +63,7 @@ catch exception
        'MATLAB threw the following error:\n%s\n%s\n\n'], exception.identifier, exception.message);
 end %[output:group:270971a5]
 %%
-%[text] Try the '\\' solver. I don't recommend this either. Skip it. It takes around 78GB fo memory to run this.
+%[text] Try the '\\' solver. I don't recommend this either. Skip it. It takes around 66GB of memory to run this.
 try %[output:group:5a4bdef0]
     tic;
     [~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod,'\');
@@ -101,20 +103,20 @@ toc; %[output:79763852]
 %   data: {"dataType":"text","outputData":{"text":"No error thrown. Mathworks fixed this bug.\n","truncated":false}}
 %---
 %[output:0409e3cd]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 120.318136 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 80.862073 seconds.\n","truncated":false}}
 %---
 %[output:07ad6f10]
 %   data: {"dataType":"text","outputData":{"text":"No error thrown. Mathworks fixed this bug.\n","truncated":false}}
 %---
 %[output:531f0d3f]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 1489.062612 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 1288.071849 seconds.\n","truncated":false}}
 %---
 %[output:3c791c80]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 43.406837 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 36.175797 seconds.\n","truncated":false}}
 %---
 %[output:31e5ee93]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 45.461208 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 36.099922 seconds.\n","truncated":false}}
 %---
 %[output:79763852]
-%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 126.942613 seconds.\n","truncated":false}}
+%   data: {"dataType":"text","outputData":{"text":"Elapsed time is 108.421625 seconds.\n","truncated":false}}
 %---
