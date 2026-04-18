@@ -1,6 +1,10 @@
 Documentation
 ==========================
 
+An 8-part tutorial series, additional regularizeNd insights, and a deeper dive into the package are available on the project page below. The material overlaps with the Examples section, but is not identical.
+
+`regularizeNd page <https://jasonhnicholson.com/pages/regularizeNd/>`_
+
 .. contents::
    :local:
    :depth: 2

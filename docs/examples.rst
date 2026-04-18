@@ -1,16 +1,11 @@
 Examples
 ========
 
-These example pages are generated from the MATLAB scripts in `Examples/` using MATLAB `publish`.
-The generated HTML (and any supporting files) are placed under `_static/examples/` so they are
-included in the Sphinx build output.
-
-To (re)generate the published examples:
-
-- From the docs folder: `make examples`
 
 Published examples
 ------------------
+
+These example pages are generated from the MATLAB scripts in `Examples/` using MATLAB `publish`.
 
 - `a01_START_HERE_example <_static/examples/a01_START_HERE_example.html>`_
 - `a02_example1D <_static/examples/a02_example1D.html>`_
@@ -26,5 +21,5 @@ Published examples
 Assets
 ------
 
-Assets are not included in the Sphinx build output, but are available in the Examples folder.
+Assets are not included in the Sphinx build output, but are available in the `Examples/` folder.
 
