@@ -100,7 +100,7 @@ end
 
 function update_package_json_version(filePath, newVersion, dryRun, prefix)
   content = fileread(filePath);
-  pattern = '"version"\\s*:\\s*"[^"]+"';
+  pattern = '"version"\s*:\s*"[^"]+"';
   replacement = sprintf('"version": "%s"', newVersion);
   updated = regexprep(content, pattern, replacement, 'once');
 
@@ -120,8 +120,8 @@ end
 
 function update_conf_py_version(filePath, newVersion, dryRun, prefix)
   content = fileread(filePath);
-  updated = regexprep(content, "^version\\s*=\\s*'.*'$", sprintf("version = '%s'", newVersion), 'lineanchors', 'once');
-  updated = regexprep(updated, "^release\\s*=\\s*'.*'$", sprintf("release = '%s'", newVersion), 'lineanchors', 'once');
+  updated = regexprep(content, "version = '\d+\.\d+\.\d+'", sprintf("version = '%s'", newVersion), 'lineanchors', 'once');
+  updated = regexprep(updated, "release = '\d+\.\d+\.\d+'", sprintf("release = '%s'", newVersion), 'lineanchors', 'once');
 
   if strcmp(content, updated)
     fprintf("%s docs/conf.py already at version %s\n", prefix, newVersion);

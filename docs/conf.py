@@ -10,8 +10,10 @@ project = 'regularizeNd'
 copyright = '2025, Jason H. Nicholson'
 author = 'Jason H. Nicholson'
 
-version = '0.1'
-release = '0.1'
+# Note the version and release numbers must follow the format
+# version = '\d+\.\d+\.\d+' 
+version = '3.2.1'
+release = '3.2.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
