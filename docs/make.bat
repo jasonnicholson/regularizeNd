@@ -8,13 +8,13 @@ REM Command file for Sphinx documentation (Windows).
 REM Mirrors the behavior of docs/Makefile.
 
 if "%SPHINXBUILD%" == "" (
-	set SPHINXBUILD=sphinx-build
+	set SPHINXBUILD=uv run sphinx-build
 )
 if "%SPHINXAUTOBUILD%" == "" (
-	set SPHINXAUTOBUILD=sphinx-autobuild
+	set SPHINXAUTOBUILD=uv run sphinx-autobuild
 )
 if "%PYTHON%" == "" (
-	set PYTHON=python
+	set PYTHON=uv run python
 )
 
 set SOURCEDIR=.

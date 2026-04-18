@@ -68,6 +68,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Create a virtual environment and sync dependencies
 uv venv
 uv sync
+uv sync --group docs
 
 # Run commands inside the uv-managed environment
 uv run python -V
@@ -91,10 +92,11 @@ uv run sphinx-build --version
 
 Note: other scripts assume the MATLAB path has already been set. The only script that adjusts the path internally is `createPackage`, which adds the build folder briefly for `builddocsearchdb` and removes it immediately.
 
-To run a live-reloading docs server during documentation development, use the Sphinx autobuild target from the docs folder:
+To run docs commands through uv without activating a shell environment, use the Sphinx targets from the docs folder:
 
 ```bash
 cd docs
+make html
 make livehtml
 ```
   

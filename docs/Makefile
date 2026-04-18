@@ -4,9 +4,9 @@
 # You can set these variables from the command line, and also
 # from the environment for the first two.
 SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SPHINXAUTOBUILD ?= sphinx-autobuild
-PYTHON        ?= python3
+SPHINXBUILD   ?= uv run sphinx-build
+SPHINXAUTOBUILD ?= uv run sphinx-autobuild
+PYTHON        ?= uv run python
 SOURCEDIR     = .
 BUILDDIR      = _build
 STATICDIR     = $(SOURCEDIR)/_static
