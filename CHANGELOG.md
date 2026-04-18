@@ -1,3 +1,18 @@
+## **3.2.1**&emsp;<sub><sup>2026-04-17 ([f425791...9003bd2](https://github.com/jasonnicholson/regularizeNd/compare/f425791447686c4103abbfd05e524cc9aa15092c...9003bd2816200e3c038c8d9cd767bc3d77397daf?diff=split))</sup></sub>
+
+### Documentation
+
+- Updated the iterative solver example on my new desktop\. Better times by a factor of about 8 on the direct solvers\. IIterative solvers are only 20% faster\. ([d9a8834](https://github.com/jasonnicholson/regularizeNd/commit/d9a88344d027bd6bf9d1ab00910d55825d146750))
+- Updated iterative sovler example after adding stride optimization\. ([4b8d95e](https://github.com/jasonnicholson/regularizeNd/commit/4b8d95ec5d9fe5678839c333f6dd9f95b5229390))
+- Developer documentation updates ([2df5d30](https://github.com/jasonnicholson/regularizeNd/commit/2df5d301ff272433ef60aa2eb662f56384bf3e7f))
+- Connecting to my tutorial series on my personal site\. ([9003bd2](https://github.com/jasonnicholson/regularizeNd/commit/9003bd2816200e3c038c8d9cd767bc3d77397daf))
+
+### Performance improvements
+
+- Stride order minimization Implemented stride order minimization\. This corresponds to internally sort the dimensions by number of points per dimension\. Smaller first\. Larger last\. This had 2\.7x increase in speed for the a07 example\. ([d9b29bd](https://github.com/jasonnicholson/regularizeNd/commit/d9b29bdb098526bb4843367ab202c63ff1ad2fca))
+
+<br>
+
 ## **3.2.0**&emsp;<sub><sup>2026-03-29 ([69e9c9c...e6ecd1a](https://github.com/jasonnicholson/regularizeNd/compare/69e9c9c2df82a2bc850b098dad170e0c6ebf53ed...e6ecd1ac0fc28844b342f13de569604cb6887b0c?diff=split))</sup></sub>
 
 ### Documentation
