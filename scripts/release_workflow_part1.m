@@ -50,10 +50,11 @@ function release_workflow_part1(options)
   fprintf("\n");
   fprintf("%s Part 1 complete. Before running release_workflow_part2, do the following manually:\n", PREFIX);
   fprintf("\n");
-  fprintf("  1. Open the build\\regularizeNd.prj.\n");
+  fprintf("  1. Open the build\\regularizeNd_project.prj.\n");
   fprintf('  2. Click "Package Toolbox".\n');
   fprintf("  3. Set the version.\n");
   fprintf("  4. Make the Getting Started file is correctly configured.\n");
+  fprintf("  5. Click ""Package Toolbox"".\n");
   fprintf("\n");
   fprintf("Then run: release_workflow_part2('DryRun', %s)\n", mat2str(dryRun));
   fprintf("\n");
