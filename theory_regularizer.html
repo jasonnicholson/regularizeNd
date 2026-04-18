@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theory of the Regularizer &mdash; regularizeNd 3.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=eb155f5e"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Developer Guide" href="developer_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            regularizeNd
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Pages</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Theory of the Regularizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#d">1D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nd">nD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">regularizeNd</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Theory of the Regularizer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/theory_regularizer.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="theory-of-the-regularizer">
+<h1>Theory of the Regularizer<a class="headerlink" href="#theory-of-the-regularizer" title="Link to this heading"></a></h1>
+<p>The default regularizer in regularizeNd penalizes second derivative along each axis. The idealized zero-penalty condition is</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial^{2}f}{\partial x_k^{2}} = 0, \qquad k = 1,\dots,d.
+\]</div>
+<p>This means the gradient in each axis is constant with respect to that same axis. Equivalently, the function is linear in each axis when the other axes are held fixed.</p>
+<section id="d">
+<h2>1D<a class="headerlink" href="#d" title="Link to this heading"></a></h2>
+<p>If</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{d^2 f}{dx^2} = 0,
+\]</div>
+<p>then the exact zero-penalty function is affine:</p>
+<div class="math notranslate nohighlight">
+\[
+f(x) = a_0 + a_1 x.
+\]</div>
+</section>
+<section id="id1">
+<h2>2D<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>If</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial^{2}f}{\partial x^{2}} = 0,
+\qquad
+\frac{\partial^{2}f}{\partial y^{2}} = 0,
+\]</div>
+<p>then the exact zero-penalty function is bilinear:</p>
+<div class="math notranslate nohighlight">
+\[
+f(x,y) = c + ax + by + dxy.
+\]</div>
+<p>Check:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial f}{\partial x} = a + dy,
+\qquad
+\frac{\partial^{2}f}{\partial x^{2}} = 0,
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial f}{\partial y} = b + dx,
+\qquad
+\frac{\partial^{2}f}{\partial y^{2}} = 0.
+\]</div>
+</section>
+<section id="id2">
+<h2>3D<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>In three dimensions, the exact zero-penalty function class is trilinear:</p>
+<div class="math notranslate nohighlight">
+\[
+f(x,y,z) = c_0 + c_1 x + c_2 y + c_3 z + c_4 xy + c_5 xz + c_6 yz + c_7 xyz.
+\]</div>
+<p>This is linear in each axis separately.</p>
+</section>
+<section id="nd">
+<h2>nD<a class="headerlink" href="#nd" title="Link to this heading"></a></h2>
+<p>In <span class="math notranslate nohighlight">\(d\)</span> dimensions, the exact zero-penalty functions are multilinear:</p>
+<div class="math notranslate nohighlight">
+\[
+f(x_1,\dots,x_d) = \sum_{S \subseteq \{1,\dots,d\}} c_S \prod_{i \in S} x_i.
+\]</div>
+<p>Each variable appears with power at most 1, so every pure second derivative with respect to a single axis is zero.</p>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
+<p>The null space of the second-derivative regularizer is not just globally linear in all variables together. It is multilinear: affine in 1D, bilinear in 2D, trilinear in 3D, and multilinear in nD.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="developer_guide.html" class="btn btn-neutral float-left" title="Developer Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jason H. Nicholson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

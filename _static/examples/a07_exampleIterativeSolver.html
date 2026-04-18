@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2026a"><title>Iterative Solver Example</title><style type="text/css">.rtcContent { padding: 30px; } .S0 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 28.8px; min-height: 0px; white-space: pre; color: rgb(192, 76, 11); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 24px; font-weight: 400; text-align: left;  }
+._richTextNode {white-space: break-spaces;}
+.CodeBlock { background-color: #F5F5F5; margin: 10px 0 10px 0; }
+.S1 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 1px solid rgb(217, 217, 217); border-bottom: 1px solid rgb(217, 217, 217); border-radius: 4px; padding: 6px 45px 4px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S2 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 25px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.S3 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S4 { margin: 20px 10px 5px 4px; padding: 0px; line-height: 25px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.S5 { margin: 15px 10px 5px 4px; padding: 0px; line-height: 20.4px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 17px; font-weight: 700; text-align: left;  }
+.S6 { margin: 3px; border: 1px solid rgb(191, 191, 191); border-collapse: collapse;  }
+.S7 { background-color: rgba(0, 0, 0, 0);  }
+.S8 { border: 1px solid rgb(191, 191, 191); vertical-align: top;  }
+.S9 { margin: 2px 10px 2px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S10 { margin: 10px 0px 20px; padding-left: 0px; font-family: Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif; font-size: 14px;  }
+.S11 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }
+.S12 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 1px solid rgb(217, 217, 217); border-bottom: 0px none rgb(33, 33, 33); border-radius: 4px 4px 0px 0px; padding: 6px 45px 0px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S13 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 0px none rgb(33, 33, 33); border-bottom: 0px none rgb(33, 33, 33); border-radius: 0px; padding: 0px 45px 0px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S14 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 0px none rgb(33, 33, 33); border-bottom: 1px solid rgb(217, 217, 217); border-radius: 0px 0px 4px 4px; padding: 0px 45px 4px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S15 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 0px none rgb(33, 33, 33); border-bottom: 1px solid rgb(217, 217, 217); border-radius: 0px; padding: 0px 45px 4px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S16 { color: rgb(33, 33, 33); padding: 10px 0px 6px 17px; background: rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box; font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px; overflow-x: hidden; line-height: 17.234px;  }
+/* Copyright 2014-2025 The MathWorks, Inc. *//* Styling that is common to warnings and errors is in diagnosticOutput.css */.embeddedOutputsErrorElement {    min-height: 18px;    max-height: 550px;}
+.embeddedOutputsErrorElement .diagnosticMessage-errorType {    overflow: auto;}
+.embeddedOutputsErrorElement.inlineElement {}
+.embeddedOutputsErrorElement.rightPaneElement {}
+/* Copyright 2014-2025 The MathWorks, Inc. *//* Styling that is common to warnings and errors is in diagnosticOutput.css */.embeddedOutputsWarningElement {    min-height: 18px;    max-height: 550px;}
+.embeddedOutputsWarningElement .diagnosticMessage-warningType {    overflow: auto;}
+.embeddedOutputsWarningElement.inlineElement {}
+.embeddedOutputsWarningElement.rightPaneElement {}
+/* Copyright 2015-2025 The MathWorks, Inc. *//* In this file, styles are not scoped to rtcContainer since they could be in the Dojo Tooltip */.diagnosticMessage-wrapper {    /* Since this selector may be used outside RTC Container without RTC semantic variables, a    default value is used. An example here is the App Designer's alert tooltip. */    font-family: var(--rtc-output-font-family, Menlo, Monaco, Consolas, "Courier New", monospace);    font-size: var(--rtc-output-font-size, 12px);}
+.diagnosticMessage-wrapper.diagnosticMessage-warningType {    /*This fallback value will be used for appdesigner warnings*/    color: var(--rtc-warning-output-color, var(--mw-color-matlabWarning));}
+.diagnosticMessage-wrapper.diagnosticMessage-warningType a {    /*This fallback value will be used for appdesigner warnings*/    color: var(--rtc-warning-output-color, var(--mw-color-matlabWarning));    text-decoration: underline;}
+.rtcThemeDefaultOverride .diagnosticMessage-wrapper.diagnosticMessage-warningType,.rtcThemeDefaultOverride .diagnosticMessage-wrapper.diagnosticMessage-warningType a {    color: var(--mw-color-matlabWarning) !important;}
+.diagnosticMessage-wrapper.diagnosticMessage-errorType {    /*This fallback value will be used in appdesigner error tooltip text*/    color: var(--rtc-error-output-color, var(--mw-color-matlabErrors));}
+.diagnosticMessage-wrapper.diagnosticMessage-errorType a {    /*This fallback value will be used in appdesigner error tooltip text*/    color: var(--rtc-error-output-color, var(--mw-color-matlabErrors));    text-decoration: underline;}
+.rtcThemeDefaultOverride .diagnosticMessage-wrapper.diagnosticMessage-errorType,.rtcThemeDefaultOverride .diagnosticMessage-wrapper.diagnosticMessage-errorType a {    color: var(--mw-color-matlabErrors) !important;}
+.diagnosticMessage-wrapper .diagnosticMessage-messagePart,.diagnosticMessage-wrapper .diagnosticMessage-causePart {    white-space: pre-wrap;}
+.diagnosticMessage-wrapper .diagnosticMessage-stackPart {    white-space: pre;}
+/* Copyright 2014-2025 The MathWorks, Inc. */.embeddedOutputsTextElement,.embeddedOutputsVariableStringElement {    white-space: pre;    word-wrap:  initial;    min-height: 18px;    max-height: 550px;}
+.embeddedOutputsTextElement .textElement,.embeddedOutputsVariableStringElement .textElement {    overflow: auto;}
+.textElement,.rtcDataTipElement .textElement {    padding-top: 2px;}
+.embeddedOutputsTextElement.inlineElement,.embeddedOutputsVariableStringElement.inlineElement {}
+.inlineElement .textElement {}
+.embeddedOutputsTextElement.rightPaneElement,.embeddedOutputsVariableStringElement.rightPaneElement {    min-height: 16px;}
+.rightPaneElement .textElement {    padding-top: 2px;    padding-left: 9px;}
+.S17 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 1px solid rgb(217, 217, 217); border-bottom: 0px none rgb(33, 33, 33); border-radius: 0px; padding: 6px 45px 0px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace, Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }</style></head><body><div class = rtcContent><h1  class = 'S0'><span class="_richTextNode">Iterative Solver Example</span></h1><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S1'><span style="white-space: pre"><span >clc; clear; close </span><span style="color: rgb(167, 9, 245);">all</span><span >;</span></span></div></div></div><h2  class = 'S2'><span class="_richTextNode">Data Description</span></h2><div  class = 'S3'><span class="_richTextNode">This is a 5D example. The underlying regularization grid is </span><span class="_richTextNode" style=' font-weight: bold;'>25 × 7 × 7 × 12 × 8 = 117,600 nodes</span><span class="_richTextNode">. The system matrix A is 499,748 × 117,600 with 2,582,568 nonzeros (42 MB). The right-hand side b is 499,748 × 1. A has two row types: 37,356 rows with 32 nonzeros (data-fit rows from 2⁵-node multilinear interpolation stencils) and 462,392 rows with 3 nonzeros (regularization rows from second-order finite-difference stencils along each grid dimension).</span></div><h2  class = 'S4'><span class="_richTextNode">Why Direct Solvers Fail: The Cholesky Fill Catastrophe</span></h2><div  class = 'S3'><span class="_richTextNode">Direct solvers (Cholesky, LDL, QR) all fail on this problem not because of a software bug, but because of a </span><span class="_richTextNode" style=' font-weight: bold;'>fundamental structural property</span><span class="_richTextNode"> of the 5D grid that makes the factorization unavoidably large. The analysis below was performed on 2026-Mar-29.</span></div><h3  class = 'S5'><span class="_richTextNode">The Strides</span></h3><div  class = 'S3'><span class="_richTextNode">When n = 117,600 grid nodes are laid out in a flat array using column-major (Fortran) order on the 25 × 7 × 7 × 12 × 8 grid, the index distance between adjacent nodes along each dimension — the </span><span class="_richTextNode" style=' font-style: italic;'>stride</span><span class="_richTextNode"> — is:</span></div><table  class = 'S6'><col/><col/><col/><tr  class = 'S7'><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode" style=' font-weight: bold;'>Dimension</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode" style=' font-weight: bold;'>Grid Size</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode" style=' font-weight: bold;'>Stride</span></div></td></tr><tr  class = 'S7'><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">1</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">25</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">1</span></div></td></tr><tr  class = 'S7'><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">2</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">7</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">25</span></div></td></tr><tr  class = 'S7'><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">3</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">7</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">175</span></div></td></tr><tr  class = 'S7'><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">4</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">12</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">1225</span></div></td></tr><tr  class = 'S7'><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">5</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">8</span></div></td><td  class = 'S8'><div  class = 'S9'><span class="_richTextNode">14700</span></div></td></tr></table><h3  class = 'S5'><span class="_richTextNode">The Long-Range Connections</span></h3><div  class = 'S3'><span class="_richTextNode">The second-order finite-difference regularization along dimension 5 uses the stencil </span><span class="_richTextNode" style=' font-family: monospace;'>[1, −2, 1]</span><span class="_richTextNode"> applied at node indices </span><span class="_richTextNode" style=' font-family: monospace;'>[j, j+14700, j+29400]</span><span class="_richTextNode">. This means columns </span><span class="_richTextNode" style=' font-family: monospace;'>j</span><span class="_richTextNode"> and </span><span class="_richTextNode" style=' font-family: monospace;'>j+29400</span><span class="_richTextNode"> appear together in the same regularization row of A, creating a </span><span class="_richTextNode" style=' font-weight: bold;'>direct edge</span><span class="_richTextNode"> in the A′A graph at distance </span><span class="_richTextNode" style=' font-weight: bold;'>29,400 = n/4</span><span class="_richTextNode">. This is confirmed in the data: all 88,200 long-range connections in A′A fall at exactly bandwidth 29,400 — a sharp discrete spike.</span></div><h3  class = 'S5'><span class="_richTextNode">Why No Reordering Helps</span></h3><div  class = 'S3'><span class="_richTextNode">Because these long-range connections are </span><span class="_richTextNode" style=' font-style: italic;'>direct graph edges</span><span class="_richTextNode"> (not fill-in), no permutation or reordering (AMD, COLAMD, nested dissection) can reduce the matrix bandwidth below 29,400. This yields an inescapable theoretical lower bound on the Cholesky factor:</span></div><div  class = 'S3'><span class="_richTextNode"></span></div><div  class = 'S3'><span class="_richTextNode">    NNZ(L) ≥ n × bandwidth / 2 ≈ 117,600 × 29,400 / 2 ≈ 1.73 × 10⁹</span></div><div  class = 'S3'><span class="_richTextNode"></span></div><div  class = 'S3'><span class="_richTextNode">Symbolic analysis confirms the AMD-ordered Cholesky L has </span><span class="_richTextNode" style=' font-weight: bold;'>1.81 × 10⁹ nonzeros</span><span class="_richTextNode"> — essentially at the floor. Storing L requires ~14.5 GB (double, sparse). Peak RAM during numerical factorization is ~44 GB (L plus working storage). This is the fill ratio:</span></div><div  class = 'S3'><span class="_richTextNode"></span></div><div  class = 'S3'><span class="_richTextNode">NNZ(L) / NNZ(A′A) = 799×    </span></div><div  class = 'S3'><span class="_richTextNode">NNZ(L) / NNZ(A)    = 701×</span></div><div  class = 'S3'><span class="_richTextNode"></span></div><div  class = 'S3'><span class="_richTextNode">QR factorization shares this fate: the R factor has the same sparsity pattern as L.</span></div><h3  class = 'S5'><span class="_richTextNode">Why Iterative Solvers Are Fine</span></h3><div  class = 'S3'><span class="_richTextNode">LSQR, CGLS, PCG, and SYMMLQ only perform matrix-vector products with A and A′. They </span><span class="_richTextNode" style=' font-weight: bold;'>never form A′A</span><span class="_richTextNode"> and never compute a factorization. Total working memory is the 42 MB for A plus a few length-117,600 vectors — roughly 40 MB total. Each iteration costs 2.58 M multiply-adds, which is fast.</span></div><div  class = 'S3'><span class="_richTextNode"></span></div><div  class = 'S3'><span class="_richTextNode" style=' font-weight: bold;'>Because of the large stride in higher dimensions, the best method to solve higher dimensional problems is iterative methods.</span></div><div  class = 'S3'><span class="_richTextNode"></span></div><h2  class = 'S4'><span class="_richTextNode">Computer Used for run below</span></h2><ul  class = 'S10'><li  class = 'S11'><span class="_richTextNode">Intel Core Ultra 7 265K 3.9 GHz 20-Core Processor</span></li><li  class = 'S11'><span class="_richTextNode">192GB of ram</span></li></ul><div  class = 'S3'><span class="_richTextNode">While running this script, MATLAB used a maximum of 105 threads. Maximum ram was around 66GB for the</span><span class="_richTextNode" style=' font-family: monospace;'>\</span><span class="_richTextNode"> which is a sparse QR factorization.</span></div><h2  class = 'S4'><span class="_richTextNode">Stride Optimization 2026-Apr-10</span></h2><div  class = 'S3'><span class="_richTextNode">After updating this example, I realized optimizing the stride of the grid was easy. Just sort the dimension by size, solve, and then undo the permutation of dimensions. This equates to about a 33% speed up with the '</span><span class="_richTextNode" style=' font-family: monospace;'>normal'</span><span class="_richTextNode"> solver, 13% for '</span><span class="_richTextNode" style=' font-family: monospace;'>\'</span><span class="_richTextNode">, 17% for 'pcg'/'symmlq', and 15% for 'lsqr'. Memory requirements for the direct sovlers was reduced by 20-30%.</span></div><h2  class = 'S4'><span class="_richTextNode" style=' font-weight: bold;'>Load Data</span></h2><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S12'><span style="white-space: pre"><span >load(</span><span style="color: rgb(167, 9, 245);">'a07_iterative_solver_data.mat'</span><span >);</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >inputs = double(inputs);</span></span></div></div><div class="inlineWrapper"><div  class = 'S14'><span style="white-space: pre"><span >output = double(output);</span></span></div></div></div><h2  class = 'S2'><span class="_richTextNode">Try the Direct Solvers</span></h2><div  class = 'S3'><span class="_richTextNode">Try the 'normal' solver. I don't recommend this. Skip it. It takes around 27.2GB of memory to run this.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S12'><span style="white-space: pre"><span >smoothness = [0.001 0.01 0.01 0.001 0.01];</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >interpMethod = </span><span style="color: rgb(167, 9, 245);">"linear"</span><span >;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'>&nbsp;</div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">try</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    tic;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    [~] = regularizeNd(inputs, output, xGrid, smoothness);</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    </span><span style="color: rgb(0, 128, 19);">% Note this call is the same as</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    </span><span style="color: rgb(0, 128, 19);">% yGrid = regularizeNd(inputs, output, xGrid, smoothness,'linear', 'normal');</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    fprintf(</span><span style="color: rgb(167, 9, 245);">'No error thrown. Mathworks fixed this bug.\n'</span><span >);</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    toc;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">catch </span><span >exception</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >   fprintf([</span><span style="color: rgb(167, 9, 245);">'While using the ''normal'' solver in regularizeNd,\n' </span><span style="color: rgb(14, 0, 255);">...</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >       </span><span style="color: rgb(167, 9, 245);">'MATLAB threw the following error:\n%s\n%s\n\n'</span><span >], exception.identifier, exception.message);</span></span></div></div><div class="inlineWrapper outputs"><div  class = 'S15'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">end</span></span></div><div  class = 'S16'><div class="inlineElement eoOutputWrapper disableDefaultGestureHandling embeddedOutputsTextElement" uid="F7CC4F8F" prevent-scroll="true" data-testid="output_0" tabindex="-1" style="width: 1145px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;"><div class="textElement eoOutputContent" tabindex="-1" data-previous-available-width="1108" data-previous-scroll-height="17" data-hashorizontaloverflow="false" role="article" aria-roledescription="Use Browse Mode to explore " aria-description="text output " style="max-height: 261px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;">No error thrown. Mathworks fixed this bug.</div></div><div class="inlineElement eoOutputWrapper disableDefaultGestureHandling embeddedOutputsTextElement" uid="7E23EA31" prevent-scroll="true" data-testid="output_1" tabindex="-1" style="width: 1145px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;"><div class="textElement eoOutputContent" tabindex="-1" data-previous-available-width="1108" data-previous-scroll-height="17" data-hashorizontaloverflow="false" role="article" aria-roledescription="Use Browse Mode to explore " aria-description="text output " style="max-height: 261px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;">Elapsed time is 80.862073 seconds.</div></div></div></div></div><div  class = 'S3'><span class="_richTextNode">Try the '\' solver. I don't recommend this either. Skip it. It takes around 66GB of memory to run this.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S12'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">try</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    tic;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    [~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod,</span><span style="color: rgb(167, 9, 245);">'\'</span><span >);</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    fprintf(</span><span style="color: rgb(167, 9, 245);">'No error thrown. Mathworks fixed this bug.\n'</span><span >);</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >    toc;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">catch </span><span >exception</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >      fprintf([</span><span style="color: rgb(167, 9, 245);">'While using the ''\\'' solver in regularizeNd,\n' </span><span style="color: rgb(14, 0, 255);">...</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >       </span><span style="color: rgb(167, 9, 245);">'MATLAB threw the following error:\n%s\n%s\n'</span><span >], exception.identifier, exception.message);</span></span></div></div><div class="inlineWrapper outputs"><div  class = 'S15'><span style="white-space: pre"><span style="color: rgb(14, 0, 255);">end</span></span></div><div  class = 'S16'><div class="inlineElement eoOutputWrapper disableDefaultGestureHandling embeddedOutputsTextElement" uid="27ACAAFC" prevent-scroll="true" data-testid="output_2" tabindex="-1" style="width: 1145px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;"><div class="textElement eoOutputContent" tabindex="-1" data-previous-available-width="1108" data-previous-scroll-height="17" data-hashorizontaloverflow="false" role="article" aria-roledescription="Use Browse Mode to explore " aria-description="text output " style="max-height: 261px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;">No error thrown. Mathworks fixed this bug.</div></div><div class="inlineElement eoOutputWrapper disableDefaultGestureHandling embeddedOutputsTextElement" uid="6060AD0A" prevent-scroll="true" data-testid="output_3" tabindex="-1" style="width: 1145px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;"><div class="textElement eoOutputContent" tabindex="-1" data-previous-available-width="1108" data-previous-scroll-height="17" data-hashorizontaloverflow="false" role="article" aria-roledescription="Use Browse Mode to explore " aria-description="text output " style="max-height: 261px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;">Elapsed time is 1288.071849 seconds.</div></div></div></div></div><h2  class = 'S2'><span class="_richTextNode">Try the Iterative Solvers</span></h2><div  class = 'S3'><span class="_richTextNode">Solve using the 'pcg' solver. The pcg solver solves the normal equation iteratively for x, (A'*A)*x = A'*b. Note that the condition number of (A'*A) is square of the condition number of A. This means that solving the problem is more numerically unstable than solving A*x = b in the least squares sense. However, regularizeNd generally produces well conditioned matrices so this issue is most often irrelevant. If you need an iterative solver and are struggling with accuracy, try 'lsqr'.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S12'><span style="white-space: pre"><span >tic;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >[~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod, </span><span style="color: rgb(167, 9, 245);">'pcg'</span><span >);</span></span></div></div><div class="inlineWrapper outputs"><div  class = 'S15'><span style="white-space: pre"><span >toc;</span></span></div><div  class = 'S16'><div class="inlineElement eoOutputWrapper disableDefaultGestureHandling embeddedOutputsTextElement" uid="D776D0BC" prevent-scroll="true" data-testid="output_4" tabindex="-1" style="width: 1145px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;"><div class="textElement eoOutputContent" tabindex="-1" data-previous-available-width="1108" data-previous-scroll-height="17" data-hashorizontaloverflow="false" role="article" aria-roledescription="Use Browse Mode to explore " aria-description="text output " style="max-height: 261px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;">Elapsed time is 36.175797 seconds.</div></div></div></div></div><div  class = 'S3'><span class="_richTextNode">Solving using the 'symmlq' solver. The symmlq solver is very similar to the pcg solver; see the MATLAB documentation to see the similarities. The similarities between the solvers are beyond the scope of this example. The symmlq solver solves the normal equation iteratively for x, (A'*A)*x = A'*b.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S12'><span style="white-space: pre"><span >tic;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >[~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod, </span><span style="color: rgb(167, 9, 245);">'symmlq'</span><span >);</span></span></div></div><div class="inlineWrapper outputs"><div  class = 'S15'><span style="white-space: pre"><span >toc;</span></span></div><div  class = 'S16'><div class="inlineElement eoOutputWrapper disableDefaultGestureHandling embeddedOutputsTextElement" uid="D1C7B5C9" prevent-scroll="true" data-testid="output_5" tabindex="-1" style="width: 1145px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;"><div class="textElement eoOutputContent" tabindex="-1" data-previous-available-width="1108" data-previous-scroll-height="17" data-hashorizontaloverflow="false" role="article" aria-roledescription="Use Browse Mode to explore " aria-description="text output " style="max-height: 261px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;">Elapsed time is 36.099922 seconds.</div></div></div></div></div><div  class = 'S3'><span class="_richTextNode">Solving using the 'lsqr' solver. The lsqr solver solves A*x = b in the least squares sense iteratively. Use this solver as a last resort with regularizeNd. There is probably a rare case where '\' and 'normal' fail, and 'pcg' and 'symmlq' do not produce adequate results. Thus, lsqr would be the last resort and may produce adequately accurate results at the cost of long solve times.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S12'><span style="white-space: pre"><span >tic;</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span >[~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod, </span><span style="color: rgb(167, 9, 245);">'lsqr'</span><span >);</span></span></div></div><div class="inlineWrapper outputs"><div  class = 'S15'><span style="white-space: pre"><span >toc;</span></span></div><div  class = 'S16'><div class="inlineElement eoOutputWrapper disableDefaultGestureHandling embeddedOutputsTextElement" uid="E1108CEB" prevent-scroll="true" data-testid="output_6" tabindex="-1" style="width: 1145px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;"><div class="textElement eoOutputContent" tabindex="-1" data-previous-available-width="1108" data-previous-scroll-height="17" data-hashorizontaloverflow="false" role="article" aria-roledescription="Use Browse Mode to explore " aria-description="text output " style="max-height: 261px; white-space: pre; font-style: normal; color: rgb(33, 33, 33); font-size: 12px;">Elapsed time is 108.421625 seconds.</div></div></div></div><div class="inlineWrapper"><div  class = 'S17'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% Copyright (c) 2016-2026 Jason Nicholson</span></span></div></div><div class="inlineWrapper"><div  class = 'S13'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% Licensed under the MIT License</span></span></div></div><div class="inlineWrapper"><div  class = 'S14'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% See LICENSE file in project root</span></span></div></div></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+%% Iterative Solver Example
+
+clc; clear; close all;
+%% Data Description
+% This is a 5D example. The underlying regularization grid is *25 × 7 × 7 × 
+% 12 × 8 = 117,600 nodes*. The system matrix A is 499,748 × 117,600 with 2,582,568 
+% nonzeros (42 MB). The right-hand side b is 499,748 × 1. A has two row types: 
+% 37,356 rows with 32 nonzeros (data-fit rows from 2⁵-node multilinear interpolation 
+% stencils) and 462,392 rows with 3 nonzeros (regularization rows from second-order 
+% finite-difference stencils along each grid dimension).
+%% Why Direct Solvers Fail: The Cholesky Fill Catastrophe
+% Direct solvers (Cholesky, LDL, QR) all fail on this problem not because of 
+% a software bug, but because of a *fundamental structural property* of the 5D 
+% grid that makes the factorization unavoidably large. The analysis below was 
+% performed on 2026-Mar-29.
+% The Strides
+% When n = 117,600 grid nodes are laid out in a flat array using column-major 
+% (Fortran) order on the 25 × 7 × 7 × 12 × 8 grid, the index distance between 
+% adjacent nodes along each dimension — the _stride_ — is:
+%% 
+% *Dimension*
+%% 
+% *Grid Size*
+%% 
+% *Stride*
+%% 
+% 1
+%% 
+% 25
+%% 
+% 1
+%% 
+% 2
+%% 
+% 7
+%% 
+% 25
+%% 
+% 3
+%% 
+% 7
+%% 
+% 175
+%% 
+% 4
+%% 
+% 12
+%% 
+% 1225
+%% 
+% 5
+%% 
+% 8
+%% 
+% 14700
+% The Long-Range Connections
+% The second-order finite-difference regularization along dimension 5 uses the 
+% stencil |[1, −2, 1]| applied at node indices |[j, j+14700, j+29400]|. This means 
+% columns |j| and |j+29400| appear together in the same regularization row of 
+% A, creating a *direct edge* in the A′A graph at distance *29,400 = n/4*. This 
+% is confirmed in the data: all 88,200 long-range connections in A′A fall at exactly 
+% bandwidth 29,400 — a sharp discrete spike.
+% Why No Reordering Helps
+% Because these long-range connections are _direct graph edges_ (not fill-in), 
+% no permutation or reordering (AMD, COLAMD, nested dissection) can reduce the 
+% matrix bandwidth below 29,400. This yields an inescapable theoretical lower 
+% bound on the Cholesky factor:
+% 
+% 
+% 
+% NNZ(L) ≥ n × bandwidth / 2 ≈ 117,600 × 29,400 / 2 ≈ 1.73 × 10⁹
+% 
+% 
+% 
+% Symbolic analysis confirms the AMD-ordered Cholesky L has *1.81 × 10⁹ nonzeros* 
+% — essentially at the floor. Storing L requires ~14.5 GB (double, sparse). Peak 
+% RAM during numerical factorization is ~44 GB (L plus working storage). This 
+% is the fill ratio:
+% 
+% 
+% 
+% NNZ(L) / NNZ(A′A) = 799×    
+% 
+% NNZ(L) / NNZ(A)    = 701×
+% 
+% 
+% 
+% QR factorization shares this fate: the R factor has the same sparsity pattern 
+% as L.
+% Why Iterative Solvers Are Fine
+% LSQR, CGLS, PCG, and SYMMLQ only perform matrix-vector products with A and 
+% A′. They *never form A′A* and never compute a factorization. Total working memory 
+% is the 42 MB for A plus a few length-117,600 vectors — roughly 40 MB total. 
+% Each iteration costs 2.58 M multiply-adds, which is fast.
+% 
+% 
+% 
+% *Because of the large stride in higher dimensions, the best method to solve 
+% higher dimensional problems is iterative methods.*
+% 
+% 
+%% Computer Used for run below
+%% 
+% * Intel Core Ultra 7 265K 3.9 GHz 20-Core Processor
+% * 192GB of ram
+%% 
+% While running this script, MATLAB used a maximum of 105 threads. Maximum ram 
+% was around 66GB for the|\| which is a sparse QR factorization.
+%% Stride Optimization 2026-Apr-10
+% After updating this example, I realized optimizing the stride of the grid 
+% was easy. Just sort the dimension by size, solve, and then undo the permutation 
+% of dimensions. This equates to about a 33% speed up with the '|normal'| solver, 
+% 13% for '|\'|, 17% for 'pcg'/'symmlq', and 15% for 'lsqr'. Memory requirements 
+% for the direct sovlers was reduced by 20-30%.
+%% *Load Data*
+
+load('a07_iterative_solver_data.mat');
+inputs = double(inputs);
+output = double(output);
+%% Try the Direct Solvers
+% Try the 'normal' solver. I don't recommend this. Skip it. It takes around 
+% 27.2GB of memory to run this.
+
+smoothness = [0.001 0.01 0.01 0.001 0.01];
+interpMethod = "linear";
+
+try
+    tic;
+    [~] = regularizeNd(inputs, output, xGrid, smoothness);
+    % Note this call is the same as
+    % yGrid = regularizeNd(inputs, output, xGrid, smoothness,'linear', 'normal');
+    
+    fprintf('No error thrown. Mathworks fixed this bug.\n');
+    toc;
+catch exception
+   fprintf(['While using the ''normal'' solver in regularizeNd,\n' ...
+       'MATLAB threw the following error:\n%s\n%s\n\n'], exception.identifier, exception.message);
+end
+%% 
+% Try the '\' solver. I don't recommend this either. Skip it. It takes around 
+% 66GB of memory to run this.
+
+try
+    tic;
+    [~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod,'\');
+    
+    fprintf('No error thrown. Mathworks fixed this bug.\n');
+    toc;
+catch exception
+      fprintf(['While using the ''\\'' solver in regularizeNd,\n' ...
+       'MATLAB threw the following error:\n%s\n%s\n'], exception.identifier, exception.message);
+end
+%% Try the Iterative Solvers
+% Solve using the 'pcg' solver. The pcg solver solves the normal equation iteratively 
+% for x, (A'*A)*x = A'*b. Note that the condition number of (A'*A) is square of 
+% the condition number of A. This means that solving the problem is more numerically 
+% unstable than solving A*x = b in the least squares sense. However, regularizeNd 
+% generally produces well conditioned matrices so this issue is most often irrelevant. 
+% If you need an iterative solver and are struggling with accuracy, try 'lsqr'.
+
+tic;
+[~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod, 'pcg');
+toc;
+%% 
+% Solving using the 'symmlq' solver. The symmlq solver is very similar to the 
+% pcg solver; see the MATLAB documentation to see the similarities. The similarities 
+% between the solvers are beyond the scope of this example. The symmlq solver 
+% solves the normal equation iteratively for x, (A'*A)*x = A'*b.
+
+tic;
+[~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod, 'symmlq');
+toc;
+%% 
+% Solving using the 'lsqr' solver. The lsqr solver solves A*x = b in the least 
+% squares sense iteratively. Use this solver as a last resort with regularizeNd. 
+% There is probably a rare case where '\' and 'normal' fail, and 'pcg' and 'symmlq' 
+% do not produce adequate results. Thus, lsqr would be the last resort and may 
+% produce adequately accurate results at the cost of long solve times.
+
+tic;
+[~] = regularizeNd(inputs, output, xGrid, smoothness, interpMethod, 'lsqr');
+toc;
+% Copyright (c) 2016-2026 Jason Nicholson
+% Licensed under the MIT License
+% See LICENSE file in project root
+##### SOURCE END #####
+-->
+</div></body></html>
