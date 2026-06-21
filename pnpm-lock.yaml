@@ -12,8 +12,8 @@ importers:
   .:
     devDependencies:
       git-conventional-commits:
-        specifier: ^2.8.0
-        version: 2.8.0
+        specifier: ^2.9.0
+        version: 2.9.0
 
 packages:
 
@@ -47,8 +47,8 @@ packages:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
 
-  git-conventional-commits@2.8.0:
-    resolution: {integrity: sha512-wMRrXix/ZGlsei8yZ6N8aYmgRCt4OjXJhMcRgqI/YnjiY1dpoNfZFkqSYCP7wwv1ONsjvPK1+DottPbo+vh4fg==}
+  git-conventional-commits@2.9.0:
+    resolution: {integrity: sha512-a/lv8s6QbJV4cDSaljyzMf3FRdBOvOBt9xkRExZKeSodXfFsDdJYxjm9w7U+e8v3J6yfSzyP5EJGB6Vszg5dGQ==}
     hasBin: true
 
   is-fullwidth-code-point@3.0.0:
@@ -114,7 +114,7 @@ snapshots:
 
   get-caller-file@2.0.5: {}
 
-  git-conventional-commits@2.8.0:
+  git-conventional-commits@2.9.0:
     dependencies:
       yaml: 2.8.3
       yargs: 17.7.2

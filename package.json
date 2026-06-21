@@ -24,7 +24,7 @@
     "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
-    "git-conventional-commits": "^2.8.0"
+    "git-conventional-commits": "^2.9.0"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@11.8.0"
 }
