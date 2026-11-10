@@ -26,21 +26,11 @@ node -v
 npm -v
 ```
 
-Enable Corepack to manage package managers like pnpm. Note: as of Node.js 25, Corepack is no longer bundled, so install it separately if needed.
+Install [pnpm](https://pnpm.io/installation) with npm. The `packageManager` property in `package.json` pins the version, and pnpm automatically installs and uses that version. Corepack is not required.
 
 ```bash
-# Install Corepack when it is not bundled with Node.js
-npm install -g corepack
-```
-
-Then enable Corepack and activate pnpm:
-
-```bash
-# Enable Corepack shims
-corepack enable
-
-# Ensure pnpm is available via Corepack
-corepack install
+# Install pnpm globally so it is on your PATH
+npm install -g pnpm
 
 # Verify pnpm
 pnpm -v
@@ -69,6 +59,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv venv
 uv sync
 uv sync --group docs
+uv sync --group publish
 
 # Run commands inside the uv-managed environment
 uv run python -V
@@ -119,7 +110,7 @@ before enabling `-W` for the HTML build or promoting API-check rules to errors.
 1. Determines the next semantic version using `git-conventional-commits`.
 2. Updates `package.json`, `pyproject.toml`, and `docs/conf.py` with the next version.
 3. Generates `CHANGELOG.md`.
-4. Runs `deploy_documentation` with the same DryRun setting; when DryRun is true, it does everything except push.
+4. Runs `deploy_documentation` with the same DryRun setting. It builds the Sphinx HTML into `docs/_build/html`, then publishes it to the `gh-pages` branch with [ghp-import](https://github.com/c-w/ghp-import) (`uv run --group publish ghp-import --no-jekyll --force --push`). When DryRun is true, `--push` is omitted, so only the local `gh-pages` branch is updated.
 5. Sets up the `build` directory and toolbox project files using `createPackage(..., "PackageToolbox", false)`.
 6. Stops and prints the manual packaging instructions.
 
