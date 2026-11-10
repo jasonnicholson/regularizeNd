@@ -250,18 +250,18 @@
 </pre></div>
 </div>
 <dl>
-<dt>Inputs</dt><dd><p>C: Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the
+<dt>Inputs</dt><dd><p><strong>C</strong>: Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the
 expression <span class="math notranslate nohighlight">\(Cx - d\)</span>. C is M-by-N, where M is the number of equations, and N is the number of elements of x.</p>
-<p>d: Constant vector, specified as a vector of doubles. d represents the additive constant term in the expression <span class="math notranslate nohighlight">\(Cx -
+<p><strong>d</strong>: Constant vector, specified as a vector of doubles. d represents the additive constant term in the expression <span class="math notranslate nohighlight">\(Cx -
 d\)</span>. d is M-by-1, where M is the number of equations.</p>
-<p>AInequality: Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear
+<p><strong>AInequality</strong>: Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear
 coefficients in the constraints <span class="math notranslate nohighlight">\(A_{Inequality}x \leq b_{Inequality}\)</span>. AInequality has size Mineq-by-N, where Mineq is the
 number of constraints and N is the number of elements of x. To save memory, pass AInequality as a sparse matrix.</p>
-<p>bInequality: Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the
+<p><strong>bInequality</strong>: Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the
 constant vector in the constraints <span class="math notranslate nohighlight">\(A_{Inequality}x \leq b_{Inequality}\)</span>. bInequality has length Mineq, where AInequality
 is Mineq-by-N.</p>
 </dd>
-<dt>Outputs</dt><dd><p>x: Solution, returned as a vector.</p>
+<dt>Outputs</dt><dd><p><strong>x</strong>: Solution, returned as a vector.</p>
 </dd>
 <dt>Description</dt><dd><p>Solves:</p>
 <p><span class="math notranslate nohighlight">\(\min\limits_{x} \frac{1}{2} \lVert Cx - d \rVert_2^2\)</span> subject to <span class="math notranslate nohighlight">\(Ax \leq b\)</span></p>
@@ -319,12 +319,12 @@ Mathematics, SIAM, 1995.”</p>
 </pre></div>
 </div>
 <dl>
-<dt>Inputs</dt><dd><p>xGrid (cell array): cell array of grid vectors</p>
-<p>dimension ((1,1), default=1): The monotonic constraint is formed across this dimension.</p>
-<p>dxMin (default=0): The minimum difference between different elements of x. <span class="math notranslate nohighlight">\(x(i+l) &gt;= x(i) + \Delta x_{min}\)</span></p>
+<dt>Inputs</dt><dd><p><strong>xGrid</strong> (cell array): cell array of grid vectors</p>
+<p><strong>dimension</strong> ((1,1), default=1): The monotonic constraint is formed across this dimension.</p>
+<p><strong>dxMin</strong> (default=0): The minimum difference between different elements of x. <span class="math notranslate nohighlight">\(x(i+l) &gt;= x(i) + \Delta x_{min}\)</span></p>
 </dd>
-<dt>Outputs</dt><dd><p>A: A matrix in <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
-<p>b: b vector in <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
+<dt>Outputs</dt><dd><p><strong>A</strong>: A matrix in <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
+<p><strong>b</strong>: b vector in <span class="math notranslate nohighlight">\(Ax\leq b\)</span></p>
 </dd>
 <dt>Description</dt><dd><p>This function is mainly used in conjunction with regularizeNdMatrices to create monotonic increasing constraints.
 Monotonically decreasing constraints are just the negative of A, Aneg = -A and bneg = b.</p>
@@ -397,33 +397,29 @@ different structure in A. i.e. The 1 and -1 in a row mat not be adjacent to each
 </pre></div>
 </div>
 <dl>
-<dt>Inputs:</dt><dd><p>x (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
+<dt>Inputs:</dt><dd><p><strong>x</strong> (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
 corresponds to a dimension.</p>
-<p>y (double, column vector): Contains the corresponds output values to x. y has the same number of rows as x.</p>
-<p>xGrid (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
+<p><strong>y</strong> (double, column vector): Contains the corresponds output values to x. y has the same number of rows as x.</p>
+<p><strong>xGrid</strong> (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
 for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For
 instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.</p>
-<p>smoothness (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
+<p><strong>smoothness</strong> (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
 “smoothness” to “goodness of fit.” This must be a positive real number. If it is a vector, it must have same
 number of elements as columns in x.</p>
-<blockquote>
-<div><p>Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
+<p>Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
 the overall problem which is the ratio of fidelity equations to smoothness equations.</p>
 <p>A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output hypersurface.
 This results in noticeable smoothing.  If your input data has little or no noise, use 0.01 to give smoothness 1%
 as much weight as goodness of fit.</p>
 <p>If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension.
 This allows the user to apply a different amount of smoothing in the each axis/dimension.</p>
-</div></blockquote>
-<p>interpMethod (string, default=”linear”): Denotes the interpolation scheme used to interpolate the data.</p>
-<blockquote>
-<div><p>Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
+<p><strong>interpMethod</strong> (string, default=”linear”): Denotes the interpolation scheme used to interpolate the data.</p>
+<p>Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
 methods, the interpolation method is not the dominant factor in the calculation time in regularizeNd. The dominant
 factor in calculation time is the size of the grid and the solver used. So in general, do not choose your
 interpolation method based on computational complexity. Choose your interpolation method because of accuracy and
 shape that you are looking to obtain.</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>“linear” - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid
 points. linear should be smoother than nearest
 for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a
@@ -437,11 +433,8 @@ number of dimension grows, the number of grid points used to interpolate at a qu
 4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic
 has good properties of accuracy and smoothness but is the most complex interpMethod to calculate.</p></li>
 </ul>
-</div></blockquote>
-</div></blockquote>
-<p>solver (string, default=”normal”): The solver used for the resulting linear system. The default is most often the best choice.</p>
-<blockquote>
-<div><p>What solver should you use? The short answer is use “normal” as a first guess. “\” may be best ill-conditioned
+<p><strong>solver</strong> (string, default=”normal”): The solver used for the resulting linear system. The default is most often the best choice.</p>
+<p>What solver should you use? The short answer is use “normal” as a first guess. “\” may be best ill-conditioned
 problems. If you receive rank deficiency warnings with “normal”, try the “\” solver. Otherwise, use the “normal”
 solver because it is usually faster than the “\” solver.</p>
 <p>The larger the numbers of grid points, the larger the solve time. Since the equations generated tends to be well
@@ -452,8 +445,7 @@ than the “\”.</p>
 “\” are reason to try the iterative solvers. These errors are rare however they happen. Start with the “pcg”
 solver. Then “symmlq”. Finally try “lsqr” solver. The “lsqr” solver is usually slow compared to the “pcg” and
 “symmlq” solver.</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>“\” - uses matlab’s backslash operator to solve the sparse system. This is most likely the sparse QR solver.</p></li>
 <li><p>“lsqr” - Uses the MATLAB lsqr solver. This solver is not recommended. Try “pcg” or “symmlq” first and use “lsqr”
 as a last resort. Experiments have shown that “pcg” and “symmlq” solvers are faster and just as accurate
@@ -472,16 +464,14 @@ preconditioner is used.</p></li>
 <li><p>“symmlq” - Calls the MATLAB symmlq iterative solver that solves the normal equation, <cite>(A’A)*x = A’*y</cite>, for x. Use
 this solver if “pcg” has issues. “symmlq” uses the same preconditioner as “pcg”.</p></li>
 </ul>
-</div></blockquote>
-</div></blockquote>
-<p>maxIterations (default=min(1e5,  nTotalGridPoints)): Only used if the solver is set to the iterative solvers, ‘lsqr’, ‘pcg’, or ‘symmlq’. Reducing this will
+<p><strong>maxIterations</strong> (default=min(1e5,  nTotalGridPoints)): Only used if the solver is set to the iterative solvers, ‘lsqr’, ‘pcg’, or ‘symmlq’. Reducing this will
 speed up the solver at the cost of accuracy. Increasing it will increase accuracy at the cost of time.
 The default value is the smaller of 100,000 and the number of nodes in the grid.</p>
-<p>solverTolerance (default=1e-11*abs(max(y,[],”all”) - min(y,[],”all”))): Only used if the solver is set to the iterative solvers, ‘lsqr’, ‘pcg’, or ‘symmlq’. The
+<p><strong>solverTolerance</strong> (default=1e-11*abs(max(y,[],”all”) - min(y,[],”all”))): Only used if the solver is set to the iterative solvers, ‘lsqr’, ‘pcg’, or ‘symmlq’. The
 solverTolerance is used with ‘lsqr’, ‘pcg’, or ‘symmlq’. Smaller increases accuracy and reduces speed.
 Larger decreases accuracy and increases speed.</p>
 </dd>
-<dt>Output:</dt><dd><p>yGrid (array): Contains the fitted surface or hypersurface corresponding to the grid points xGrid. yGrid is in the
+<dt>Output:</dt><dd><p><strong>yGrid</strong> (array): Contains the fitted surface or hypersurface corresponding to the grid points xGrid. yGrid is in the
 ndgrid format. In 2d, ndgrid format is the transpose of meshgrid format.</p>
 </dd>
 <dt>Description</dt><dd><p>regularizeNd answers the question what is the best possible lookup table that the scattered data input x and output y in
@@ -490,8 +480,7 @@ regularizeNd supports extrapolation from a scattered data set as well.</p>
 <p>The calculated lookup table yGrid is meant to be used with griddedInterpolant class with the conservative memory form. Call
 griddedInterpolant like F = griddedInterpolant(xGrid, yGrid).</p>
 <p>Desirable properties of regularizeNd:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>Calculates a relationship between the input x and the output y without definition of the functional form of x to y.</p></li>
 <li><p>Often the fit is superior to polynomial type fitting without the wiggles.</p></li>
 <li><p>Extrapolation is possible from a scattered data set.</p></li>
@@ -504,7 +493,6 @@ input and 1D out (total 3D).</p></li>
 <li><p>regularizeNd can handle setting the smoothness to 0 in any axis/dimension. This means no smoothing is applied in a
 particular axis/dimension and the data is just a least squares fit of a lookup table in that axis/dimension.</p></li>
 </ul>
-</div></blockquote>
 <p>For an introduction on how regularization works, start here:
 <a class="reference external" href="https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/">https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/</a></p>
 </dd>
@@ -576,32 +564,28 @@ sensitive. Passing an empty argument doesn’t work.</p></li>
 </pre></div>
 </div>
 <dl>
-<dt>Inputs:</dt><dd><p>x (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
+<dt>Inputs:</dt><dd><p><strong>x</strong> (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
 corresponds to a dimension.</p>
-<p>xGrid (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
+<p><strong>xGrid</strong> (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
 for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For
 instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.</p>
-<p>smoothness (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
+<p><strong>smoothness</strong> (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
 “smoothness” to “goodness of fit.” This must be a positive real number. If it is a vector, it must have same
 number of elements as columns in x.</p>
-<blockquote>
-<div><p>Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
+<p>Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
 the overall problem which is the ratio of fidelity equations to smoothness equations.</p>
 <p>A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output hypersurface.
 This results in noticeable smoothing.  If your input data has little or no noise, use 0.01 to give smoothness 1%
 as much weight as goodness of fit.</p>
 <p>If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension.
 This allows the user to apply a different amount of smoothing in the each axis/dimension.</p>
-</div></blockquote>
-<p>interpMethod (string, default=”linear”): Denotes the interpolation scheme used to interpolate the data.</p>
-<blockquote>
-<div><p>Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
+<p><strong>interpMethod</strong> (string, default=”linear”): Denotes the interpolation scheme used to interpolate the data.</p>
+<p>Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
 methods, the interpolation method is not the dominant factor in the calculation time in regularizeNd. The dominant
 factor in calculation time is the size of the grid and the solver used. So in general, do not choose your
 interpolation method based on computational complexity. Choose your interpolation method because of accuracy and
 shape that you are looking to obtain.</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>“linear” - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid
 points. linear should be smoother than nearest
 for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a
@@ -615,13 +599,11 @@ number of dimension grows, the number of grid points used to interpolate at a qu
 4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic
 has good properties of accuracy and smoothness but is the most complex interpMethod to calculate.</p></li>
 </ul>
-</div></blockquote>
-</div></blockquote>
 </dd>
-<dt>Output</dt><dd><p>Afidelity (sparse matirx): Contains the fidelity equations. size(A,1) ==size(x,1) == size(y,1). The number of rows in A
+<dt>Output</dt><dd><p><strong>Afidelity</strong> (sparse matirx): Contains the fidelity equations. size(A,1) ==size(x,1) == size(y,1). The number of rows in A
 corresponds to the number of points in x,y. The number of columns corresponds to the number points in the
 grid.</p>
-<p>Lreg (Cell array): L{i} corresponds to the scaled 2nd derivative regularization of the ith dimension.</p>
+<p><strong>Lreg</strong> (Cell array): L{i} corresponds to the scaled 2nd derivative regularization of the ith dimension.</p>
 </dd>
 <dt>Description</dt><dd><p>regularizeNdMatrices is most often is used for adding contraints to what regularizeNd would produce. The matrices output
 from regularizeNdMatrices are used with constraint matrices in a linear least squares constrained optimization problem.
