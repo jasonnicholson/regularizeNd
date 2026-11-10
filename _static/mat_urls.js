@@ -1,0 +1,56 @@
+/* sphinxcontrib-matlabdomain stable address */
+/* sphinxcontrib-matlabdomain: open an object that moved to another page. */
+(function () {
+  "use strict";
+  var anchor = "";
+  try { anchor = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+  var key = anchor.slice(0, 4) === "mat-" ? anchor.slice(4) : "";
+  function roots() {
+    var out = [];
+    var root = document.documentElement.getAttribute("data-content_root");
+    if (root) { out.push(new URL(root, location.href).href); }
+    var depth = location.pathname.split("/").length - 1;
+    for (var up = "./"; depth-- > 0; up += "../") {
+      var url = new URL(up, location.href).href;
+      if (out.indexOf(url) < 0) { out.push(url); }
+    }
+    return out;
+  }
+  var guard = "sphinxcontrib-matlabdomain:" + anchor;
+  function moved(root, refs) {
+    if (!key || !Object.prototype.hasOwnProperty.call(refs, key)) { return; }
+    try {
+      var last = Number(sessionStorage.getItem(guard));
+      if (Date.now() - last < 10000) { sessionStorage.removeItem(guard); return; }
+      sessionStorage.setItem(guard, String(Date.now()));
+    } catch (e) {}
+    location.replace(root + "mat/ref/" + (refs[key] || key) + ".html");
+  }
+  function find(list) {
+    if (!list.length) { return; }
+    window.matStableRefs = undefined;
+    var script = document.createElement("script");
+    script.src = list[0] + "mat/refs.js";
+    script.charset = "utf-8";
+    script.onload = function () {
+      var refs = window.matStableRefs;
+      if (!refs) { find(list.slice(1)); return; }
+      var home = document.getElementById("sphinxcontrib-matlabdomain-home");
+      if (home) { home.href = list[0] + home.getAttribute("data-page"); }
+      moved(list[0], refs);
+    };
+    script.onerror = function () { find(list.slice(1)); };
+    document.head.appendChild(script);
+  }
+  function run() {
+    var home = document.getElementById("sphinxcontrib-matlabdomain-home");
+    var here = key && document.getElementById(anchor);
+    if (here) { try { sessionStorage.removeItem(guard); } catch (e) {} }
+    if (home || (key && !here)) { find(roots()); }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", run);
+  } else {
+    run();
+  }
+})();
