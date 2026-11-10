@@ -4,23 +4,23 @@ function x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %   x = lsqConstrainedAlternative(C,d,AInequality,bInequality)
 %
 %% Inputs
-%   C: Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the
+%   **C**: Multiplier matrix, specified as a matrix of doubles. C represents the multiplier of the solution x in the
 %   expression :math:`Cx - d`. C is M-by-N, where M is the number of equations, and N is the number of elements of x.
 %
-%   d: Constant vector, specified as a vector of doubles. d represents the additive constant term in the expression :math:`Cx -
+%   **d**: Constant vector, specified as a vector of doubles. d represents the additive constant term in the expression :math:`Cx -
 %   d`. d is M-by-1, where M is the number of equations.
 %
-%   AInequality: Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear
+%   **AInequality**: Linear inequality constraint matrix, specified as a matrix of doubles. AInequality represents the linear
 %   coefficients in the constraints :math:`A_{Inequality}x \leq b_{Inequality}`. AInequality has size Mineq-by-N, where Mineq is the
 %   number of constraints and N is the number of elements of x. To save memory, pass AInequality as a sparse matrix.
 %
-%   bInequality: Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the
+%   **bInequality**: Linear inequality constraint vector, specified as a vector of doubles. bInequality represents the
 %   constant vector in the constraints :math:`A_{Inequality}x \leq b_{Inequality}`. bInequality has length Mineq, where AInequality
 %   is Mineq-by-N.
 %
 % 
 %% Outputs
-%   x: Solution, returned as a vector.
+%   **x**: Solution, returned as a vector.
 %
 %% Description
 %   Solves:

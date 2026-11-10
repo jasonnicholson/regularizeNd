@@ -7,16 +7,16 @@ function [A,b] = monotonicConstraint(xGrid,dimension,dxMin)
 %   [A,b] = monotonicConstraint(xGrid,dimension,dxMin)
 %
 %% Inputs
-%   xGrid (cell array): cell array of grid vectors
+%   **xGrid** (cell array): cell array of grid vectors
 %
-%   dimension ((1,1), default=1): The monotonic constraint is formed across this dimension.
+%   **dimension** ((1,1), default=1): The monotonic constraint is formed across this dimension.
 %
-%   dxMin (default=0): The minimum difference between different elements of x. :math:`x(i+l) >= x(i) + \Delta x_{min}`
+%   **dxMin** (default=0): The minimum difference between different elements of x. :math:`x(i+l) >= x(i) + \Delta x_{min}`
 %
 %% Outputs
-%   A: A matrix in :math:`Ax\leq b`
+%   **A**: A matrix in :math:`Ax\leq b`
 %
-%   b: b vector in :math:`Ax\leq b`
+%   **b**: b vector in :math:`Ax\leq b`
 %
 %% Description
 %   This function is mainly used in conjunction with regularizeNdMatrices to create monotonic increasing constraints.

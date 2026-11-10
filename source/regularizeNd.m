@@ -9,100 +9,94 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   %   yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, maxIterations, solverTolerance)
   %
   %% Inputs:
-  %   x (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
+  %   **x** (double, Column vector or matrix of column vectors): Contains scattered input data. Each row contains one point. Each column
   %   corresponds to a dimension.
   %
-  %   y (double, column vector): Contains the corresponds output values to x. y has the same number of rows as x.
+  %   **y** (double, column vector): Contains the corresponds output values to x. y has the same number of rows as x.
   %
-  %   xGrid (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
+  %   **xGrid** (cell array): Contains vectors defining the nodes in the grid in each dimension. xGrid{1} corresponds with x(:,1)
   %   for instance. Unequal spacing in the grid vectors is allowed. The grid vectors must completely span x. For
   %   instance the values of x(:,1) must be within the bounds of xGrid{1}. If xGrid does not span x, an error is thrown.
   %
-  %   smoothness (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
+  %   **smoothness** (default=0.01): Scalar or vector. - The ratio of smoothness to fidelity of the output surface/hypersurface. i.e. ratio of
   %   "smoothness" to "goodness of fit." This must be a positive real number. If it is a vector, it must have same
   %   number of elements as columns in x.
   %
-  %     Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
-  %     the overall problem which is the ratio of fidelity equations to smoothness equations.
+  %   Smoothness is independent of the number points in each direction, the aspect ratio between axes, or the scale of
+  %   the overall problem which is the ratio of fidelity equations to smoothness equations.
   %
-  %     A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output hypersurface.
-  %     This results in noticeable smoothing.  If your input data has little or no noise, use 0.01 to give smoothness 1%
-  %     as much weight as goodness of fit.
+  %   A smoothness of 1 gives equal weight to fidelity (goodness of fit) and smoothness of the output hypersurface.
+  %   This results in noticeable smoothing.  If your input data has little or no noise, use 0.01 to give smoothness 1%
+  %   as much weight as goodness of fit.
   %
-  %     If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension.
-  %     This allows the user to apply a different amount of smoothing in the each axis/dimension.
+  %   If this parameter is a vector, then it defines the relative smoothing to be associated with each axis/dimension.
+  %   This allows the user to apply a different amount of smoothing in the each axis/dimension.
   %
-  %   interpMethod (string, default="linear"): Denotes the interpolation scheme used to interpolate the data.
+  %   **interpMethod** (string, default="linear"): Denotes the interpolation scheme used to interpolate the data.
   %
-  %     Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
-  %     methods, the interpolation method is not the dominant factor in the calculation time in regularizeNd. The dominant
-  %     factor in calculation time is the size of the grid and the solver used. So in general, do not choose your
-  %     interpolation method based on computational complexity. Choose your interpolation method because of accuracy and
-  %     shape that you are looking to obtain.
+  %   Even though there is a computational complexity difference between linear, nearest, and cubic interpolation
+  %   methods, the interpolation method is not the dominant factor in the calculation time in regularizeNd. The dominant
+  %   factor in calculation time is the size of the grid and the solver used. So in general, do not choose your
+  %   interpolation method based on computational complexity. Choose your interpolation method because of accuracy and
+  %   shape that you are looking to obtain.
   %
-  %       - "linear" - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid
-  %         points. linear should be smoother than nearest
-  %         for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a
-  %         query point grows with 2^nDimensions. i.e. 2d needs 4 points, 3d needs 8 points, 4d needs 16 points per
-  %         query point. In general, linear can use smaller smoothness values than cubic and still be well
-  %         conditioned.
+  %   - "linear" - Uses linear interpolation within the grid. linear interpolation requires that extrema occur at the grid
+  %     points. linear should be smoother than nearest
+  %     for the same grid. As the number of dimension grows, the number of grid points used to interpolate at a
+  %     query point grows with 2^nDimensions. i.e. 2d needs 4 points, 3d needs 8 points, 4d needs 16 points per
+  %     query point. In general, linear can use smaller smoothness values than cubic and still be well
+  %     conditioned.
+  %   - "nearest" - Nearest neighbor interpolation. Nearest should be the least complex but least smooth.
+  %   - "cubic" - Uses Lagrange cubic interpolation. Cubic interpolation allows extrema to occur at other locations
+  %     besides the grid points. Cubic should provide the most flexible relationship for a given xGrid. As the
+  %     number of dimension grows, the number of grid points used to interpolate at a query point grows with
+  %     4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic
+  %     has good properties of accuracy and smoothness but is the most complex interpMethod to calculate.
   %
-  %       - "nearest" - Nearest neighbor interpolation. Nearest should be the least complex but least smooth.
+  %   **solver** (string, default="normal"): The solver used for the resulting linear system. The default is most often the best choice.
   %
-  %       - "cubic" - Uses Lagrange cubic interpolation. Cubic interpolation allows extrema to occur at other locations
-  %         besides the grid points. Cubic should provide the most flexible relationship for a given xGrid. As the
-  %         number of dimension grows, the number of grid points used to interpolate at a query point grows with
-  %         4^nDimensions. i.e. 2d needs 16 points, 3d needs 64 points, 4d needs 256 points per query point. cubic
-  %         has good properties of accuracy and smoothness but is the most complex interpMethod to calculate.
+  %   What solver should you use? The short answer is use "normal" as a first guess. "\\" may be best ill-conditioned
+  %   problems. If you receive rank deficiency warnings with "normal", try the "\\" solver. Otherwise, use the "normal"
+  %   solver because it is usually faster than the "\\" solver.
   %
-  %   solver (string, default="normal"): The solver used for the resulting linear system. The default is most often the best choice.
+  %   The larger the numbers of grid points, the larger the solve time. Since the equations generated tends to be well
+  %   conditioned, the "normal" solver is  a good choice. Beware using "normal" when a small smoothing parameter is
+  %   used, since this will make the equations less well conditioned. The "normal" solver for large grids is 3x faster
+  %   than the "\\".
   %
-  %     What solver should you use? The short answer is use "normal" as a first guess. "\\" may be best ill-conditioned
-  %     problems. If you receive rank deficiency warnings with "normal", try the "\\" solver. Otherwise, use the "normal"
-  %     solver because it is usually faster than the "\\" solver.
+  %   Use the "pcg", "symmlq", or "lsqr" solver when the "normal" and "\\" fail. Out of memory errors with "normal" or
+  %   "\\" are reason to try the iterative solvers. These errors are rare however they happen. Start with the "pcg"
+  %   solver. Then "symmlq". Finally try "lsqr" solver. The "lsqr" solver is usually slow compared to the "pcg" and
+  %   "symmlq" solver.
   %
-  %     The larger the numbers of grid points, the larger the solve time. Since the equations generated tends to be well
-  %     conditioned, the "normal" solver is  a good choice. Beware using "normal" when a small smoothing parameter is
-  %     used, since this will make the equations less well conditioned. The "normal" solver for large grids is 3x faster
-  %     than the "\\".
+  %   - "\\" - uses matlab's backslash operator to solve the sparse system. This is most likely the sparse QR solver.
+  %   - "lsqr" - Uses the MATLAB lsqr solver. This solver is not recommended. Try "pcg" or "symmlq" first and use "lsqr"
+  %     as a last resort. Experiments have shown that "pcg" and "symmlq" solvers are faster and just as accurate
+  %     as "lsqr" for the matrices generated by regularizeNd. The same preconditioner as the "pcg" solver is
+  %     used.
+  %   - "normal" - Constructs the normal equation and solves. `x = (A'A)\\(A'*y)`. From testing, this seems to be a well
+  %     conditioned and faster way to solve this type of equation system than backslash `x = A\\y`. Testing shows
+  %     that the normal equation is 3x faster than the "\\" solver for this type of problem. `A'*A` preserves the
+  %     sparsity and is symmetric positive definite. Often `A'*A` will have less nonzero elements than A. i.e.
+  %     `nnz(A'*A) < nnz(A)`.
+  %   - "pcg" - Calls the MATLAB pcg iterative solver that solves the normal equation, `(A'A)*x = A'*y`, for x. Use this
+  %     solver first when "normal" and "\\" fail. The "pcg" solver tries to generate the Incomplete Cholesky
+  %     Factorization (ichol) as a preconditioner. If Incomplete Cholesky Factorization fails, then diagonal
+  %     compensation is added. There may be a case where the preconditioner just cannot be calculated and thus no
+  %     preconditioner is used.
+  %   - "symmlq" - Calls the MATLAB symmlq iterative solver that solves the normal equation, `(A'A)*x = A'*y`, for x. Use
+  %     this solver if "pcg" has issues. "symmlq" uses the same preconditioner as "pcg".
   %
-  %     Use the "pcg", "symmlq", or "lsqr" solver when the "normal" and "\\" fail. Out of memory errors with "normal" or
-  %     "\\" are reason to try the iterative solvers. These errors are rare however they happen. Start with the "pcg"
-  %     solver. Then "symmlq". Finally try "lsqr" solver. The "lsqr" solver is usually slow compared to the "pcg" and
-  %     "symmlq" solver.
-  %
-  %       - "\\" - uses matlab's backslash operator to solve the sparse system. This is most likely the sparse QR solver.
-  %
-  %       - "lsqr" - Uses the MATLAB lsqr solver. This solver is not recommended. Try "pcg" or "symmlq" first and use "lsqr"
-  %         as a last resort. Experiments have shown that "pcg" and "symmlq" solvers are faster and just as accurate
-  %         as "lsqr" for the matrices generated by regularizeNd. The same preconditioner as the "pcg" solver is
-  %         used.
-  %
-  %       - "normal" - Constructs the normal equation and solves. `x = (A'A)\\(A'*y)`. From testing, this seems to be a well
-  %         conditioned and faster way to solve this type of equation system than backslash `x = A\\y`. Testing shows
-  %         that the normal equation is 3x faster than the "\\" solver for this type of problem. `A'*A` preserves the
-  %         sparsity and is symmetric positive definite. Often `A'*A` will have less nonzero elements than A. i.e.
-  %         `nnz(A'*A) < nnz(A)`.
-  %
-  %       - "pcg" - Calls the MATLAB pcg iterative solver that solves the normal equation, `(A'A)*x = A'*y`, for x. Use this
-  %         solver first when "normal" and "\\" fail. The "pcg" solver tries to generate the Incomplete Cholesky
-  %         Factorization (ichol) as a preconditioner. If Incomplete Cholesky Factorization fails, then diagonal
-  %         compensation is added. There may be a case where the preconditioner just cannot be calculated and thus no
-  %         preconditioner is used.
-  %
-  %       - "symmlq" - Calls the MATLAB symmlq iterative solver that solves the normal equation, `(A'A)*x = A'*y`, for x. Use
-  %         this solver if "pcg" has issues. "symmlq" uses the same preconditioner as "pcg".
-  %
-  %   maxIterations (default=min(1e5,  nTotalGridPoints)): Only used if the solver is set to the iterative solvers, 'lsqr', 'pcg', or 'symmlq'. Reducing this will
+  %   **maxIterations** (default=min(1e5,  nTotalGridPoints)): Only used if the solver is set to the iterative solvers, 'lsqr', 'pcg', or 'symmlq'. Reducing this will
   %   speed up the solver at the cost of accuracy. Increasing it will increase accuracy at the cost of time.
   %   The default value is the smaller of 100,000 and the number of nodes in the grid.
   %
-  %   solverTolerance (default=1e-11*abs(max(y,[],"all") - min(y,[],"all"))): Only used if the solver is set to the iterative solvers, 'lsqr', 'pcg', or 'symmlq'. The
+  %   **solverTolerance** (default=1e-11*abs(max(y,[],"all") - min(y,[],"all"))): Only used if the solver is set to the iterative solvers, 'lsqr', 'pcg', or 'symmlq'. The
   %   solverTolerance is used with 'lsqr', 'pcg', or 'symmlq'. Smaller increases accuracy and reduces speed.
   %   Larger decreases accuracy and increases speed.
   %
   %% Output:
-  %  yGrid (array): Contains the fitted surface or hypersurface corresponding to the grid points xGrid. yGrid is in the
+  %  **yGrid** (array): Contains the fitted surface or hypersurface corresponding to the grid points xGrid. yGrid is in the
   %  ndgrid format. In 2d, ndgrid format is the transpose of meshgrid format.
   %
   %% Description
@@ -115,17 +109,17 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   %
   %   Desirable properties of regularizeNd:
   %
-  %     - Calculates a relationship between the input x and the output y without definition of the functional form of x to y.
-  %     - Often the fit is superior to polynomial type fitting without the wiggles.
-  %     - Extrapolation is possible from a scattered data set.
-  %     - After creating the lookup table yGrid and using it with griddedInterpolant, as the query point moves away from the
-  %       scattered data, the relationship between the input x and output y becomes more linear because of the smoothness
-  %       equations and no nearby fidelity equations. The linear relationship is a good choice when the relationship between x
-  %       and y is unknown in extrapolation.
-  %     - regularizeNd can handle 1D, 2D, nD input data to 1D output data. RegularizeData3D and gridfit can only handle 2D
-  %       input and 1D out (total 3D).
-  %     - regularizeNd can handle setting the smoothness to 0 in any axis/dimension. This means no smoothing is applied in a
-  %       particular axis/dimension and the data is just a least squares fit of a lookup table in that axis/dimension.
+  %   - Calculates a relationship between the input x and the output y without definition of the functional form of x to y.
+  %   - Often the fit is superior to polynomial type fitting without the wiggles.
+  %   - Extrapolation is possible from a scattered data set.
+  %   - After creating the lookup table yGrid and using it with griddedInterpolant, as the query point moves away from the
+  %     scattered data, the relationship between the input x and output y becomes more linear because of the smoothness
+  %     equations and no nearby fidelity equations. The linear relationship is a good choice when the relationship between x
+  %     and y is unknown in extrapolation.
+  %   - regularizeNd can handle 1D, 2D, nD input data to 1D output data. RegularizeData3D and gridfit can only handle 2D
+  %     input and 1D out (total 3D).
+  %   - regularizeNd can handle setting the smoothness to 0 in any axis/dimension. This means no smoothing is applied in a
+  %     particular axis/dimension and the data is just a least squares fit of a lookup table in that axis/dimension.
   %
   %   For an introduction on how regularization works, start here:
   %   https://mathformeremortals.wordpress.com/2013/01/29/introduction-to-regularizing-with-2d-data-part-1-of-3/
