@@ -19,14 +19,17 @@ dev = [
     "secretstorage>=3.5.0",
 ]
 docs = [
+  "furo",
+  "myst-parser",
+  "sphinx-autobuild",
   "sphinx>=8",
   "sphinxcontrib-matlabdomain",
-  "sphinx-autobuild",
-  "sphinx-rtd-theme>=3.0.2",
-  "myst-parser",
 ]
 test = [
   "pytest>=7",
+]
+publish = [
+  "ghp-import"
 ]
 
 [tool.uv]

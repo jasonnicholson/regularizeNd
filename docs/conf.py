@@ -23,7 +23,6 @@ extensions = [
     'sphinxcontrib.matlab',
     'myst_parser',
     'sphinx.ext.mathjax',
-    'sphinx_rtd_theme',
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc'
 ]
@@ -59,7 +58,7 @@ myst_enable_extensions = [
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 html_static_path = ['_static']
 
 

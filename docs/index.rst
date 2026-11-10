@@ -5,13 +5,11 @@ An 8-part tutorial series, additional regularizeNd insights, and a deeper dive i
 
 `regularizeNd page <https://jasonhnicholson.com/pages/regularizeNd/>`_
 
-.. contents::
-   :local:
-   :depth: 2
 
 .. toctree::
    :maxdepth: 1
    :caption: Pages
+   :hidden:
 
    examples
    developer_guide
