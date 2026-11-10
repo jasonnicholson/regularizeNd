@@ -94,8 +94,8 @@ make livehtml
 For documentation checks, run from the repository root:
 
 ```bash
-uv run --group docs sphinx-build -b html -n -w docs/_build/warnings.txt docs docs/_build/html
-uv run --group docs sphinx-build -b matlab-api-check -d docs/_build/html/.doctrees docs docs/_build/api-check
+uv run --group docs sphinx-build -b html -d docs/_build/doctrees -n -w docs/_build/warnings.txt docs docs/_build/html
+uv run --group docs sphinx-build -b matlab-api-check -d docs/_build/doctrees docs docs/_build/api-check
 ```
 
 The HTML build currently reports one `image.not_readable` warning for the

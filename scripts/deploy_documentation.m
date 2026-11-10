@@ -81,8 +81,10 @@ function build_docs_html(repoRoot, docsDir, buildHtmlDir, skipExamplesPublish, p
     end
   end
 
+  % Doctrees default to <outdir>/.doctrees; keep them out of the published folder.
+  doctreeDir = fullfile(docsDir, "_build", "doctrees");
   fprintf("%s Building Sphinx HTML docs (uv run --group docs python -m sphinx)\n", prefix);
-  run_cmd(sprintf('uv run --group docs python -m sphinx -b html "%s" "%s"', docsDir, buildHtmlDir), docsDir, prefix, false);
+  run_cmd(sprintf('uv run --group docs python -m sphinx -b html -d "%s" "%s" "%s"', doctreeDir, docsDir, buildHtmlDir), docsDir, prefix, false);
 end
 
 function publish_with_ghp_import(repoRoot, buildHtmlDir, ghPagesBranch, commitHash, dryRun, prefix)
