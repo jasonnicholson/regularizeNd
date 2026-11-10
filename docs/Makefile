@@ -37,7 +37,7 @@ livehtml: maybe-examples
 	# - SPHINXOPTS: extra options forwarded to sphinx-build
 	# - O: additional command-line arguments
 	# Effect: automatically rebuilds documentation on changes and serves a live-updating site.
-	@$(SPHINXAUTOBUILD) "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) --port 8002 --open-browser --watch ../source $(O)
+	@$(SPHINXAUTOBUILD) "$(SOURCEDIR)" "$(BUILDDIR)/html" --doctree-dir "$(BUILDDIR)/doctrees" $(SPHINXOPTS) --port 8002 --open-browser --watch ../source $(O)
 
 examples:
 	@$(PYTHON) -c "import sys; sys.exit(0)"

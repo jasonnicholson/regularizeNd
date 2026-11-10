@@ -78,7 +78,7 @@ goto end
 :livehtml
 	call "%~f0" maybe-examples
 	if errorlevel 1 exit /b %errorlevel%
-	%SPHINXAUTOBUILD% "%SOURCEDIR%" "%BUILDDIR%\html" %SPHINXOPTS% --port 8002 --open-browser --watch ..\source %O%
+	%SPHINXAUTOBUILD% "%SOURCEDIR%" "%BUILDDIR%\html" --doctree-dir "%BUILDDIR%\doctrees" %SPHINXOPTS% --port 8002 --open-browser --watch ..\source %O%
 	goto end
 
 :help
