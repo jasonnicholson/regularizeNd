@@ -324,8 +324,8 @@ make<span class="w"> </span>livehtml
 </pre></div>
 </div>
 <p>For documentation checks, run from the repository root:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>docs<span class="w"> </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>-n<span class="w"> </span>-w<span class="w"> </span>docs/_build/warnings.txt<span class="w"> </span>docs<span class="w"> </span>docs/_build/html
-uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>docs<span class="w"> </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>matlab-api-check<span class="w"> </span>-d<span class="w"> </span>docs/_build/html/.doctrees<span class="w"> </span>docs<span class="w"> </span>docs/_build/api-check
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>docs<span class="w"> </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>-d<span class="w"> </span>docs/_build/doctrees<span class="w"> </span>-n<span class="w"> </span>-w<span class="w"> </span>docs/_build/warnings.txt<span class="w"> </span>docs<span class="w"> </span>docs/_build/html
+uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>docs<span class="w"> </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>matlab-api-check<span class="w"> </span>-d<span class="w"> </span>docs/_build/doctrees<span class="w"> </span>docs<span class="w"> </span>docs/_build/api-check
 </pre></div>
 </div>
 <p>The HTML build currently reports one <code class="docutils literal notranslate"><span class="pre">image.not_readable</span></code> warning for the
