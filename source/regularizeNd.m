@@ -182,7 +182,7 @@ function yGrid = regularizeNd(x, y, xGrid, smoothness, interpMethod, solver, max
   %    zlabel('z')
   %    legend({'Exact', 'Noisy', 'regularizeNd'},'location', 'best');
   %
-  %   .. image:: example1.png
+  %   .. image:: img/example1.png
 
   % Author(s): Jason Nicholson
   % Copyright (c) 2016-2026 Jason Nicholson

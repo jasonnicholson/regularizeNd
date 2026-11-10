@@ -19,20 +19,19 @@ An 8-part tutorial series, additional regularizeNd insights, and a deeper dive i
    changelog
    
 
-.. currentmodule:: .
 
 lsqConstrainedAlternative
 -------------------------
-.. autofunction:: lsqConstrainedAlternative
+.. autofunction:: lsqConstrainedAlternative.m
 
 monotonicConstraint
 --------------------
-.. autofunction:: monotonicConstraint
+.. autofunction:: monotonicConstraint.m
 
 regularizeNd
 ------------
-.. autofunction:: regularizeNd
+.. autofunction:: regularizeNd.m
 
 regularizeNdMatrices
 --------------------
-.. autofunction:: regularizeNdMatrices
+.. autofunction:: regularizeNdMatrices.m

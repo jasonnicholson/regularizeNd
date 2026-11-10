@@ -18,9 +18,6 @@ release = '3.2.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-import os
-import sys
-
 extensions = [
     'sphinx.ext.autodoc',
     'sphinxcontrib.matlab',
@@ -31,8 +28,19 @@ extensions = [
     'sphinx.ext.autodoc'
 ]
 
-# Add MATLAB source directory so sphinxcontrib-matlabdomain can find .m files
-matlab_src_dir = os.path.abspath(os.path.join('..', 'source'))
+matlab_src_code_project_root = '../source'
+matlab_src_exclude_patterns = [
+  '+internal/' # Exclude the internal namespace
+  ]
+matlab_api_check_rules = {
+    'description': 'error',
+    'method-description': 'warning',
+    'inputs': 'error',
+    'outputs': 'error',
+    'name-value': 'error',
+    'sidecar-documented': 'error',
+    'sidecar-links': 'error',
+}
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

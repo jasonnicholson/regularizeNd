@@ -99,7 +99,18 @@ cd docs
 make html
 make livehtml
 ```
-  
+
+For documentation checks, run from the repository root:
+
+```bash
+uv run --group docs sphinx-build -b html -n -w docs/_build/warnings.txt docs docs/_build/html
+uv run --group docs sphinx-build -b matlab-api-check -d docs/_build/html/.doctrees docs docs/_build/api-check
+```
+
+The HTML build currently reports one `image.not_readable` warning for the
+image in `regularizeNd` help. The API checker reports 11 warnings for missing
+examples, inputs, and outputs in internal function help. Review those findings
+before enabling `-W` for the HTML build or promoting API-check rules to errors.
 
 ## Release Workflow
 

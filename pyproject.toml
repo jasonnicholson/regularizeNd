@@ -19,8 +19,8 @@ dev = [
     "secretstorage>=3.5.0",
 ]
 docs = [
-  "sphinx",
-  "sphinxcontrib-matlabdomain>=0.22.1",
+  "sphinx>=8",
+  "sphinxcontrib-matlabdomain",
   "sphinx-autobuild",
   "sphinx-rtd-theme>=3.0.2",
   "myst-parser",
@@ -32,6 +32,9 @@ test = [
 [tool.uv]
 # Use uv with the existing .venv created via `uv venv`
 managed = true
+
+[tool.uv.sources]
+sphinxcontrib-matlabdomain = { git = "https://github.com/sphinx-contrib/matlabdomain.git", rev = "241941e28ed48f0712f1dfa7624f274592ca424b" }
 
 [tool.pytest.ini_options]
 testpaths = ["ports/python/tests"]
